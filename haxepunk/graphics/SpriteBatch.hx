@@ -4,9 +4,18 @@ import haxepunk.renderers.Renderer;
 import haxepunk.scene.Scene;
 import haxepunk.math.Vector2;
 
+enum TriangleFormat
+{
+	Strip;
+	Fan;
+}
+
 class SpriteBatch
 {
 
+	/**
+	 * The current material being used by SpriteBatch
+	 */
 	public static var material(get, set):Material;
 	private static function get_material():Material
 	{
@@ -154,7 +163,15 @@ class SpriteBatch
 		addVertex(x4, y4, u2, v1, r, g, b, a);
 	}
 
-	public static function drawTriangles(material:Material, verts:Array<Vector2>, uvs:Array<Vector2>, ?tint:Color)
+	/**
+	 * Draw a triangle list.
+	 * @param material The material to use for drawing.
+	 * @param verts The triangle list vertices
+	 * @param uvs The triangle list uvs
+	 * @param format How to draw the triangle list, in a fan or strip.
+	 * @param tint The color to tint the vertices.
+	 */
+	public static function drawTriangles(material:Material, verts:Array<Vector2>, uvs:Array<Vector2>, ?format:TriangleFormat, ?tint:Color):Void
 	{
 		var r, g, b, a;
 		if (tint != null)
@@ -173,29 +190,32 @@ class SpriteBatch
 
 		// add indices
 		var tris = verts.length - 2;
-		if (_iIndex + tris * 3 > MAX_INDICES) flush();
-		var index = _index;
-		switch ("fan")
+		if (_iIndex + tris * 3 > MAX_INDICES)
 		{
-		case "strip":
-			for (i in 2...tris)
-			{
-				_triIndices[_iIndex++] = _index;
-				_triIndices[_iIndex++] = _index+1;
-				_triIndices[_iIndex++] = _index+2;
+			flush();
+		}
+		var index = _index;
+		switch (format)
+		{
+			case Strip:
+				for (i in 2...tris)
+				{
+					_triIndices[_iIndex++] = _index;
+					_triIndices[_iIndex++] = _index+1;
+					_triIndices[_iIndex++] = _index+2;
+					_index += 1;
+				}
+				_index += 2;
+			default:
+				var first = _index++;
+				for (i in 0...tris)
+				{
+					_triIndices[_iIndex++] = first;
+					_triIndices[_iIndex++] = _index;
+					_triIndices[_iIndex++] = _index+1;
+					_index += 1;
+				}
 				_index += 1;
-			}
-			_index += 2;
-		case "fan": // fan
-			var first = _index++;
-			for (i in 0...tris)
-			{
-				_triIndices[_iIndex++] = first;
-				_triIndices[_iIndex++] = _index;
-				_triIndices[_iIndex++] = _index+1;
-				_index += 1;
-			}
-			_index += 1;
 		}
 
 		// add vertices
@@ -214,6 +234,7 @@ class SpriteBatch
         }
 	}
 
+	/** @private Increase the quad count and flush if over the limit */
 	inline private static function addQuad()
 	{
 		if (_numQuads + 1 > MAX_QUADS)
@@ -223,6 +244,7 @@ class SpriteBatch
 		_numQuads += 1; // must increment after in case a flush occurs
 	}
 
+	/** @private Adds a vertex to the quad list */
 	inline private static function addVertex(x:Float=0, y:Float=0, u:Float=0, v:Float=0, r:Float=1, g:Float=1, b:Float=1, a:Float=1):Void
 	{
 		_quadVertices[_vIndex++] = x;
@@ -236,7 +258,11 @@ class SpriteBatch
 	}
 
 	/**
-	 * Flushes the last batch of sprites.
+	 * Flushes the current SpriteBatch.
+	 * This is automatically called on several conditions:
+	 *   1. A batch limit is reached (either maximum quads or triangles)
+	 *   2. The material has been changed
+	 *   3. End of the scene's draw frame
 	 */
 	public static function flush():Void
 	{

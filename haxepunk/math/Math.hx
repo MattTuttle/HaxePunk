@@ -315,6 +315,12 @@ class Math
 		return current == a ? b : a;
 	}
 
+	/**
+	 * Generate a universally unique identifier.
+	 * @param len The resulting length of the identifier.
+	 * @param radix How many different characters to use.
+	 * @return The generated UUID result.
+	 */
 	public static function uuid(?len:Int, ?radix:Int):String
 	{
 		var uuid = "";
@@ -346,6 +352,10 @@ class Math
 		return uuid;
 	}
 
+	/**
+	 * Quickly generate a universally unique identifier.
+	 * @return The generated UUID result.
+	 */
 	public static function uuidFast():String
 	{
 		var rnd = 0, r, uuid = "";
