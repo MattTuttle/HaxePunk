@@ -11,6 +11,9 @@ class Entity extends SceneNode
 	public var mask(default, null):Mask;
 	public var collidable:Bool = true;
 
+	public var drawable(get, never):Bool;
+	private inline function get_drawable():Bool { return _graphic != null;}
+
 	public var layer(get, set):Float;
 	private inline function get_layer():Float { return position.z; }
 	private inline function set_layer(value:Float) { return position.z = value; }
@@ -72,11 +75,19 @@ class Entity extends SceneNode
 		return _name;
 	}
 
+	/**
+	 * Add a Mask to the Entity.
+	 * @return The Mask that was added.
+	 */
 	public function addMask(mask:Mask):Mask
 	{
 		return this.mask = mask;
 	}
 
+	/**
+	 * Add a Graphic to the Entity.
+	 * @return The Graphic that was added.
+	 */
 	public function addGraphic(graphic:Graphic):Graphic
 	{
 		if (_graphic == null)
@@ -94,9 +105,12 @@ class Entity extends SceneNode
 		return _graphic;
 	}
 
+	/**
+	 * Draw the entity if a graphic exists
+	 */
 	public function draw()
 	{
-		if (_graphic != null)
+		if (drawable)
 		{
 			_graphic.draw(position);
 		}

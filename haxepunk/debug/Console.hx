@@ -45,7 +45,7 @@ class Console
 		});
 		_logText.text = lines.join("\n") + "\n> " + input;
 		_fpsText.text = "FPS: " + Std.int(HXP.frameRate);
-		_entityText.text = scene.count + (scene.count == 1 ? " Entity" : " Entities");
+		_entityText.text = scene.entityCount + (scene.entityCount == 1 ? " Entity" : " Entities");
 
 		_tool.update(scene, elapsed);
 	}

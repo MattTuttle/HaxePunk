@@ -13,10 +13,10 @@ class Scene
 {
 
 	public var camera:Camera;
-	public var width:Int = 0;
-	public var height:Int = 0;
+	public var width:Int;
+	public var height:Int;
 
-	public function new()
+	public function new(width:Int=0, height:Int=0)
 	{
 		camera = new Camera();
 		_added = new Array<Entity>();
@@ -24,29 +24,68 @@ class Scene
 		_types = new StringMap<Array<Entity>>();
 		_entityNames = new StringMap<Entity>();
 		_frameList = new Array<Float>();
+		this.width = width;
+		this.height = height;
 	}
 
-	public function add(e:Entity)
+	/**
+	 * Add a single entity to the scene.
+	 * @param e The Entity to add.
+	 */
+	public function add(e:Entity):Void
 	{
 		_added.push(e);
 	}
 
-	public function remove(e:Entity)
+	/**
+	 * Add a list of entities to the scene.
+	 * @param list A list of Entity objects to add.
+	 */
+	public function addList(list:Array<Entity>):Void
+	{
+		for (e in list)
+		{
+			add(e);
+		}
+	}
+
+	/**
+	 * Remove a single entity from the scene.
+	 * @param e The Entity to remove.
+	 */
+	public inline function remove(e:Entity):Void
 	{
 		e.remove = true;
 	}
 
 	/**
-	 * Remove all entities in the scene
+	 * Remove a list of entities from the scene.
+	 * @param list A list of Entity objects to remove.
 	 */
-	public function clear()
+	public function removeList(list:Array<Entity>):Void
 	{
-		for (i in 0..._entities.length)
+		for (e in list)
 		{
-			_entities[i].remove = true;
+			remove(e);
 		}
 	}
 
+	/**
+	 * Remove all entities in the scene
+	 */
+	public function removeAll():Void
+	{
+		removeList(_entities);
+	}
+
+	/**
+	 * Create an Entity object with a mask applied and add it to the scene.
+	 * @param mask The Mask object to add.
+	 * @param layer The layer on which to place the entity.
+	 * @param x The x-axis position of the Entity.
+	 * @param y The y-axis position of the Entity.
+	 * @return The created and added Entity object.
+	 */
 	public function addMask(mask:Mask, layer:Int=0, x:Float=0, y:Float=0):Entity
 	{
 		var e = new Entity(x, y, layer);
@@ -55,6 +94,14 @@ class Scene
 		return e;
 	}
 
+	/**
+	 * Create an Entity object with a graphic applied and add it to the scene.
+	 * @param graphic The Graphic object to add.
+	 * @param layer The layer on which to place the entity.
+	 * @param x The x-axis position of the Entity.
+	 * @param y The y-axis position of the Entity.
+	 * @return The created and added Entity object.
+	 */
 	public function addGraphic(graphic:Graphic, layer:Int=0, x:Float=0, y:Float=0):Entity
 	{
 		var e = new Entity(x, y, layer);
@@ -63,9 +110,15 @@ class Scene
 		return e;
 	}
 
-	public var count(get, never):Int;
-	private inline function get_count():Int { return _entities.length; }
+	/**
+	 * The number of entities in the Scene.
+	 */
+	public var entityCount(get, never):Int;
+	private inline function get_entityCount():Int { return _entities.length; }
 
+	/**
+	 * An iterator of all the entities in the Scene.
+	 */
 	public var entities(get, never):Iterator<Entity>;
 	private inline function get_entities():Iterator<Entity>
 	{
@@ -75,11 +128,11 @@ class Scene
 	/**
 	 * A list of Entity objects of the type.
 	 * @param	type 		The type to check.
-	 * @return 	The Entity list.
+	 * @return 	An Entity iterator containing all entities of the requested type.
 	 */
-	public inline function entitiesForType(type:String):Array<Entity>
+	public inline function entitiesForType(type:String):Iterator<Entity>
 	{
-		return _types.exists(type) ? _types.get(type) : null;
+		return _types.exists(type) ? _types.get(type).iterator() : null;
 	}
 
 	/**
@@ -95,7 +148,7 @@ class Scene
 	/**
 	 * How many different types have been added to the Scene.
 	 */
-	public var uniqueTypes(get, null):Int;
+	public var uniqueTypes(get, never):Int;
 	private inline function get_uniqueTypes():Int
 	{
 		var i:Int = 0;
@@ -150,10 +203,35 @@ class Scene
 		}
 	}
 
+	/**
+	 * Get entity by name
+	 * @param name the entity name to find
+	 * @return The Entity, if any, that matches the name given.
+	 */
+	public function getByName(name:String):Entity
+	{
+		return exists(name) ? _entityNames.get(name) : null;
+	}
+
+	/**
+	 * Check if an entity exists by name
+	 * @param name the entity name to check for existence
+	 */
+	public inline function exists(name:String):Bool
+	{
+		return _entityNames.exists(name);
+	}
+
 	/** @private Register the entities instance name. */
 	@:allow(haxepunk.scene.Entity)
 	private inline function registerName(e:Entity)
 	{
+		#if debug
+		if (exists(e.name))
+		{
+			trace("WARN: Entity named '" + e.name + "' already exists!");
+		}
+		#end
 		_entityNames.set(e.name, e);
 	}
 
@@ -169,12 +247,17 @@ class Scene
 		return Std.int(a.layer - b.layer);
 	}
 
+	/**
+	 * Draws the scene
+	 */
 	public function draw()
 	{
+		var e;
 		Renderer.clear(camera.clearColor);
 		for (i in 0..._entities.length)
 		{
-			_entities[i].draw();
+			e = _entities[i];
+			if (e.drawable) e.draw();
 		}
 		if (Console.enabled) Console.instance.draw(this);
 		SpriteBatch.flush();
@@ -187,27 +270,36 @@ class Scene
 		_frameLast = t;
 	}
 
-	public function capture(filename:String)
+	/**
+	 * Captures the scene to an image file
+	 * @param filename the name of the screenshot file to generate
+	 */
+	public function capture(filename:String):Void
 	{
-		var file = sys.io.File.write(filename);
-		var format = filename.substr(filename.lastIndexOf(".") + 1);
-		var image = Renderer.capture(0, 0, width, height);
-		var bytes = image.encode(format);
-		file.writeBytes(bytes, 0, bytes.length);
-		file.close();
+		try {
+			var file = sys.io.File.write(filename);
+			var format = filename.substr(filename.lastIndexOf(".") + 1);
+			var bytes = Renderer.capture(0, 0, width, height).encode(format);
+			file.writeBytes(bytes, 0, bytes.length);
+			file.close();
+		} catch (e:Dynamic) {
+			trace("Failed to capture screen: " + e);
+		}
 	}
 
-	public function update(elapsed:Float)
+	/**
+	 * Updates the scene
+	 * @param elapsed The elapsed time, in seconds, since the last update.
+	 */
+	public function update(elapsed:Float):Void
 	{
 		updateEntities(elapsed);
 		if (Console.enabled) Console.instance.update(this, elapsed);
 		camera.update();
 	}
 
-	/**
-	 * Adds, updates, and removes entities from the scene
-	 */
-	private inline function updateEntities(elapsed:Float=0)
+	/** @private Adds, updates, and removes entities from the scene */
+	private inline function updateEntities(elapsed:Float=0):Void
 	{
 		var removed = new Array<Entity>(),
 			e:Entity;
