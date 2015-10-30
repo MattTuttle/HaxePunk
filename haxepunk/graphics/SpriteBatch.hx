@@ -233,10 +233,9 @@ class SpriteBatch
 	 */
 	public static function flush():Void
 	{
-		var numTris = Std.int(_iIndex / 3);
 		var drawQuads = _numQuads > 0,
-			drawTris = numTris > 0;
-		if (!(drawQuads || drawTris)) return;
+			drawTris = _iIndex > 0;
+		if (!drawQuads && !drawTris) return;
 
 		// update buffers
 		if (_quadVertexBuffer == null)
@@ -263,9 +262,6 @@ class SpriteBatch
 			}
 		}
 
-		// grab the camera transform
-		var cameraTransform = HXP.scene.camera.transform;
-
 		if (drawTris)
 		{
 			Renderer.bindBuffer(_triVertexBuffer);
@@ -279,6 +275,9 @@ class SpriteBatch
 			Renderer.updateBuffer(_quadVertices, STATIC_DRAW);
 		}
 
+		// grab the camera transform
+		var cameraTransform = HXP.scene.camera.transform;
+
 		// loop material passes
 		for (pass in material.passes)
 		{
@@ -291,7 +290,7 @@ class SpriteBatch
 			if (drawTris)
 			{
 				Renderer.bindBuffer(_triVertexBuffer);
-				Renderer.draw(_triIndexBuffer, numTris);
+				Renderer.draw(_triIndexBuffer, Std.int(_iIndex / 3));
 				Renderer.bindBuffer(_quadVertexBuffer);
 			}
 

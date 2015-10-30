@@ -187,6 +187,14 @@ class Scene
 		_frameLast = t;
 	}
 
+	public function capture(filename:String)
+	{
+		var file = sys.io.File.write(filename);
+		var image = Renderer.capture(0, 0, width, height);
+		var bytes = image.encode();
+		file.writeBytes(bytes, 0, bytes.length);
+	}
+
 	public function update(elapsed:Float)
 	{
 		updateEntities(elapsed);

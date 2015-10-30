@@ -140,6 +140,7 @@ class Text extends Graphic
 				var x:Float, y:Float;
 				var lines = value.split("\n");
 				var vertIndex = 0;
+				_numTriangles = 0;
 				for (i in 0...lines.length)
 				{
 					var line = lines[i];

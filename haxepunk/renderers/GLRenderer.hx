@@ -77,6 +77,13 @@ class GLRenderer
 		}
 	}
 
+	public static inline function capture(x:Int, y:Int, width:Int, height:Int):Image
+	{
+		var pixels = new UInt8Array(width * height * 3);
+		GL.readPixels(x, y, width, height, GL.RGBA, GL.UNSIGNED_BYTE, pixels);
+		return new Image(new ImageBuffer(pixels, width, height), 0, 0, width, height);
+	}
+
 	public static inline function createTexture(image:ImageBuffer):NativeTexture
 	{
 		var format = image.bitsPerPixel == 8 ? GL.ALPHA : GL.RGBA;
