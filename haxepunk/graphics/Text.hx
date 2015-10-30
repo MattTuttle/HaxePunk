@@ -237,7 +237,7 @@ class Text extends Graphic
 
 		_vertexBuffer = Renderer.createBuffer(4);
 
-		// MUST be set after material is created
+		// Must be set AFTER material is created
 		this.lineHeight = this.size = size;
 		this.text = text;
 	}
@@ -251,12 +251,12 @@ class Text extends Graphic
 		#if !flash
 		if (_numTriangles <= 0 || _indexBuffer == null || _vertexBuffer == null) return;
 
-		// TODO: batch this process?
 		// finish drawing whatever came before the text area
 		SpriteBatch.flush();
 
 		_drawPosition.x = -origin.x;
 		_drawPosition.y = -origin.y;
+		// _drawPosition.z = 0;
 		_drawPosition *= scale;
 		_drawPosition += offset;
 
@@ -273,7 +273,7 @@ class Text extends Graphic
 			Renderer.setColor(pass.shader.uniform("uColor"), color);
 			Renderer.setAttribute(pass.shader.attribute("aVertexPosition"), 0, 2);
 			Renderer.setAttribute(pass.shader.attribute("aTexCoord"), 2, 2);
-			Renderer.draw(_indexBuffer, _numTriangles, 0);
+			Renderer.draw(_indexBuffer, _numTriangles);
 		}
 
 		#end

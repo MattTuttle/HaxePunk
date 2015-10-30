@@ -32,8 +32,9 @@ class SpriteBatch
 					_invTexHeight = 1 / tex.height;
 				}
 			}
+			_material = value;
 		}
-		return _material = value;
+		return _material;
 	}
 
 	/**
@@ -169,51 +170,57 @@ class SpriteBatch
 		}
 
 		SpriteBatch.material = material;
-        addTriFan(verts.length - 2);
+
+		// add indices
+		var tris = verts.length - 2;
+		if (_iIndex + tris * 3 > MAX_INDICES) flush();
+		var index = _index;
+		switch ("fan")
+		{
+		case "strip":
+			for (i in 2...tris)
+			{
+				_triIndices[_iIndex++] = _index;
+				_triIndices[_iIndex++] = _index+1;
+				_triIndices[_iIndex++] = _index+2;
+				_index += 1;
+			}
+			_index += 2;
+		case "fan": // fan
+			var first = _index++;
+			for (i in 0...tris)
+			{
+				_triIndices[_iIndex++] = first;
+				_triIndices[_iIndex++] = _index;
+				_triIndices[_iIndex++] = _index+1;
+				_index += 1;
+			}
+			_index += 1;
+		}
+
+		// add vertices
         for (i in 0...verts.length)
         {
 			var vert = verts[i],
 				uv = uvs[i];
-			_triVertices[_vIndex++] = vert.x;
-			_triVertices[_vIndex++] = vert.y;
-			_triVertices[_vIndex++] = uv.x;
-			_triVertices[_vIndex++] = uv.y;
-			_triVertices[_vIndex++] = r;
-			_triVertices[_vIndex++] = g;
-			_triVertices[_vIndex++] = b;
-			_triVertices[_vIndex++] = a;
+			_triVertices[index++] = vert.x;
+			_triVertices[index++] = vert.y;
+			_triVertices[index++] = uv.x;
+			_triVertices[index++] = uv.y;
+			_triVertices[index++] = r;
+			_triVertices[index++] = g;
+			_triVertices[index++] = b;
+			_triVertices[index++] = a;
         }
-	}
-
-	inline private static function addTriStrip(verts:Int)
-	{
-		for (i in 2...verts)
-		{
-			_triIndices[_iIndex++] = _index;
-			_triIndices[_iIndex++] = _index+1;
-			_triIndices[_iIndex++] = _index+2;
-			_index += 1;
-		}
-		_index += 2;
-	}
-
-	inline private static function addTriFan(tris:Int)
-	{
-		if (_iIndex + tris * 3 > MAX_INDICES) flush();
-		var first = _index++;
-		for (i in 0...tris)
-		{
-			_triIndices[_iIndex++] = first;
-			_triIndices[_iIndex++] = _index;
-			_triIndices[_iIndex++] = _index+1;
-			_index += 1;
-		}
-		_index += 1;
 	}
 
 	inline private static function addQuad()
 	{
-		if (++_numQuads * 6 > MAX_INDICES) flush();
+		if (_numQuads + 1 > MAX_QUADS)
+		{
+			flush();
+		}
+		_numQuads += 1; // must increment after in case a flush occurs
 	}
 
 	inline private static function addVertex(x:Float=0, y:Float=0, u:Float=0, v:Float=0, r:Float=1, g:Float=1, b:Float=1, a:Float=1):Void
@@ -237,14 +244,23 @@ class SpriteBatch
 			drawTris = _iIndex > 0;
 		if (!drawQuads && !drawTris) return;
 
-		// update buffers
-		if (_quadVertexBuffer == null)
+		if (drawTris)
 		{
-			_quadVertexBuffer = Renderer.createBuffer(8);
-			_triVertexBuffer = Renderer.createBuffer(8);
-			// create static quad index buffer
-			if (_quadIndexBuffer == null)
+			if (_triVertexBuffer == null)
 			{
+				_triVertexBuffer = Renderer.createBuffer(8);
+			}
+			Renderer.bindBuffer(_triVertexBuffer);
+			Renderer.updateBuffer(_triVertices, STATIC_DRAW);
+			_triIndexBuffer = Renderer.updateIndexBuffer(_triIndices, STATIC_DRAW, _triIndexBuffer);
+		}
+
+		if (drawQuads)
+		{
+			if (_quadVertexBuffer == null)
+			{
+				_quadVertexBuffer = Renderer.createBuffer(8);
+				// create static quad index buffer
 				var indices = new IntArray(#if !flash MAX_INDICES #end);
 				var i = 0, j = 0;
 				while (i < MAX_INDICES)
@@ -253,24 +269,14 @@ class SpriteBatch
 					indices[i++] = j+1;
 					indices[i++] = j+2;
 
-					indices[i++] = j+1;
+					indices[i++] = j;
 					indices[i++] = j+2;
 					indices[i++] = j+3;
 					j += 4;
 				}
 				_quadIndexBuffer = Renderer.updateIndexBuffer(indices, STATIC_DRAW, _quadIndexBuffer);
 			}
-		}
 
-		if (drawTris)
-		{
-			Renderer.bindBuffer(_triVertexBuffer);
-			Renderer.updateBuffer(_triVertices, STATIC_DRAW);
-			_triIndexBuffer = Renderer.updateIndexBuffer(_triIndices, STATIC_DRAW, _triIndexBuffer);
-		}
-
-		if (drawQuads)
-		{
 			Renderer.bindBuffer(_quadVertexBuffer);
 			Renderer.updateBuffer(_quadVertices, STATIC_DRAW);
 		}
@@ -296,7 +302,7 @@ class SpriteBatch
 
 			if (drawQuads)
 			{
-				Renderer.draw(_quadIndexBuffer, Std.int(_numQuads / 2));
+				Renderer.draw(_quadIndexBuffer, _numQuads * 2);
 			}
 		}
 
@@ -308,15 +314,18 @@ class SpriteBatch
 	private static var _vIndex:Int = 0;
 	private static var _numQuads:Int = 0;
 
-	private static inline var MAX_INDICES = 4095;
+	private static inline var MAX_VERTICES = 16384;
+	private static inline var MAX_INDICES = 4092;
+	private static inline var MAX_QUADS = 682; // MAX_INDICES / 6
+
 	private static var _triIndices = new IntArray(#if !flash MAX_INDICES #end);
 	private static var _triIndexBuffer:IndexBuffer;
 	private static var _quadIndexBuffer:IndexBuffer;
 
-	private static var _quadVertices = new FloatArray(#if !flash 16384 #end);
+	private static var _quadVertices = new FloatArray(#if !flash MAX_VERTICES #end);
 	private static var _quadVertexBuffer:VertexBuffer;
 
-	private static var _triVertices = new FloatArray(#if !flash 16384 #end);
+	private static var _triVertices = new FloatArray(#if !flash MAX_VERTICES #end);
 	private static var _triVertexBuffer:VertexBuffer;
 
 	private static var _invTexWidth:Float = 0;

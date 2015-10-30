@@ -56,13 +56,14 @@ class Console
 
 		Draw.begin();
 
-		_logText.origin.y = HXP.window.height - _logText.height;
+		_logText.origin.y = -(HXP.window.height - _logText.height);
 		_logText.draw(pos);
 
 		_fpsText.draw(pos);
 
-		_entityText.origin.x = HXP.window.width - _entityText.width;
-		Draw.fillRect(_entityText.origin.x + pos.x, _entityText.origin.y + pos.y, _entityText.width, _entityText.height, HXP.entityColor);
+		var x = HXP.window.width - _entityText.width;
+		_entityText.origin.x = -x;
+		Draw.fillRect(x + pos.x, pos.y, _entityText.width, _entityText.height, HXP.entityColor);
 		_entityText.draw(pos);
 
 		if (_frameInfos.length > 1)

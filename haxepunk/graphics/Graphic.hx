@@ -55,8 +55,8 @@ class Graphic
 	 */
 	public function centerOrigin():Void
 	{
-		origin.x = width / 2;
-		origin.y = height / 2;
+		origin.x = width * 0.5;
+		origin.y = height * 0.5;
 	}
 
 	/**
