@@ -53,10 +53,10 @@ class SpriteBatch
 	 * @param y the sprite's y-axis value
 	 * @param width the sprite's width
 	 * @param height the sprite's height
-	 * @param texX the sprite's uv rect x value
-	 * @param texY the sprite's uv rect y value
-	 * @param texWidth the sprite's uv rect width value
-	 * @param texHeight the sprite's uv rect height value
+	 * @param texX the sprite's uv rect x value (in pixels)
+	 * @param texY the sprite's uv rect y value (in pixels)
+	 * @param texWidth the sprite's uv rect width value (in pixels)
+	 * @param texHeight the sprite's uv rect height value (in pixels)
 	 * @param flipX flips sprite's uv coordinates on x-axis
 	 * @param flipY flips sprite's uv coordinates on y-axis
 	 * @param originX the sprite's x-axis anchor point for rotation

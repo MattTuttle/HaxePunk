@@ -1,27 +1,59 @@
 package haxepunk.graphics;
 
 import haxepunk.scene.Camera;
-import haxepunk.math.Vector3;
-import haxepunk.math.Matrix4;
+import haxepunk.math.*;
+
+abstract TilesheetSource(TileSheet) to TileSheet from TileSheet
+{
+	private function new(tilesheet:TileSheet) { this = tilesheet; }
+
+	@:from static private function fromAsset(asset:String):TilesheetSource
+	{
+		var parts = asset.split("@");
+		if (parts.length == 2)
+		{
+			var file = parts.shift();
+			var coords = parts.shift().split("x");
+			if (coords.length == 2)
+			{
+				var w = Std.parseInt(coords[0]);
+				var h = Std.parseInt(coords[1]);
+				var tilesheet = new TileSheet(Assets.getTexture(file), w, h);
+				return new TilesheetSource(tilesheet);
+			}
+		}
+		throw "Expected tilesheet with format '<asset>@<width>x<height>'";
+	}
+}
 
 class Tilemap extends Graphic
 {
 
-	public function new(material:Material, width:Int, height:Int, tileWidth:Int, tileHeight:Int, ?tileSpacingWidth:Int=0, ?tileSpacingHeight:Int=0)
+	public var tilesheet:TileSheet;
+	public var tint:Color;
+
+	public function new(source:TilesheetSource, width:Int, height:Int)
 	{
 		super();
+
+		this.tilesheet = source;
+		this.tint = new Color(1, 1, 1, 1);
+
+		var tileWidth = tilesheet.tileWidth;
+		var tileHeight = tilesheet.tileHeight;
+		// clamp width/height to a multiple of the tile size
 		_width = width - (width % tileWidth);
 		_height = height - (height % tileHeight);
+		// determine number of columns and rows
 		_columns = Std.int(_width / tileWidth);
 		_rows = Std.int(_height / tileHeight);
 
+		// fill map with the "empty" tile id
 		_map = new Array<Int>();
 		for (i in 0...(_rows * _columns))
 		{
 			_map[i] = -1;
 		}
-
-		this.material = material;
 	}
 
 	/**
@@ -159,7 +191,23 @@ class Tilemap extends Graphic
 
 	override public function draw(offset:Vector3):Void
 	{
-		// SpriteBatch.draw(material, _matrix);
+		var scaledTileWidth = tilesheet.tileWidth * scale.x,
+			scaledTileHeight = tilesheet.tileHeight * scale.y;
+		material = tilesheet.material; // set to the current tilesheet material
+		for (y in 0..._rows)
+		{
+			for (x in 0..._columns)
+			{
+				var tile = getTile(x, y);
+				if (tile < 0) continue;
+				var rect = tilesheet.getTileRect(tile);
+				if (rect == null) continue;
+				SpriteBatch.draw(material, x * scaledTileWidth, y * scaledTileHeight,
+					scaledTileWidth, scaledTileHeight,
+					rect.x, rect.y, rect.width, rect.height,
+					false, false, 0, 0, scale.x, scale.y, 0, tint);
+			}
+		}
 	}
 
 	// Tilemap information.
