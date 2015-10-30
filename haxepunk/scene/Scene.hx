@@ -190,9 +190,11 @@ class Scene
 	public function capture(filename:String)
 	{
 		var file = sys.io.File.write(filename);
+		var format = filename.substr(filename.lastIndexOf(".") + 1);
 		var image = Renderer.capture(0, 0, width, height);
-		var bytes = image.encode();
+		var bytes = image.encode(format);
 		file.writeBytes(bytes, 0, bytes.length);
+		file.close();
 	}
 
 	public function update(elapsed:Float)

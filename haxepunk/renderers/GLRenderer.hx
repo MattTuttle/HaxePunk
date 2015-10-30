@@ -79,8 +79,24 @@ class GLRenderer
 
 	public static inline function capture(x:Int, y:Int, width:Int, height:Int):Image
 	{
-		var pixels = new UInt8Array(width * height * 3);
+		var bytesPerRow = width * 4;
+		var pixels = new UInt8Array(height * bytesPerRow);
 		GL.readPixels(x, y, width, height, GL.RGBA, GL.UNSIGNED_BYTE, pixels);
+		// flip result vertically
+		var tmp, row, flippedRow;
+		for (y in 0...Std.int(height / 2))
+		{
+			row = y * bytesPerRow;
+			flippedRow = (height - y) * bytesPerRow;
+			for (x in 0...bytesPerRow)
+			{
+				tmp = pixels[row];
+				pixels[row] = pixels[flippedRow];
+				pixels[flippedRow] = tmp;
+				flippedRow += 1;
+				row += 1;
+			}
+		}
 		return new Image(new ImageBuffer(pixels, width, height), 0, 0, width, height);
 	}
 
