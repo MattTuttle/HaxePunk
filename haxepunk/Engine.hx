@@ -78,7 +78,8 @@ class Engine extends Application
 				width = windowWidth;
 				height = windowHeight;
 		}
-		Renderer.setViewport(x, y, width, height);
+		var pixelScale = HXP.window.scale; // for retina devices
+		Renderer.setViewport(x, y, Std.int(width * pixelScale), Std.int(height * pixelScale));
 	}
 
 	override public function render(renderer:lime.graphics.Renderer):Void
