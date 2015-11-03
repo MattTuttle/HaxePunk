@@ -158,6 +158,14 @@ class Mouse
 				case NoScale:
 					Mouse.x = x - Std.int((ww - width) / 2);
 					Mouse.x = y - Std.int((wh - height) / 2);
+				case Zoom:
+					var scale = ww / width;
+					if (scale * height < wh)
+					{
+						scale = wh / height;
+					}
+					Mouse.x = (x - Std.int((ww - Std.int(width * scale)) / 2)) / scale;
+					Mouse.y = (y - Std.int((wh - Std.int(height * scale)) / 2)) / scale;
 				case LetterBox:
 					var scale = ww / width;
 					if (scale * height > wh)

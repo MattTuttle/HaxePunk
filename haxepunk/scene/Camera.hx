@@ -36,9 +36,9 @@ class Camera extends SceneNode
 		transform.lookAt(position, target, up);
 	}
 
-	public function update():Void
+	public function update(width:Float, height:Float):Void
 	{
-		if (_projection == null) make2D(HXP.window.width, HXP.window.height);
+		if (_projection == null) make2D(width, height);
 		transform.identity();
 		transform.translate(-position.x, -position.y, -position.z);
 		transform.multiply(_projection);

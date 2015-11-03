@@ -29,6 +29,10 @@ class Engine extends Application
 		HXP.window = windows[0];
 
 		HXP.window.onResize.add(setViewport);
+		HXP.window.onMove.add(function(x, y) {
+			// for some reason the viewport needs to be set when the window moves
+			setViewport(HXP.window.width, HXP.window.height);
+		});
 		setViewport(HXP.window.width, HXP.window.height);
 
 		// Init the input system
@@ -56,29 +60,35 @@ class Engine extends Application
 
 	private function setViewport(windowWidth:Int, windowHeight:Int)
 	{
-		if (scene.width == 0) scene.width = HXP.window.width;
-		if (scene.height == 0) scene.height = HXP.window.height;
-		var x = 0, y = 0, width = scene.width, height = scene.height;
+		if (scene.width == 0) scene.width = windowWidth;
+		if (scene.height == 0) scene.height = windowHeight;
+		var x = 0, y = 0, scale = 1.0,
+			width = scene.width, height = scene.height;
 		switch (HXP.scaleMode)
 		{
 			case NoScale:
-				x = Std.int((windowWidth - width) / 2);
-				y = Std.int((windowHeight - height) / 2);
+				// Nothing to do
+			case Zoom:
+				scale = windowWidth / width;
+				if (scale * height < windowHeight)
+				{
+					scale = windowHeight / height;
+				}
 			case LetterBox:
-				var scale = windowWidth / width;
+				scale = windowWidth / width;
 				if (scale * height > windowHeight)
 				{
 					scale = windowHeight / height;
 				}
-				width = Std.int(width * scale);
-				height = Std.int(height * scale);
-				x = Std.int((windowWidth - width) / 2);
-				y = Std.int((windowHeight - height) / 2);
 			case Stretch:
 				width = windowWidth;
 				height = windowHeight;
 		}
+		width = Std.int(width * scale);
+		height = Std.int(height * scale);
 		var pixelScale = HXP.window.scale; // for retina devices
+		x = Std.int((windowWidth - width) / 2 * pixelScale);
+		y = Std.int((windowHeight - height) / 2 * pixelScale);
 		Renderer.setViewport(x, y, Std.int(width * pixelScale), Std.int(height * pixelScale));
 	}
 

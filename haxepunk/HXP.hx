@@ -9,6 +9,7 @@ enum ScaleMode
 {
 	NoScale;
 	Stretch;
+	Zoom;
 	LetterBox;
 }
 
