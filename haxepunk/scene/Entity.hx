@@ -7,7 +7,6 @@ import haxepunk.math.*;
 class Entity extends SceneNode
 {
 
-	public var hitbox(default, null):Box;
 	public var mask(default, null):Mask;
 	public var collidable:Bool = true;
 
@@ -17,6 +16,22 @@ class Entity extends SceneNode
 	public var layer(get, set):Float;
 	private inline function get_layer():Float { return position.z; }
 	private inline function set_layer(value:Float) { return position.z = value; }
+
+	/**
+	 * Generate world boundaries based on applied mask
+	 */
+	public var bounds(get, never):Rectangle;
+	private function get_bounds():Rectangle {
+		var rect = new Rectangle();
+		if (mask != null)
+		{
+			rect.left = x + mask.min.x;
+			rect.right = x + mask.max.x;
+			rect.top = y + mask.min.y;
+			rect.bottom = y + mask.max.y;
+		}
+		return rect;
+	}
 
 	/**
 	 * The collision group, used for collision checking.
@@ -67,7 +82,7 @@ class Entity extends SceneNode
 	public function new(x:Float = 0, y:Float = 0, z:Float = 0)
 	{
 		super(x, y, z);
-		mask = hitbox = new Box();
+		mask = new Box();
 	}
 
 	public function toString():String
@@ -164,15 +179,12 @@ class Entity extends SceneNode
 	}
 
 	/**
-	 * TODO: change to 3d?
+	 *
 	 */
-	public function collidePoint(x1:Float, y1:Float, x2:Float, y2:Float):Bool
+	public function collidePoint(point:Vector3):Bool
 	{
-		hitbox.x += x1; hitbox.y += y1;
-		var vec = new Vector3(x2, y2);
-		var result = hitbox.containsPoint(vec);
-		hitbox.x -= x1; hitbox.y -= y1;
-		return result;
+		var vec = point - position;
+		return mask != null && mask.containsPoint(vec);
 	}
 
 	/**
@@ -182,40 +194,40 @@ class Entity extends SceneNode
 	 * @param	y			Virtual y position to place this Entity.
 	 * @return	The first Entity collided with, or null if none were collided.
 	 */
-	public function collide(group:String, ?offset:Vector3):Entity
+	public function collide(?group:String, ?offset:Vector3):Entity
 	{
 		// check that the entity has been added to a scene
-		if (scene == null) return null;
-
-		var entities = scene.entitiesForGroup(group);
-		if (!collidable || entities == null) return null;
-
-		var _x = hitbox.x, _y = hitbox.x;
-		offset = (offset == null ? position : offset + position);
-		hitbox.min += offset;
-		hitbox.max += offset;
-
-		for (e in entities)
-		{
-			if (e.collidable && e != this)
-			{
-				e.hitbox.min += e.position;
-				e.hitbox.max += e.position;
-				var result = e.hitbox.intersects(hitbox);
-				e.hitbox.min -= e.position;
-				e.hitbox.max -= e.position;
-
-				if (result && (mask == null || e.mask != null && mask.intersects(e.mask)))
-				{
-					hitbox.min -= offset;
-					hitbox.max -= offset;
-					return e;
-				}
-			}
-		}
-
-		hitbox.min -= offset;
-		hitbox.max -= offset;
+		// if (scene == null) return null;
+		//
+		// var entities = scene.entitiesForGroup(group);
+		// if (!collidable || entities == null) return null;
+		//
+		// var _x = hitbox.x, _y = hitbox.x;
+		// offset = (offset == null ? position : offset + position);
+		// hitbox.min += offset;
+		// hitbox.max += offset;
+		//
+		// for (e in entities)
+		// {
+		// 	if (e.collidable && e != this)
+		// 	{
+		// 		e.hitbox.min += e.position;
+		// 		e.hitbox.max += e.position;
+		// 		var result = e.hitbox.intersects(hitbox);
+		// 		e.hitbox.min -= e.position;
+		// 		e.hitbox.max -= e.position;
+		//
+		// 		if (result && (mask == null || e.mask != null && mask.intersects(e.mask)))
+		// 		{
+		// 			hitbox.min -= offset;
+		// 			hitbox.max -= offset;
+		// 			return e;
+		// 		}
+		// 	}
+		// }
+		//
+		// hitbox.min -= offset;
+		// hitbox.max -= offset;
 		return null;
 	}
 

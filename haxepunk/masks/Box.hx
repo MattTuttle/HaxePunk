@@ -17,23 +17,11 @@ class Box extends Rectangle implements Mask
 		super(x, y, width, height);
 	}
 
-	public var min(get, set):Vector3;
+	public var min(get, never):Vector3;
 	private inline function get_min():Vector3 { return new Vector3(left, top); }
-	private inline function set_min(value:Vector3):Vector3
-	{
-		x = value.x;
-		y = value.y;
-		return value;
-	}
 
-	public var max(get, set):Vector3;
+	public var max(get, never):Vector3;
 	private inline function get_max():Vector3 { return new Vector3(right, bottom); }
-	private inline function set_max(value:Vector3):Vector3
-	{
-		width = value.x - x;
-		height = value.y - y;
-		return value;
-	}
 
 	public function debugDraw(offset:Vector3, color:haxepunk.graphics.Color):Void
 	{

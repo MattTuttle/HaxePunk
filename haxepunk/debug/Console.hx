@@ -56,6 +56,7 @@ class Console
 
 		Draw.begin();
 
+		#if false
 		_logText.origin.y = -(HXP.window.height - _logText.height);
 		_logText.draw(pos);
 
@@ -86,13 +87,17 @@ class Console
 				lastInfo = info;
 			}
 		}
+		#end
 
+		var bounds:Rectangle;
 		for (entity in scene.entities)
 		{
 			if (entity.mask != null)
 			{
 				entity.mask.debugDraw(entity.position, HXP.maskColor);
 			}
+			bounds = entity.bounds;
+			Draw.rect(bounds.x, bounds.y, bounds.width, bounds.height, HXP.entityColor);
 			Draw.pixel(entity.x, entity.y, HXP.entityColor, 4);
 		}
 		_tool.draw(pos);

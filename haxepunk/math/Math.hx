@@ -9,23 +9,24 @@ class Math
 	/**
 	 * Flash equivalent: int.MIN_VALUE
 	 */
-	public static inline var INT_MIN_VALUE = -2147483648;
+	public static inline var INT_MIN = -2147483648;
 
 	/**
 	 * Flash equivalent: int.MAX_VALUE
 	 */
-	public static inline var INT_MAX_VALUE = 2147483647;
+	public static inline var INT_MAX = 2147483647;
 
 	/**
 	 * Flash equivalent: Number.MAX_VALUE
 	 */
-#if flash
-	public static var NUMBER_MAX_VALUE(get_NUMBER_MAX_VALUE,never):Float;
-	public static inline function get_NUMBER_MAX_VALUE():Float { return untyped __global__["Number"].MAX_VALUE; }
-#else
-	public static var NUMBER_MAX_VALUE(get_NUMBER_MAX_VALUE,never):Float;
-	public static inline function get_NUMBER_MAX_VALUE():Float { return 179 * pow(10, 306); } // 1.79e+308
-#end
+	public static var FLOAT_MAX(get,never):Float;
+	public static inline function get_FLOAT_MAX():Float {
+		#if flash
+		return untyped __global__["Number"].MAX_VALUE;
+		#else
+		return 179 * pow(10, 306); // 1.79e+308
+		#end
+	}
 
 	// Used for rad-to-deg and deg-to-rad conversion.
 	public static var DEG(get, never):Float;

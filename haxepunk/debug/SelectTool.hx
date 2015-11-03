@@ -27,9 +27,10 @@ class SelectTool implements Tool
 		else if (Input.released(MouseButton.LEFT) > 0)
 		{
 			_mousePressed = false;
+			var point = new Vector3(Mouse.x, Mouse.y);
 			for (entity in HXP.scene.entities)
 			{
-				if (entity.collidePoint(0, 0, Mouse.x, Mouse.y))
+				if (entity.collidePoint(point))
 				{
 					trace(entity);
 				}

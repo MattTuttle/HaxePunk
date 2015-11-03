@@ -7,8 +7,11 @@ class Polygon implements Mask
 
 	public var x:Float;
 	public var y:Float;
-	public var min(default, null):Vector3;
-	public var max(default, null):Vector3;
+
+	public var min(get, never):Vector3;
+	public inline function get_min():Vector3 { return _min; }
+	public var max(get, never):Vector3;
+	public inline function get_max():Vector3 { return _max; }
 
     /**
 	 * Constructor.
@@ -102,8 +105,8 @@ class Polygon implements Mask
 
 		var h = project(horizontal);
 		var v = project(vertical);
-		min = new Vector3(h.min, v.min);
-		max = new Vector3(h.max, v.max);
+		_min = new Vector3(h.min, v.min);
+		_max = new Vector3(h.max, v.max);
 	}
 
     public function debugDraw(offset:Vector3, color:haxepunk.graphics.Color):Void
@@ -239,6 +242,8 @@ class Polygon implements Mask
 		return new Projection(min, max);
 	}
 
+	public var _min:Vector3;
+	public var _max:Vector3;
 	private var _angle:Float = 0;
 	private var _axes:Array<Vector3>;
 	private var _points:Array<Vector3>;

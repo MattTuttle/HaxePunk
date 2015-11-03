@@ -16,6 +16,11 @@ class Rectangle
 		this.height = height;
 	}
 
+	public function toString():String
+	{
+		return 'Rectangle<$x, $y, $width, $height>';
+	}
+
 	public var left(get, set):Float;
 	private inline function get_left():Float { return x; }
 	private inline function set_left(value:Float):Float { return x = value; }

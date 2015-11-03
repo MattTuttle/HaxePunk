@@ -5,7 +5,7 @@ import haxepunk.debug.Console;
 import haxepunk.graphics.Graphic;
 import haxepunk.graphics.Draw;
 import haxepunk.masks.Mask;
-import haxepunk.math.Matrix4;
+import haxepunk.math.*;
 import haxepunk.renderers.Renderer;
 import haxepunk.graphics.SpriteBatch;
 
@@ -127,12 +127,12 @@ class Scene
 
 	/**
 	 * A list of Entity objects of the group.
-	 * @param	group 		The group to check.
+	 * @param	group 		The group to check. If group is null, return all entities.
 	 * @return 	An Entity iterator containing all entities of the requested group.
 	 */
-	public inline function entitiesForGroup(group:String):Iterator<Entity>
+	public inline function entitiesForGroup(?group:String):Iterator<Entity>
 	{
-		return _groups.exists(group) ? _groups.get(group).iterator() : null;
+		return group == null ? entities : (_groups.exists(group) ? _groups.get(group).iterator() : [].iterator());
 	}
 
 	/**
@@ -174,7 +174,7 @@ class Scene
 
 	/** @private Adds Entity to the group list. */
 	@:allow(haxepunk.scene.Entity)
-	private function addGroup(e:Entity)
+	private function addGroup(e:Entity):Void
 	{
 		var list:Array<Entity>;
 		// add to group list
@@ -192,7 +192,7 @@ class Scene
 
 	/** @private Removes Entity from the group list. */
 	@:allow(haxepunk.scene.Entity)
-	private function removeGroup(e:Entity)
+	private function removeGroup(e:Entity):Void
 	{
 		if (!_groups.exists(e.group)) return;
 		var list = _groups.get(e.group);
@@ -208,7 +208,7 @@ class Scene
 	 * @param name the entity name to find
 	 * @return The Entity, if any, that matches the name given.
 	 */
-	public function getByName(name:String):Entity
+	public function getByName(name:String):Null<Entity>
 	{
 		return exists(name) ? _entityNames.get(name) : null;
 	}
@@ -224,7 +224,7 @@ class Scene
 
 	/** @private Register the entities instance name. */
 	@:allow(haxepunk.scene.Entity)
-	private inline function registerName(e:Entity)
+	private inline function registerName(e:Entity):Void
 	{
 		#if debug
 		if (exists(e.name))
@@ -240,6 +240,78 @@ class Scene
 	private inline function unregisterName(e:Entity):Void
 	{
 		_entityNames.remove(e.name);
+	}
+
+	/**
+	 * Find the entity origin point nearest to the given point, if any.
+	 * @param	point		Point to check.
+	 * @param	group		The collision group to search or all entities if null.
+	 * @param	useBounds	Use the Entity Mask bounds.
+	 * @return	The entity closest to the given point.
+	 */
+	public function nearestTo(point:Vector3, ?group:String, useBounds:Bool=false):Null<Entity>
+	{
+		var nearDist:Float = Math.FLOAT_MAX,
+			dist:Float,
+			near:Entity = null;
+		for (e in entitiesForGroup(group))
+		{
+			if (useBounds)
+			{
+				var bounds = e.bounds;
+				dist = Math.distanceRectPoint(point.x, point.y, bounds.x, bounds.y, bounds.width, bounds.height);
+			}
+			else
+			{
+				dist = Math.distanceSquared(point.x, point.y, e.x, e.y);
+			}
+
+			if (dist < nearDist)
+			{
+				nearDist = dist;
+				near = e;
+			}
+		}
+		return near;
+	}
+
+	/**
+	 * Returns all entities found that collide with the position.
+	 * @param	point	Point to check for collision.
+	 * @param	group	The collision group to search or all entities if null.
+	 * @return	A list of any entities that collide with the point.
+	 */
+	public function collidePoint(point:Vector3, ?group:String):Array<Entity>
+	{
+		var result = [];
+		for (e in entitiesForGroup(group))
+		{
+			if (e.collidable && e.collidePoint(point))
+			{
+				result.push(e);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Returns all entities found that collide with the Mask.
+	 * @param	mask	Mask to use for collision checks.
+	 * @param	group	The collision group to search or all entities if not specified.
+	 * @return	A list of any entities that collide with the Mask.
+	 */
+	public function collideInto(mask:Mask, ?group:String):Array<Entity>
+	{
+		var result = [];
+		var list = _groups.exists(group) ? _groups.get(group) : _entities;
+		for (e in list)
+		{
+			// if (e.collidable && e.collide(mask, x, y))
+			// {
+			// 	result.push(e);
+			// }
+		}
+		return result;
 	}
 
 	private function sortByLayer(a:Entity, b:Entity):Int
