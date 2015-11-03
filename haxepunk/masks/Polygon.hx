@@ -9,9 +9,9 @@ class Polygon implements Mask
 	public var y:Float;
 
 	public var min(get, never):Vector3;
-	public inline function get_min():Vector3 { return _min; }
+	public inline function get_min():Vector3 { return new Vector3(x + _min.x, y + _min.y); }
 	public var max(get, never):Vector3;
-	public inline function get_max():Vector3 { return _max; }
+	public inline function get_max():Vector3 { return new Vector3(x + _max.x, y + _max.y); }
 
     /**
 	 * Constructor.
@@ -91,6 +91,8 @@ class Polygon implements Mask
 			a.x = Math.cos(vecAngle);
 			a.y = Math.sin(vecAngle);
 		}
+
+		calculateBounds();
 	}
 
 	public function setPoints(points:Array<Vector3>):Void
@@ -102,11 +104,7 @@ class Polygon implements Mask
 
 		_points = points;
 		generateAxes();
-
-		var h = project(horizontal);
-		var v = project(vertical);
-		_min = new Vector3(h.min, v.min);
-		_max = new Vector3(h.max, v.max);
+		calculateBounds();
 	}
 
     public function debugDraw(offset:Vector3, color:haxepunk.graphics.Color):Void
@@ -139,6 +137,14 @@ class Polygon implements Mask
 	{
 		if (Std.is(other, Polygon)) return intersectsPolygon(cast other);
 		return false;
+	}
+
+	private function calculateBounds()
+	{
+		var h = project(horizontal);
+		var v = project(vertical);
+		_min = new Vector3(h.min, v.min);
+		_max = new Vector3(h.max, v.max);
 	}
 
 	private function intersectsWithAxes(other:Polygon, axes:Array<Vector3>)
