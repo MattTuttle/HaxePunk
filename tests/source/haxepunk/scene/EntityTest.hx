@@ -7,7 +7,7 @@ class EntityTest extends haxe.unit.TestCase
 	public function testNoScene()
 	{
 		var e = new Entity();
-		assertEquals("player", e.type = "player");
+		assertEquals("player", e.group = "player");
 		assertEquals(null, e.collide("player"));
 	}
 
@@ -18,28 +18,6 @@ class EntityTest extends haxe.unit.TestCase
 		scene.add(e);
 		scene.updateEntities();
 		assertEquals(scene, e.scene);
-	}
-
-	public function testCollide()
-	{
-		var scene = new Scene();
-
-		var a = new Entity(50, 50);
-		a.hitbox.left = -50;
-		a.hitbox.top = -50;
-		a.hitbox.right = 50;
-		a.hitbox.bottom = 50;
-		scene.add(a);
-
-		var b = new Entity(-25, -25);
-		b.hitbox.width = 50;
-		b.hitbox.height = 50;
-		b.type = "player";
-		scene.add(b);
-
-		scene.updateEntities();
-
-		assertEquals(b, a.collide("player"));
 	}
 
 }

@@ -30,9 +30,9 @@ class CircleTest extends haxe.unit.TestCase
 		assertEquals(true, a.intersectsCircle(b));
 		assertEquals(true, b.intersectsCircle(a));
 
-		a.x = -35; a.y = 15;
+		a.origin.x = -35; a.origin.y = 15;
 		assertEquals(true, a.intersects(b));
-		a.x = -30; a.y = -20;
+		a.origin.x = -30; a.origin.y = -20;
 		assertEquals(false, a.intersectsCircle(b));
 	}
 

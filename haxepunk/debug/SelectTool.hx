@@ -3,8 +3,7 @@ package haxepunk.debug;
 import haxepunk.graphics.Draw;
 import haxepunk.inputs.Input;
 import haxepunk.inputs.Mouse;
-import haxepunk.masks.Box;
-import haxepunk.math.Vector3;
+import haxepunk.math.*;
 import haxepunk.scene.Scene;
 
 class SelectTool implements Tool
@@ -12,7 +11,7 @@ class SelectTool implements Tool
 
 	public function new()
 	{
-		_selectRect = new Box();
+		_selectRect = new Rectangle();
 	}
 
 	public function update(scene:Scene, elapsed:Float)
@@ -70,7 +69,7 @@ class SelectTool implements Tool
 		}
 	}
 
-	private var _selectRect:Box;
+	private var _selectRect:Rectangle;
 	private var _mouseOriginX:Float = 0;
 	private var _mouseOriginY:Float = 0;
 	private var _mousePressed:Bool = false;

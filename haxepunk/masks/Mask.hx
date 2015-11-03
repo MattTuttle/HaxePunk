@@ -7,18 +7,17 @@ import haxepunk.graphics.Color;
 interface Mask
 {
 
-	public var x:Float;
-    public var y:Float;
+	public var origin:Vector3;
 
 	/**
 	 * Absolute minimum point of mask (used for bounds)
 	 */
-	public var min(get, never):Vector3;
+	public var min(default, null):Vector3;
 
 	/**
 	 * Absolute maximum point of mask (used for bounds)
 	 */
-	public var max(get, never):Vector3;
+	public var max(default, null):Vector3;
 
 	/**
 	 * Checks if two masks intersect.

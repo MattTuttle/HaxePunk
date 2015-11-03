@@ -2,8 +2,35 @@ package haxepunk.masks;
 
 import haxepunk.math.*;
 
-class Box extends Rectangle implements Mask
+class Box implements Mask
 {
+
+	public var origin:Vector3;
+	public var width(default, set):Float;
+	public function set_width(value:Float):Float
+	{
+		max.x = width / 2;
+		min.x = -max.x;
+		return width = value;
+	}
+	public var height(default, set):Float;
+	public function set_height(value:Float):Float
+	{
+		max.y = height / 2;
+		min.y = -max.y;
+		return height = value;
+	}
+	public var min(default, null):Vector3;
+	public var max(default, null):Vector3;
+
+	public var left(get, never):Float;
+	private inline function get_left():Float { return origin.x + min.x; }
+	public var right(get, never):Float;
+	private inline function get_right():Float { return origin.x + max.x; }
+	public var top(get, never):Float;
+	private inline function get_top():Float { return origin.y + min.y; }
+	public var bottom(get, never):Float;
+	private inline function get_bottom():Float { return origin.y + max.y; }
 
 	/**
 	 * Constructor.
@@ -14,18 +41,16 @@ class Box extends Rectangle implements Mask
 	 */
 	public function new(width:Float=0, height:Float=0, x:Float=0, y:Float=0)
 	{
-		super(x, y, width, height);
+		this.origin = new Vector3(x, y);
+		this.min = new Vector3();
+		this.max = new Vector3();
+		this.width = width;
+		this.height = height;
 	}
-
-	public var min(get, never):Vector3;
-	private inline function get_min():Vector3 { return new Vector3(left, top); }
-
-	public var max(get, never):Vector3;
-	private inline function get_max():Vector3 { return new Vector3(right, bottom); }
 
 	public function debugDraw(offset:Vector3, color:haxepunk.graphics.Color):Void
 	{
-		haxepunk.graphics.Draw.rect(offset.x + x, offset.y + y, width, height, color);
+		haxepunk.graphics.Draw.rect(offset.x + origin.x + min.x, offset.y + origin.y + min.y, width, height, color);
 	}
 
 	public function overlap(other:Mask):Vector3

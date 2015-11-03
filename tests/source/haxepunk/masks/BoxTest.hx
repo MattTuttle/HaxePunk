@@ -20,9 +20,9 @@ class BoxTest extends haxe.unit.TestCase
 		assertEquals(true, a.intersectsBox(b));
 		assertEquals(true, b.intersectsBox(a));
 
-		a.x = a.y = -25; // edges touching
+		a.origin.x = a.origin.y = -25; // edges touching
 		assertEquals(true, a.intersects(b));
-		a.y = -26;
+		a.origin.y = -26;
 		assertEquals(false, a.intersectsBox(b));
 	}
 

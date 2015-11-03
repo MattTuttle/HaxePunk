@@ -56,7 +56,6 @@ class Console
 
 		Draw.begin();
 
-		#if false
 		_logText.origin.y = -(HXP.window.height - _logText.height);
 		_logText.draw(pos);
 
@@ -87,7 +86,6 @@ class Console
 				lastInfo = info;
 			}
 		}
-		#end
 
 		var bounds:Rectangle;
 		for (entity in scene.entities)

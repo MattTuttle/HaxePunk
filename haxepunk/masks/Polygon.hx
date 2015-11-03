@@ -5,13 +5,9 @@ import haxepunk.math.*;
 class Polygon implements Mask
 {
 
-	public var x:Float;
-	public var y:Float;
-
-	public var min(get, never):Vector3;
-	public inline function get_min():Vector3 { return new Vector3(x + _min.x, y + _min.y); }
-	public var max(get, never):Vector3;
-	public inline function get_max():Vector3 { return new Vector3(x + _max.x, y + _max.y); }
+	public var origin:Vector3;
+	public var min(default, null):Vector3;
+	public var max(default, null):Vector3;
 
     /**
 	 * Constructor.
@@ -19,8 +15,7 @@ class Polygon implements Mask
 	 */
     public function new(points:Array<Vector3>, x:Float=0, y:Float=0)
     {
-		this.x = x;
-		this.y = y;
+		this.origin = new Vector3(x, y);
 		setPoints(points);
     }
 
@@ -109,8 +104,7 @@ class Polygon implements Mask
 
     public function debugDraw(offset:Vector3, color:haxepunk.graphics.Color):Void
 	{
-		var pos = new Vector3(x, y);
-		pos += offset;
+		var pos = origin + offset;
 		var firstPoint = _points[0] + pos,
 			lastPoint = firstPoint;
 		for (i in 1..._points.length) {
@@ -143,15 +137,15 @@ class Polygon implements Mask
 	{
 		var h = project(horizontal);
 		var v = project(vertical);
-		_min = new Vector3(h.min, v.min);
-		_max = new Vector3(h.max, v.max);
+		min = new Vector3(h.min, v.min);
+		max = new Vector3(h.max, v.max);
 	}
 
 	private function intersectsWithAxes(other:Polygon, axes:Array<Vector3>)
 	{
 		var offset:Float, firstProj:Projection, secondProj:Projection;
-		var dx = x - other.x,
-			dy = y - other.y;
+		var dx = origin.x - other.origin.x,
+			dy = origin.y - other.origin.y;
 		// project other on this polygon axes
 		// for a collision to be present all projections must overlap
 		for (a in axes)
@@ -248,8 +242,6 @@ class Polygon implements Mask
 		return new Projection(min, max);
 	}
 
-	public var _min:Vector3;
-	public var _max:Vector3;
 	private var _angle:Float = 0;
 	private var _axes:Array<Vector3>;
 	private var _points:Array<Vector3>;

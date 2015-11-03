@@ -303,18 +303,17 @@ class Scene
 	public function collideInto(mask:Mask, ?group:String):Array<Entity>
 	{
 		var result = [];
-		var list = _groups.exists(group) ? _groups.get(group) : _entities;
-		for (e in list)
+		for (e in entitiesForGroup(group))
 		{
-			// if (e.collidable && e.collide(mask, x, y))
-			// {
-			// 	result.push(e);
-			// }
+			if (e.collidable && e.intersects(mask))
+			{
+				result.push(e);
+			}
 		}
 		return result;
 	}
 
-	private function sortByLayer(a:Entity, b:Entity):Int
+	private static function sortByLayer(a:Entity, b:Entity):Int
 	{
 		return Std.int(a.layer - b.layer);
 	}

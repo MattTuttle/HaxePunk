@@ -5,9 +5,14 @@ import haxepunk.math.Vector3;
 class Circle implements Mask
 {
 
-    public var x:Float;
-    public var y:Float;
-    public var radius:Float;
+    public var origin:Vector3;
+    public var radius(default, set):Float;
+	private function set_radius(value:Float):Float
+	{
+		min.x = min.y = -value;
+		max.x = max.y = value;
+		return radius = value;
+	}
     public var diameter(get, never):Float;
     private inline function get_diameter():Float { return radius * 2; }
 
@@ -19,24 +24,22 @@ class Circle implements Mask
 	 */
     public function new(radius:Float=0, x:Float=0, y:Float=0)
     {
-        this.x = x;
-        this.y = y;
+        this.origin = new Vector3(x, y);
+		this.min = new Vector3();
+		this.max = new Vector3();
         this.radius = radius;
     }
 
-	public var min(get, never):Vector3;
-	private inline function get_min():Vector3 { return new Vector3(x-radius, y-radius); }
-
-	public var max(get, never):Vector3;
-	private inline function get_max():Vector3 { return new Vector3(x+radius, y+radius); }
+	public var min(default, null):Vector3;
+	public var max(default, null):Vector3;
 
     public function debugDraw(offset:Vector3, color:haxepunk.graphics.Color):Void
 	{
 		var sides = 24,
 			angle = 0.0,
 			angleStep = (Math.PI * 2) / sides,
-			posX = x + offset.x,
-			posY = y + offset.y,
+			posX = origin.x + offset.x,
+			posY = origin.y + offset.y,
 			lastX = posX + Math.cos(angle) * radius,
 			lastY = posX + Math.sin(angle) * radius,
 			pointX:Float,
@@ -68,8 +71,8 @@ class Circle implements Mask
 
 	public function intersectsCircle(other:Circle):Bool
 	{
-		var dx = other.x - x,
-			dy = other.y - y;
+		var dx = other.origin.x - origin.x,
+			dy = other.origin.y - origin.y;
 		return (dx * dx + dy * dy) <= Math.pow(radius + other.radius, 2);
 	}
 
@@ -78,8 +81,8 @@ class Circle implements Mask
 		var halfWidth = other.width * 0.5;
 		var halfHeight = other.height * 0.5;
 
-		var distanceX = Math.abs(x - other.x - halfWidth),
-			distanceY = Math.abs(y - other.y - halfHeight);
+		var distanceX = Math.abs(origin.x - other.origin.x - halfWidth),
+			distanceY = Math.abs(origin.y - other.origin.y - halfHeight);
 
 		// the hitbox is too far away so return false
 		if (distanceX > halfWidth + radius || distanceY > halfHeight + radius) return false;
@@ -90,8 +93,8 @@ class Circle implements Mask
 
 	public function containsPoint(point:Vector3):Bool
 	{
-		return point.x >= x - radius && point.x <= x + radius &&
-		 	point.y >= y - radius && point.y <= y + radius;
+		return point.x >= origin.x - radius && point.x <= origin.x + radius &&
+		 	point.y >= origin.y - radius && point.y <= origin.y + radius;
 	}
 
 	public function overlapBox(other:Box):Vector3

@@ -22,15 +22,23 @@ class Entity extends SceneNode
 	 */
 	public var bounds(get, never):Rectangle;
 	private function get_bounds():Rectangle {
-		var rect = new Rectangle();
-		if (mask != null)
+		if (mask == null)
 		{
-			rect.left = x + mask.min.x;
-			rect.right = x + mask.max.x;
-			rect.top = y + mask.min.y;
-			rect.bottom = y + mask.max.y;
+			_bounds.x = x;
+			_bounds.y = y;
+			_bounds.width = _bounds.height = 0;
 		}
-		return rect;
+		else
+		{
+			var offset = position + mask.origin,
+				min = offset + mask.min,
+				max = offset + mask.max;
+			_bounds.left = min.x;
+			_bounds.right = max.x;
+			_bounds.top = min.y;
+			_bounds.bottom = max.y;
+		}
+		return _bounds;
 	}
 
 	/**
@@ -183,8 +191,18 @@ class Entity extends SceneNode
 	 */
 	public function collidePoint(point:Vector3):Bool
 	{
+		if (mask == null) return false;
 		var vec = point - position;
-		return mask != null && mask.containsPoint(vec);
+		return mask.containsPoint(vec);
+	}
+
+	public function intersects(other:Mask):Bool
+	{
+		if (mask == null) return false;
+		mask.origin += position;
+		var result =  mask.intersects(other);
+		mask.origin -= position;
+		return result;
 	}
 
 	/**
@@ -241,5 +259,6 @@ class Entity extends SceneNode
 
 	private var _group:String = "";
 	private var _name:String = "";
+	private var _bounds:Rectangle = new Rectangle();
 
 }

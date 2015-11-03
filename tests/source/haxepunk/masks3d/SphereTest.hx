@@ -18,7 +18,7 @@ class SphereTest extends haxe.unit.TestCase
 		var b = new Sphere(new Vector3(1, 1, 1), 1);
 		assertTrue(a.intersectsSphere(b));
 
-		b.position.x = b.position.y = b.position.z = 2;
+		b.origin.x = b.origin.y = b.origin.z = 2;
 		assertFalse(a.intersectsSphere(b));
 	}
 

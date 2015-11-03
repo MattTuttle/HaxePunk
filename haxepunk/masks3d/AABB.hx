@@ -6,6 +6,8 @@ import haxepunk.math.Vector3;
 class AABB implements Mask
 {
 
+	public var origin:Vector3;
+
 	/**
 	 * Minimum point of the AABB
 	 */
@@ -17,91 +19,54 @@ class AABB implements Mask
 	public var max:Vector3;
 
 	/**
-	 * X Offset.
-	 */
-	public var x(get, set):Float;
-	private inline function get_x():Float { return min.x; }
-	private inline function set_x(value:Float):Float {
-		max.x = value + width;
-		return min.x = value;
-	}
-
-	/**
-	 * Y Offset.
-	 */
-	public var y(get, set):Float;
-	private inline function get_y():Float { return min.y; }
-	private inline function set_y(value:Float):Float {
-		max.y = value + height;
-		return min.y = value;
-	}
-
-	/**
-	 * Z Offset.
-	 */
-	public var z(get, set):Float;
-	private inline function get_z():Float { return min.z; }
-	private inline function set_z(value:Float):Float {
-		max.z = value + depth;
-		return min.z = value;
-	}
-
-	/**
 	 * Width of the AABB
 	 */
-	public var width(get, set):Float;
-	private inline function get_width():Float { return Math.abs(max.x - min.x); }
-	private inline function set_width(value:Float):Float { max.x = min.x + value; return width; }
+	public var width:Float;
 
 	/**
 	 * Height of the AABB
 	 */
-	public var height(get, set):Float;
-	private inline function get_height():Float { return Math.abs(max.y - min.y); }
-	private inline function set_height(value:Float):Float { max.y = min.y + value; return height; }
-
+	public var height:Float;
 	/**
 	 * Depth of the AABB
 	 */
-	public var depth(get, set):Float;
-	private inline function get_depth():Float { return Math.abs(max.z - min.z); }
-	private inline function set_depth(value:Float):Float { max.z = min.z + value; return depth; }
+	public var depth:Float;
 
 	/**
 	 * The leftmost position of the AABB.
 	 */
 	public var left(get, never):Float;
-	private inline function get_left():Float { return min.x; }
+	private inline function get_left():Float { return origin.x + min.x; }
 
 	/**
 	 * The rightmost position of the AABB.
 	 */
 	public var right(get, never):Float;
-	private inline function get_right():Float { return max.x; }
+	private inline function get_right():Float { return origin.x + max.x; }
 
 	/**
 	 * The topmost position of the AABB.
 	 */
 	public var top(get, never):Float;
-	private inline function get_top():Float { return min.y; }
+	private inline function get_top():Float { return origin.y + min.y; }
 
 	/**
 	 * The bottommost position of the AABB.
 	 */
 	public var bottom(get, never):Float;
-	private inline function get_bottom():Float { return max.y; }
+	private inline function get_bottom():Float { return origin.y + max.y; }
 
 	/**
 	 * The frontmost position of the AABB.
 	 */
 	public var front(get, never):Float;
-	private inline function get_front():Float { return min.z; }
+	private inline function get_front():Float { return origin.z + min.z; }
 
 	/**
 	 * The backmost position of the AABB.
 	 */
 	public var back(get, never):Float;
-	private inline function get_back():Float { return max.z; }
+	private inline function get_back():Float { return origin.z + max.z; }
 
 	/**
 	 * The center position of the AABB. (WARNING: recalculates value every time this is used)
