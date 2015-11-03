@@ -279,7 +279,8 @@ class Scene
 		try {
 			var file = sys.io.File.write(filename);
 			var format = filename.substr(filename.lastIndexOf(".") + 1);
-			var bytes = Renderer.capture(0, 0, width, height).encode(format);
+			var image = Renderer.capture(0, 0, HXP.window.width, HXP.window.height);
+			var bytes = image.encode(format);
 			file.writeBytes(bytes, 0, bytes.length);
 			file.close();
 		} catch (e:Dynamic) {
@@ -295,7 +296,7 @@ class Scene
 	{
 		updateEntities(elapsed);
 		if (Console.enabled) Console.instance.update(this, elapsed);
-		camera.update();
+		camera.update(width, height);
 	}
 
 	/** @private Adds, updates, and removes entities from the scene */
