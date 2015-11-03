@@ -21,7 +21,7 @@ class Scene
 		camera = new Camera();
 		_added = new Array<Entity>();
 		_entities = new Array<Entity>();
-		_types = new StringMap<Array<Entity>>();
+		_groups = new StringMap<Array<Entity>>();
 		_entityNames = new StringMap<Entity>();
 		_frameList = new Array<Float>();
 		this.width = width;
@@ -126,80 +126,80 @@ class Scene
 	}
 
 	/**
-	 * A list of Entity objects of the type.
-	 * @param	type 		The type to check.
-	 * @return 	An Entity iterator containing all entities of the requested type.
+	 * A list of Entity objects of the group.
+	 * @param	group 		The group to check.
+	 * @return 	An Entity iterator containing all entities of the requested group.
 	 */
-	public inline function entitiesForType(type:String):Iterator<Entity>
+	public inline function entitiesForGroup(group:String):Iterator<Entity>
 	{
-		return _types.exists(type) ? _types.get(type).iterator() : null;
+		return _groups.exists(group) ? _groups.get(group).iterator() : null;
 	}
 
 	/**
-	 * Returns the amount of Entities of the type are in the Scene.
-	 * @param	type		The type (or Class type) to count.
-	 * @return	How many Entities of type exist in the Scene.
+	 * Returns the amount of Entities of the group are in the Scene.
+	 * @param	group		The group (or Class group) to count.
+	 * @return	How many Entities of group exist in the Scene.
 	 */
-	public inline function typeCount(type:String):Int
+	public inline function groupCount(group:String):Int
 	{
-		return _types.exists(type) ? _types.get(type).length : 0;
+		return _groups.exists(group) ? _groups.get(group).length : 0;
 	}
 
 	/**
-	 * How many different types have been added to the Scene.
+	 * How many different groups have been added to the Scene.
 	 */
-	public var uniqueTypes(get, never):Int;
-	private inline function get_uniqueTypes():Int
+	public var uniqueGroups(get, never):Int;
+	private inline function get_uniqueGroups():Int
 	{
 		var i:Int = 0;
-		for (type in _types) i++;
+		for (group in _groups) i++;
 		return i;
 	}
 
 	/**
-	 * Pushes all Entities in the Scene of the type into the Array or Vector. This
+	 * Pushes all Entities in the Scene of the group into the Array or Vector. This
 	 * function does not empty the array, that responsibility is left to the user.
-	 * @param	type		The type to check.
+	 * @param	group		The group to check.
 	 * @param	into		The Array or Vector to populate.
 	 */
-	public function getType<E:Entity>(type:String, into:Array<E>):Void
+	public function getGroup<E:Entity>(group:String, into:Array<E>):Void
 	{
-		if (!_types.exists(type)) return;
+		if (!_groups.exists(group)) return;
 		var n:Int = into.length;
-		for (e in _types.get(type))
+		for (e in _groups.get(group))
 		{
 			into[n++] = cast e;
 		}
 	}
 
-	/** @private Adds Entity to the type list. */
+	/** @private Adds Entity to the group list. */
 	@:allow(haxepunk.scene.Entity)
-	private function addType(e:Entity)
+	private function addGroup(e:Entity)
 	{
 		var list:Array<Entity>;
-		// add to type list
-		if (_types.exists(e.type))
+		// add to group list
+		if (_groups.exists(e.group))
 		{
-			list = _types.get(e.type);
+			list = _groups.get(e.group);
 		}
 		else
 		{
 			list = new Array<Entity>();
-			_types.set(e.type, list);
+			_groups.set(e.group, list);
 		}
 		list.push(e);
 	}
 
-	/** @private Removes Entity from the type list. */
+	/** @private Removes Entity from the group list. */
 	@:allow(haxepunk.scene.Entity)
-	private function removeType(e:Entity)
+	private function removeGroup(e:Entity)
 	{
-		if (!_types.exists(e.type)) return;
-		var list = _types.get(e.type);
+		if (!_groups.exists(e.group)) return;
+		var list = _groups.get(e.group);
 		list.remove(e);
 		if (list.length == 0)
 		{
-			_types.remove(e.type);
+			_groups.remove(e.group);
 		}
 	}
 
@@ -309,7 +309,7 @@ class Scene
 		{
 			_entities.push(e);
 			e.scene = this;
-			if (e.type != "") addType(e);
+			if (e.group != "") addGroup(e);
 			if (e.name != "") registerName(e);
 		}
 		_added.splice(0, _added.length); // clear added array
@@ -344,7 +344,7 @@ class Scene
 		{
 			e.scene = null;
 			_entities.remove(e);
-			if (e.type != "") removeType(e);
+			if (e.group != "") removeGroup(e);
 			if (e.name != "") unregisterName(e);
 		}
 	}
@@ -355,7 +355,7 @@ class Scene
 
 	private var _added:Array<Entity>;
 	private var _entities:Array<Entity>;
-	private var _types:StringMap<Array<Entity>>;
+	private var _groups:StringMap<Array<Entity>>;
 	private var _entityNames:StringMap<Entity>;
 
 }

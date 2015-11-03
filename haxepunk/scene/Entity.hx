@@ -19,26 +19,26 @@ class Entity extends SceneNode
 	private inline function set_layer(value:Float) { return position.z = value; }
 
 	/**
-	 * The collision type, used for collision checking.
+	 * The collision group, used for collision checking.
 	 */
-	public var type(get, set):String;
-	private inline function get_type():String { return _type; }
-	private function set_type(value:String):String
+	public var group(get, set):String;
+	private inline function get_group():String { return _group; }
+	private function set_group(value:String):String
 	{
-		if (_type != value)
+		if (_group != value)
 		{
 			if (scene == null)
 			{
-				_type = value;
+				_group = value;
 			}
 			else
 			{
-				if (_type != "") scene.removeType(this);
-				_type = value;
-				if (value != "") scene.addType(this);
+				if (_group != "") scene.removeGroup(this);
+				_group = value;
+				if (value != "") scene.addGroup(this);
 			}
 		}
-		return _type;
+		return _group;
 	}
 
 	/**
@@ -176,18 +176,18 @@ class Entity extends SceneNode
 	}
 
 	/**
-	 * Checks for a collision against an Entity type.
-	 * @param	type		The Entity type to check for.
+	 * Checks for a collision against an Entity group.
+	 * @param	group		The Entity group to check for.
 	 * @param	x			Virtual x position to place this Entity.
 	 * @param	y			Virtual y position to place this Entity.
 	 * @return	The first Entity collided with, or null if none were collided.
 	 */
-	public function collide(type:String, ?offset:Vector3):Entity
+	public function collide(group:String, ?offset:Vector3):Entity
 	{
 		// check that the entity has been added to a scene
 		if (scene == null) return null;
 
-		var entities = scene.entitiesForType(type);
+		var entities = scene.entitiesForGroup(group);
 		if (!collidable || entities == null) return null;
 
 		var _x = hitbox.x, _y = hitbox.x;
@@ -227,7 +227,7 @@ class Entity extends SceneNode
 	@:allow(haxepunk.scene.Scene)
 	private var _graphic:Graphic;
 
-	private var _type:String = "";
+	private var _group:String = "";
 	private var _name:String = "";
 
 }
