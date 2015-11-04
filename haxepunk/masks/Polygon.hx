@@ -2,12 +2,8 @@ package haxepunk.masks;
 
 import haxepunk.math.*;
 
-class Polygon implements Mask
+class Polygon extends Mask
 {
-
-	public var origin:Vector3;
-	public var min(default, null):Vector3;
-	public var max(default, null):Vector3;
 
     /**
 	 * Constructor.
@@ -15,7 +11,7 @@ class Polygon implements Mask
 	 */
     public function new(points:Array<Vector3>, x:Float=0, y:Float=0)
     {
-		this.origin = new Vector3(x, y);
+		super(x, y);
 		setPoints(points);
     }
 
@@ -102,7 +98,7 @@ class Polygon implements Mask
 		calculateBounds();
 	}
 
-    public function debugDraw(offset:Vector3, color:haxepunk.graphics.Color):Void
+    override public function debugDraw(offset:Vector3, color:haxepunk.graphics.Color):Void
 	{
 		var pos = origin + offset;
 		var firstPoint = _points[0] + pos,
@@ -115,22 +111,9 @@ class Polygon implements Mask
 		haxepunk.graphics.Draw.line(lastPoint.x, lastPoint.y, firstPoint.x, firstPoint.y, color);
 	}
 
-	public function overlap(other:Mask):Vector3
+	override public function intersectsPolygon(other:Polygon):Bool
 	{
-		if (Std.is(other, Polygon)) return overlapPolygon(cast other);
-		return null;
-	}
-
-	public function overlapPolygon(other:Polygon):Vector3
-	{
-		// TODO: implement this function
-		return null;
-	}
-
-	public function intersects(other:Mask):Bool
-	{
-		if (Std.is(other, Polygon)) return intersectsPolygon(cast other);
-		return false;
+		return intersectsWithAxes(other, _axes) && intersectsWithAxes(other, other._axes);
 	}
 
 	private function calculateBounds()
@@ -165,16 +148,6 @@ class Polygon implements Mask
 			}
 		}
 		return true;
-	}
-
-	public function intersectsPolygon(other:Polygon):Bool
-	{
-		return intersectsWithAxes(other, _axes) && intersectsWithAxes(other, other._axes);
-	}
-
-	public function containsPoint(point:Vector3):Bool
-	{
-		return false;
 	}
 
 	private function generateAxes():Void

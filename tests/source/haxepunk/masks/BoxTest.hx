@@ -31,12 +31,12 @@ class BoxTest extends haxe.unit.TestCase
 		var a = new Box(40, 30, 12, -10);
 		var b = new Box(20, 50);
 		var r = a.overlap(b);
-		assertEquals(8.0, r.x);
-		assertEquals(-20.0, r.y);
+		assertEquals(18.0, r.x);
+		assertEquals(-30.0, r.y);
 
 		var r = b.overlap(a);
-		assertEquals(-8.0, r.x);
-		assertEquals(20.0, r.y);
+		assertEquals(-18.0, r.x);
+		assertEquals(30.0, r.y);
 	}
 
 }

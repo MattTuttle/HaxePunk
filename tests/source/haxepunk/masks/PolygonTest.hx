@@ -10,7 +10,6 @@ class PolygonTest extends haxe.unit.TestCase
 		var a = Polygon.createRegular();
 		var b = Polygon.createRegular();
 		assertEquals(true, a.intersects(b));
-		assertEquals(null, a.overlap(b));
 	}
 
 }

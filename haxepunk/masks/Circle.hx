@@ -2,10 +2,9 @@ package haxepunk.masks;
 
 import haxepunk.math.Vector3;
 
-class Circle implements Mask
+class Circle extends Mask
 {
 
-    public var origin:Vector3;
     public var radius(default, set):Float;
 	private function set_radius(value:Float):Float
 	{
@@ -24,16 +23,11 @@ class Circle implements Mask
 	 */
     public function new(radius:Float=0, x:Float=0, y:Float=0)
     {
-        this.origin = new Vector3(x, y);
-		this.min = new Vector3();
-		this.max = new Vector3();
+		super(x, y);
         this.radius = radius;
     }
 
-	public var min(default, null):Vector3;
-	public var max(default, null):Vector3;
-
-    public function debugDraw(offset:Vector3, color:haxepunk.graphics.Color):Void
+    override public function debugDraw(offset:Vector3, color:haxepunk.graphics.Color):Void
 	{
 		var sides = 24,
 			angle = 0.0,
@@ -55,28 +49,20 @@ class Circle implements Mask
 		}
 	}
 
-	public function overlap(other:Mask):Vector3
+	override public function containsPoint(point:Vector3):Bool
 	{
-		if (Std.is(other, Circle)) return overlapCircle(cast other);
-		if (Std.is(other, Box)) return overlapBox(cast other);
-		return null;
+		return point.x >= origin.x - radius && point.x <= origin.x + radius &&
+		 	point.y >= origin.y - radius && point.y <= origin.y + radius;
 	}
 
-	public function intersects(other:Mask):Bool
-	{
-		if (Std.is(other, Circle)) return intersectsCircle(cast other);
-		if (Std.is(other, Box)) return intersectsBox(cast other);
-		return false;
-	}
-
-	public function intersectsCircle(other:Circle):Bool
+	override public function intersectsCircle(other:Circle):Bool
 	{
 		var dx = other.origin.x - origin.x,
 			dy = other.origin.y - origin.y;
 		return (dx * dx + dy * dy) <= Math.pow(radius + other.radius, 2);
 	}
 
-	public function intersectsBox(other:Box):Bool
+	override public function intersectsBox(other:Box):Bool
 	{
 		var halfWidth = other.width * 0.5;
 		var halfHeight = other.height * 0.5;
@@ -91,22 +77,14 @@ class Circle implements Mask
 		return Math.pow(distanceX - halfWidth, 2) + Math.pow(distanceY - halfHeight, 2) <= radius * radius;
 	}
 
-	public function containsPoint(point:Vector3):Bool
+	override public inline function intersectsPolygon(other:Polygon):Bool
 	{
-		return point.x >= origin.x - radius && point.x <= origin.x + radius &&
-		 	point.y >= origin.y - radius && point.y <= origin.y + radius;
+		return other.intersectsCircle(this);
 	}
 
-	public function overlapBox(other:Box):Vector3
+	override public inline function overlapPolygon(other:Polygon):Vector3
 	{
-		// TODO: finish this function
-		return null;
-	}
-
-	public function overlapCircle(other:Circle):Vector3
-	{
-		// TODO: finish this function
-		return null;
+		return other.overlapCircle(this);
 	}
 
 }

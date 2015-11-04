@@ -10,7 +10,6 @@ class CircleTest extends haxe.unit.TestCase
 		var a = new Circle();
 		var b = new Circle();
 		assertEquals(true, a.intersectsCircle(b));
-		assertEquals(null, a.overlapCircle(b));
 	}
 
 	public function testPointIntersection()

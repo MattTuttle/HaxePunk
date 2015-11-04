@@ -2,10 +2,9 @@ package haxepunk.masks;
 
 import haxepunk.math.*;
 
-class Box implements Mask
+class Box extends Mask
 {
 
-	public var origin:Vector3;
 	public var width(default, set):Float;
 	public function set_width(value:Float):Float
 	{
@@ -20,8 +19,6 @@ class Box implements Mask
 		min.y = -max.y;
 		return height = value;
 	}
-	public var min(default, null):Vector3;
-	public var max(default, null):Vector3;
 
 	public var left(get, never):Float;
 	private inline function get_left():Float { return origin.x + min.x; }
@@ -41,45 +38,28 @@ class Box implements Mask
 	 */
 	public function new(width:Float=0, height:Float=0, x:Float=0, y:Float=0)
 	{
-		this.origin = new Vector3(x, y);
-		this.min = new Vector3();
-		this.max = new Vector3();
+		super(x, y);
 		this.width = width;
 		this.height = height;
 	}
 
-	public function debugDraw(offset:Vector3, color:haxepunk.graphics.Color):Void
+	override public function debugDraw(offset:Vector3, color:haxepunk.graphics.Color):Void
 	{
 		haxepunk.graphics.Draw.rect(offset.x + origin.x + min.x, offset.y + origin.y + min.y, width, height, color);
 	}
 
-	public function overlap(other:Mask):Vector3
+	override public function containsPoint(point:Vector3):Bool
 	{
-		if (Std.is(other, Box)) return overlapBox(cast other);
-		if (Std.is(other, Circle)) return cast(other, Circle).overlapBox(this);
-		return null;
+		return point.x >= left && point.x <= right && point.y >= top && point.y <= bottom;
 	}
 
-	/** @private Collides against an Entity. */
-	public function intersects(other:Mask):Bool
-	{
-		if (Std.is(other, Box)) return intersectsBox(cast other);
-		if (Std.is(other, Circle)) return cast(other, Circle).intersectsBox(this);
-		return false;
-	}
-
-	public function intersectsBox(other:Box):Bool
+	override public function intersectsBox(other:Box):Bool
 	{
 		return right >= other.left && left <= other.right &&
 			bottom >= other.top && top <= other.bottom;
 	}
 
-	public function containsPoint(point:Vector3):Bool
-	{
-		return point.x >= left && point.x <= right && point.y >= top && point.y <= bottom;
-	}
-
-	public function overlapBox(other:Box):Vector3
+	override public function overlapBox(other:Box):Vector3
 	{
 		var left = other.left - this.right;
 		var right = other.right - this.left;
@@ -96,6 +76,26 @@ class Box implements Mask
 			(Math.abs(top) < bottom) ? top : bottom,
 			0
 		);
+	}
+
+	override public inline function intersectsCircle(other:Circle):Bool
+	{
+		return other.intersectsBox(this);
+	}
+
+	override public inline function overlapCircle(other:Circle):Vector3
+	{
+		return other.overlapBox(this);
+	}
+
+	override public inline function intersectsPolygon(other:Polygon):Bool
+	{
+		return other.intersectsBox(this);
+	}
+
+	override public inline function overlapPolygon(other:Polygon):Vector3
+	{
+		return other.overlapBox(this);
 	}
 
 }
