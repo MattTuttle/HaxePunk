@@ -10,7 +10,7 @@ class BoxTest extends haxe.unit.TestCase
 		var a = new Box();
 		var b = new Box();
 		assertEquals(true, a.intersectsBox(b));
-		assertEquals(null, a.overlapBox(b));
+		assertEquals(null, a.separateBox(b));
 	}
 
 	public function testBoxIntersection()
@@ -26,15 +26,15 @@ class BoxTest extends haxe.unit.TestCase
 		assertEquals(false, a.intersectsBox(b));
 	}
 
-	public function testBoxOverlap()
+	public function testBoxSeparation()
 	{
 		var a = new Box(40, 30, 12, -10);
 		var b = new Box(20, 50);
-		var r = a.overlap(b);
+		var r = a.separate(b);
 		assertEquals(18.0, r.x);
 		assertEquals(-30.0, r.y);
 
-		var r = b.overlap(a);
+		var r = b.separate(a);
 		assertEquals(-18.0, r.x);
 		assertEquals(30.0, r.y);
 	}

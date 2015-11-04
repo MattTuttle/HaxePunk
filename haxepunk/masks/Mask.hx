@@ -1,13 +1,29 @@
 package haxepunk.masks;
 
-import haxepunk.math.Vector3;
+import haxe.ds.StringMap;
+import haxepunk.math.*;
 import haxepunk.scene.Entity;
 import haxepunk.graphics.Color;
+
+typedef IntersectionCallback = Dynamic->Bool;
+typedef SeparationCallback = Dynamic->Vector3;
 
 class Mask
 {
 
 	public var origin:Vector3;
+
+	public var x(get, set):Float;
+	private inline function get_x():Float { return origin.x; }
+	private inline function set_x(value:Float):Float { return origin.x = value; }
+
+	public var y(get, set):Float;
+	private inline function get_y():Float { return origin.y; }
+	private inline function set_y(value:Float):Float { return origin.y = value; }
+
+	public var z(get, set):Float;
+	private inline function get_z():Float { return origin.z; }
+	private inline function set_z(value:Float):Float { return origin.z = value; }
 
 	/**
 	 * Absolute minimum point of mask (used for bounds)
@@ -24,7 +40,13 @@ class Mask
 		this.origin = new Vector3(x, y, z);
 		this.min = new Vector3();
 		this.max = new Vector3();
+
+		_className = Type.getClassName(Type.getClass(this));
+		_intersects = new StringMap<IntersectionCallback>();
+		_separation = new StringMap<SeparationCallback>();
 	}
+
+	public function toString():String { return _className; }
 
 	/**
 	 * Checks if two masks intersect.
@@ -32,33 +54,45 @@ class Mask
 	 */
  	public function intersects(other:Mask):Bool
  	{
- 		if (Std.is(other, Circle)) return intersectsCircle(cast other);
- 		if (Std.is(other, Box)) return intersectsBox(cast other);
- 		if (Std.is(other, Polygon)) return intersectsPolygon(cast other);
- 		return false;
+		var callback = _intersects.get(other._className);
+		if (callback != null) return callback(other);
+
+		callback = other._intersects.get(_className);
+		if (callback != null) return callback(this);
+
+		throw "Not implemented";
  	}
 
-	// stubs for intersection checks
-	public function intersectsCircle(other:Circle):Bool { throw "Not implemented"; }
-	public function intersectsBox(other:Box):Bool { throw "Not implemented"; }
-	public function intersectsPolygon(other:Polygon):Bool { throw "Not implemented"; }
-
 	/**
-	 * Get the separation vector if two masks overlap.
+	 * Get the separation vector if two masks separate.
 	 * @return A separation vector that can be used to separate the two masks.
 	 */
-	public function overlap(other:Mask):Vector3
+	public function separate(other:Mask):Null<Vector3>
   	{
-  		if (Std.is(other, Circle)) return overlapCircle(cast other);
-  		if (Std.is(other, Box)) return overlapBox(cast other);
-  		if (Std.is(other, Polygon)) return overlapPolygon(cast other);
-  		return null;
+		var callback = _separation.get(other._className);
+		if (callback != null) return callback(other);
+
+		callback = other._separation.get(_className);
+		if (callback != null) return callback(this);
+
+		throw "Not implemented";
   	}
 
-	// stubs for overlap checks
-	public function overlapCircle(other:Circle):Vector3 { throw "Not implemented"; }
-	public function overlapBox(other:Box):Vector3 { throw "Not implemented"; }
-	public function overlapPolygon(other:Polygon):Vector3 { throw "Not implemented"; }
+	/**
+	 * @private Register callbacks for masks.
+	 * @param mask        The class of mask to register.
+	 * @param intersects  The intersection callback for this mask.
+	 * @param separate    The separation callback for this mask.
+	 */
+	private function register(mask:Class<Mask>, intersects:IntersectionCallback, ?separate:SeparationCallback):Void
+	{
+		var name = Type.getClassName(mask);
+		_intersects.set(name, intersects);
+		if (separate != null)
+		{
+			_separation.set(name, separate);
+		}
+	}
 
 	/**
 	 * Check if a point exists within a mask.
@@ -68,10 +102,19 @@ class Mask
 	public function containsPoint(point:Vector3):Bool { return false; }
 
 	/**
+	 * Project the mask onto an axis
+	 */
+	public function project(axis:Vector3):Projection { throw "Not implemented"; }
+
+	/**
 	 * Draws the mask to the screen.
 	 * @param offset An offset to position the mask.
 	 * @param color The color to draw the mask outline.
 	 */
 	public function debugDraw(offset:Vector3, color:Color):Void { throw "Not implemented"; }
+
+	private var _className:String;
+	private var _intersects:StringMap<IntersectionCallback>;
+	private var _separation:StringMap<SeparationCallback>;
 
 }

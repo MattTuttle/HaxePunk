@@ -13,6 +13,9 @@ class Polygon extends Mask
     {
 		super(x, y);
 		setPoints(points);
+
+		register(Polygon, intersectsPolygon);
+        register(Box, intersectsBox);
     }
 
 	/**
@@ -111,24 +114,50 @@ class Polygon extends Mask
 		haxepunk.graphics.Draw.line(lastPoint.x, lastPoint.y, firstPoint.x, firstPoint.y, color);
 	}
 
-	override public function intersectsPolygon(other:Polygon):Bool
+	public function intersectsPolygon(other:Polygon):Bool
 	{
-		return intersectsWithAxes(other, _axes) && intersectsWithAxes(other, other._axes);
+		return intersectsWithAxes(other, _axes.concat(other._axes));
 	}
 
-	private function calculateBounds()
+	public function intersectsBox(other:Box):Bool
 	{
-		var h = project(horizontal);
-		var v = project(vertical);
+		// test polygon axes and horizontal/vertical for AABB
+		return intersectsWithAxes(other, [Vector3.X_AXIS, Vector3.Y_AXIS].concat(_axes));
+		// TODO: Add Vector3.Z_AXIS for 3D Box?
+	}
+
+	public function intersectsGrid(other:Grid):Bool
+	{
+		var axes = [Vector3.X_AXIS, Vector3.Y_AXIS].concat(_axes);
+		var box = new Box(other.cellWidth, other.cellHeight);
+		// TODO: only test the cells that collide with the polygon's bounding box
+		for (y in 0...other.rows)
+		{
+			box.y = y;
+			for (x in 0...other.columns)
+			{
+				box.x = x;
+				if (other.getTile(x, y) && intersectsWithAxes(box, axes))
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private function calculateBounds():Void
+	{
+		var h = project(Vector3.X_AXIS);
+		var v = project(Vector3.Y_AXIS);
 		min = new Vector3(h.min, v.min);
 		max = new Vector3(h.max, v.max);
 	}
 
-	private function intersectsWithAxes(other:Polygon, axes:Array<Vector3>)
+	private function intersectsWithAxes(other:Mask, axes:Array<Vector3>):Bool
 	{
 		var offset:Float, firstProj:Projection, secondProj:Projection;
-		var dx = origin.x - other.origin.x,
-			dy = origin.y - other.origin.y;
+		var delta = origin - other.origin;
 		// project other on this polygon axes
 		// for a collision to be present all projections must overlap
 		for (a in axes)
@@ -137,7 +166,7 @@ class Polygon extends Mask
 			secondProj = other.project(a);
 
 			// shift the first info with the offset
-			offset = dx * a.x + dy * a.y;
+			offset = delta.dot(a);
 			firstProj.min += offset;
 			firstProj.max += offset;
 
@@ -199,7 +228,7 @@ class Polygon extends Mask
 		}
 	}
 
-	public function project(axis:Vector3):Projection
+	override public function project(axis:Vector3):Projection
 	{
 		var min:Float = axis.dot(_points[0]),
 			max:Float = min,
@@ -220,8 +249,5 @@ class Polygon extends Mask
 	private var _points:Array<Vector3>;
 
 	private static var EPSILON = 0.000000001;	// used for axes comparison in removeDuplicateAxes
-
-	public static var horizontal = new Vector3(1, 0);
-	public static var vertical = new Vector3(0, 1);
 
 }

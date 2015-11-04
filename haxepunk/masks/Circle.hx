@@ -25,6 +25,8 @@ class Circle extends Mask
     {
 		super(x, y);
         this.radius = radius;
+		register(Circle, intersectsCircle, separateCircle);
+		register(Box, intersectsBox);
     }
 
     override public function debugDraw(offset:Vector3, color:haxepunk.graphics.Color):Void
@@ -51,40 +53,47 @@ class Circle extends Mask
 
 	override public function containsPoint(point:Vector3):Bool
 	{
-		return point.x >= origin.x - radius && point.x <= origin.x + radius &&
-		 	point.y >= origin.y - radius && point.y <= origin.y + radius;
+		var dx = origin.x - point.x,
+			dy = origin.y - point.y;
+		return (dx * dx + dy * dy) <= radius * radius;
 	}
 
-	override public function intersectsCircle(other:Circle):Bool
+	public function intersectsCircle(other:Circle):Bool
 	{
 		var dx = other.origin.x - origin.x,
-			dy = other.origin.y - origin.y;
-		return (dx * dx + dy * dy) <= Math.pow(radius + other.radius, 2);
+			dy = other.origin.y - origin.y,
+            r = other.radius + radius;
+		return (dx * dx + dy * dy) <= r * r;
 	}
 
-	override public function intersectsBox(other:Box):Bool
-	{
-		var halfWidth = other.width * 0.5;
-		var halfHeight = other.height * 0.5;
+    public function separateCircle(other:Circle):Null<Vector3>
+    {
+		var delta = other.origin - origin,
+            r = other.radius + radius,
+			separation = Math.sqrt(r * r) - delta.length;
+		// if the length of radius is longer than the distance between origins, there is an overlap
+		if (separation >= 0)
+		{
+			delta.normalize(separation);
+			return delta;
+		}
+		return null;
+    }
 
-		var distanceX = Math.abs(origin.x - other.origin.x - halfWidth),
-			distanceY = Math.abs(origin.y - other.origin.y - halfHeight);
+	public function intersectsBox(other:Box):Bool
+	{
+		var delta = other.origin - origin;
 
 		// the hitbox is too far away so return false
-		if (distanceX > halfWidth + radius || distanceY > halfHeight + radius) return false;
-		if (distanceX <= halfWidth || distanceY <= halfHeight) return true;
+		if (Math.abs(delta.x) > other.halfWidth + radius ||
+			Math.abs(delta.y) > other.halfHeight + radius) return false;
+		if (Math.abs(delta.x) <= other.halfWidth ||
+			Math.abs(delta.y) <= other.halfHeight) return true;
 
-		return Math.pow(distanceX - halfWidth, 2) + Math.pow(distanceY - halfHeight, 2) <= radius * radius;
-	}
+		var x = delta.x - other.halfWidth,
+			y = delta.y - other.halfHeight;
 
-	override public inline function intersectsPolygon(other:Polygon):Bool
-	{
-		return other.intersectsCircle(this);
-	}
-
-	override public inline function overlapPolygon(other:Polygon):Vector3
-	{
-		return other.overlapCircle(this);
+		return x*x + y*y <= radius * radius;
 	}
 
 }

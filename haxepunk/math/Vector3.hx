@@ -4,6 +4,9 @@ abstract Vector3 (Point3D)
 {
 
 	public static var ZERO:Vector3 = new Vector3(0, 0, 0);
+	public static var X_AXIS = new Vector3(1);
+	public static var Y_AXIS = new Vector3(0, 1);
+	public static var Z_AXIS = new Vector3(0, 0, 1);
 
 	public function new(x:Float=0, y:Float=0, z:Float=0)
 	{
