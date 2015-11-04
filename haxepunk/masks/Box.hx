@@ -9,14 +9,14 @@ class Box implements Mask
 	public var width(default, set):Float;
 	public function set_width(value:Float):Float
 	{
-		max.x = width / 2;
+		max.x = value / 2;
 		min.x = -max.x;
 		return width = value;
 	}
 	public var height(default, set):Float;
 	public function set_height(value:Float):Float
 	{
-		max.y = height / 2;
+		max.y = value / 2;
 		min.y = -max.y;
 		return height = value;
 	}

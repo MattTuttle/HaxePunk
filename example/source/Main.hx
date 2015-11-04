@@ -23,7 +23,7 @@ class Main extends Engine
 		scene.addMask(Polygon.createRegular(8, 75), 0, 400, 200);
 
 		poly = Polygon.createRegular(5, 50);
-		poly.x = poly.y = 50;
+		poly.origin.x = poly.origin.y = 50;
 		poly.angle = 90 * Math.RAD;
 		scene.addMask(poly, 0, 50, 50);
 	}
