@@ -3,12 +3,50 @@ import haxepunk.HXP;
 import haxepunk.graphics.*;
 import haxepunk.math.*;
 import haxepunk.masks.*;
+import haxepunk.inputs.Mouse;
+
+class TrailEntity extends haxepunk.scene.Entity
+{
+
+	public function new()
+	{
+		super();
+		drawable = true; // must be set to allow draw
+	}
+
+	override public function update(elapsed:Float)
+	{
+		var maxPoints = 30,
+			width = 30,
+			change = width / maxPoints;
+		points.push({
+			position: new Vector3(Mouse.x, Mouse.y),
+			width: width
+		});
+		if (points.length > maxPoints) points.shift();
+		for (point in points)
+		{
+			point.width -= change;
+		}
+	}
+
+	override public function draw()
+	{
+		Draw.begin();
+		Draw.trail(points, color);
+	}
+
+	private var color = new Color(0, 255, 255, 1);
+	private var points = new Array<haxepunk.graphics.Draw.TrailPoint>();
+}
 
 class Main extends Engine
 {
 	override public function ready()
 	{
 		super.ready();
+
+		scene.add(new TrailEntity());
 
 		haxepunk.debug.Console.enabled = true;
 

@@ -1,6 +1,12 @@
 package haxepunk.graphics;
 
+import haxepunk.math.*;
 import haxepunk.renderers.Renderer;
+
+typedef TrailPoint = {
+	position:Vector3,
+	width:Float
+};
 
 /**
  * Draws colored primitives to the screen.
@@ -28,10 +34,10 @@ class Draw
 
 	/**
 	 * Draws a single pixel to the screen
-	 * @param x the x-axis value of the pixel
-	 * @param y the y-axis value of the pixel
-	 * @param color the color of the pixel
-	 * @param size the overall size of the pixel square
+	 * @param x      the x-axis value of the pixel
+	 * @param y      the y-axis value of the pixel
+	 * @param color  the color of the pixel
+	 * @param size   the overall size of the pixel square
 	 */
 	public static function pixel(x:Float, y:Float, color:Color, size:Float=1):Void
 	{
@@ -40,13 +46,41 @@ class Draw
 	}
 
 	/**
+	 * Draws a circle to the screen
+	 * @param x       the x-axis value of the circle
+	 * @param y       the y-axis value of the circle
+	 * @param radius  the radius of the circle
+	 * @param color   the color of the circle
+	 */
+	public static function circle(x:Float, y:Float, radius:Float, color:Color):Void
+	{
+		// TODO: draw a smoother circle with shaders?
+		var sides = 40,
+			angle = 0.0,
+			angleStep = (Math.PI * 2) / sides,
+			lastX = x + Math.cos(angle) * radius,
+			lastY = y + Math.sin(angle) * radius,
+			pointX:Float,
+			pointY:Float;
+		for (i in 0...sides)
+		{
+			angle += angleStep;
+			pointX = x + Math.cos(angle) * radius;
+			pointY = y + Math.sin(angle) * radius;
+			Draw.line(lastX, lastY, pointX, pointY, color);
+			lastX = pointX;
+			lastY = pointY;
+		}
+	}
+
+	/**
 	 * Draws a non-filled rectangle to the screen
-	 * @param x the x-axis value of the rectangle
-	 * @param y the y-axis value of the rectangle
-	 * @param width the width of the rectangle
-	 * @param height the height of the rectangle
-	 * @param color the color of the rectangle
-	 * @param thickness the line thickness of the rectangle
+	 * @param x          the x-axis value of the rectangle
+	 * @param y          the y-axis value of the rectangle
+	 * @param width      the width of the rectangle
+	 * @param height     the height of the rectangle
+	 * @param color      the color of the rectangle
+	 * @param thickness  the line thickness of the rectangle
 	 */
 	public static function rect(x:Float, y:Float, width:Float, height:Float, color:Color, thickness:Float=1):Void
 	{
@@ -62,33 +96,34 @@ class Draw
 
 	/**
 	 * Draws a filled rectangle to the screen
-	 * @param x the x-axis value of the rectangle
-	 * @param y the y-axis value of the rectangle
-	 * @param width the width of the rectangle
-	 * @param height the height of the rectangle
-	 * @param color the color of the rectangle
+	 * @param x       the x-axis value of the rectangle
+	 * @param y       the y-axis value of the rectangle
+	 * @param width   the width of the rectangle
+	 * @param height  the height of the rectangle
+	 * @param color   the color of the rectangle
 	 */
 	public static function fillRect(x:Float, y:Float, width:Float, height:Float, color:Color):Void
 	{
 		var r = color.r,
 			g = color.g,
-			b = color.b;
+			b = color.b,
+			a = color.a;
 
 		SpriteBatch.addQuad();
-		SpriteBatch.addVertex(x, y, 0, 0, r, g, b);
-		SpriteBatch.addVertex(x + width, y, 0, 0, r, g, b);
-		SpriteBatch.addVertex(x + width, y + height, 0, 0, r, g, b);
-		SpriteBatch.addVertex(x, y + height, 0, 0, r, g, b);
+		SpriteBatch.addVertex(x, y, 0, 0, r, g, b, a);
+		SpriteBatch.addVertex(x + width, y, 0, 0, r, g, b, a);
+		SpriteBatch.addVertex(x + width, y + height, 0, 0, r, g, b, a);
+		SpriteBatch.addVertex(x, y + height, 0, 0, r, g, b, a);
 	}
 
 	/**
 	 * Draws a line to the screen
-	 * @param x1 the first x-axis value of the line
-	 * @param y1 the first y-axis value of the line
-	 * @param x2 the second x-axis value of the line
-	 * @param y2 the second y-axis value of the line
-	 * @param color the color of the line
-	 * @param thickness the thickness of the line
+	 * @param x1         the first x-axis value of the line
+	 * @param y1         the first y-axis value of the line
+	 * @param x2         the second x-axis value of the line
+	 * @param y2         the second y-axis value of the line
+	 * @param color      the color of the line
+	 * @param thickness  the thickness of the line
 	 */
 	public static function line(x1:Float, y1:Float, x2:Float, y2:Float, color:Color, thickness:Float=1):Void
 	{
@@ -105,22 +140,72 @@ class Draw
 
 		var r = color.r,
 			g = color.g,
-			b = color.b;
+			b = color.b,
+			a = color.a;
 
 		SpriteBatch.addQuad();
-		SpriteBatch.addVertex(x1 + dx, y1 + dy, 0, 0, r, g, b);
-		SpriteBatch.addVertex(x1 - dx, y1 - dy, 0, 0, r, g, b);
-		SpriteBatch.addVertex(x2 - dx, y2 - dy, 0, 0, r, g, b);
-		SpriteBatch.addVertex(x2 + dx, y2 + dy, 0, 0, r, g, b);
+		SpriteBatch.addVertex(x1 + dx, y1 + dy, 0, 0, r, g, b, a);
+		SpriteBatch.addVertex(x1 - dx, y1 - dy, 0, 0, r, g, b, a);
+		SpriteBatch.addVertex(x2 - dx, y2 - dy, 0, 0, r, g, b, a);
+		SpriteBatch.addVertex(x2 + dx, y2 + dy, 0, 0, r, g, b, a);
+	}
+
+	/**
+	 * Draws a circle to the screen
+	 * @param x       the x-axis value of the circle
+	 * @param y       the y-axis value of the circle
+	 * @param radius  the radius of the circle
+	 * @param color   the color of the circle
+	 */
+	public static function trail(points:Array<TrailPoint>, color:Color):Void
+	{
+		var r = color.r,
+			g = color.g,
+			b = color.b,
+			a = color.a;
+
+		// calculate normals
+		var normals = [];
+		for (i in 0...points.length)
+		{
+			var point = points[i];
+			var current = point.position;
+			var previous = (i > 0) ? points[i-1].position : current;
+			var next = (i+1 < points.length) ? points[i+1].position : current;
+			// create perpendicular normal vector
+			var normal = (current - previous) + (next - current);
+			normal.normalize(point.width / 2);
+			var tmp = -normal.x;
+			normal.x = normal.y;
+			normal.y = tmp;
+			normals[i] = normal;
+		}
+
+		var point:Vector3,
+			normal:Vector3;
+		for (i in 1...points.length)
+		{
+			SpriteBatch.addQuad();
+			// previous
+			point = points[i-1].position;
+			normal = normals[i-1];
+			SpriteBatch.addVertex(point.x + normal.x, point.y + normal.y, 0, 0, r, g, b, a);
+			SpriteBatch.addVertex(point.x - normal.x, point.y - normal.y, 0, 0, r, g, b, a);
+			// current
+			point = points[i].position;
+			normal = normals[i];
+			SpriteBatch.addVertex(point.x - normal.x, point.y - normal.y, 0, 0, r, g, b, a);
+			SpriteBatch.addVertex(point.x + normal.x, point.y + normal.y, 0, 0, r, g, b, a);
+		}
 	}
 
 	/**
 	 * Draws a grid to the screen
-	 * @param gx x-axis value of the grid
-	 * @param gy y-axis value of the grid
-	 * @param gw width of the grid
-	 * @param gh height of the grid
-	 * @param color the color of the grid lines
+	 * @param gx     x-axis value of the grid
+	 * @param gy     y-axis value of the grid
+	 * @param gw     width of the grid
+	 * @param gh     height of the grid
+	 * @param color  the color of the grid lines
 	 */
 	public static function grid(gx:Float, gy:Float, gw:Float, gh:Float, cellX:Int, cellY:Int, color:Color)
     {

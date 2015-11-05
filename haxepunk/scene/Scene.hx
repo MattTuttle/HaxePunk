@@ -398,11 +398,12 @@ class Scene
 			{
 				var layer = e.layer;
 				e.update(elapsed);
+				// remove need to call super.update() on base Entity
+				if (e.graphic != null) e.graphic.update(elapsed);
 				if (layer != e.layer)
 				{
 					layerDirty = true;
 				}
-				if (e._graphic != null) e._graphic.update(elapsed);
 			}
 		}
 		if (layerDirty)

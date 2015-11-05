@@ -10,8 +10,14 @@ class Entity extends SceneNode
 	public var mask(default, null):Mask;
 	public var collidable:Bool = true;
 
-	public var drawable(get, never):Bool;
-	private inline function get_drawable():Bool { return _graphic != null;}
+	public var drawable:Bool = false;
+
+	public var graphic(default, set):Graphic;
+	private inline function set_graphic(value:Graphic):Graphic
+	{
+		drawable = value != null;
+		return graphic = value;
+	}
 
 	public var layer(get, set):Float;
 	private inline function get_layer():Float { return position.z; }
@@ -113,19 +119,19 @@ class Entity extends SceneNode
 	 */
 	public function addGraphic(graphic:Graphic):Graphic
 	{
-		if (_graphic == null)
+		if (this.graphic == null)
 		{
-			_graphic = graphic;
+			this.graphic = graphic;
 		}
-		else if (Std.is(_graphic, GraphicList))
+		else if (Std.is(this.graphic, GraphicList))
 		{
-			cast(_graphic, GraphicList).add(graphic);
+			cast(this.graphic, GraphicList).add(graphic);
 		}
 		else
 		{
-			_graphic = new GraphicList([_graphic, graphic]);
+			this.graphic = new GraphicList([this.graphic, graphic]);
 		}
-		return _graphic;
+		return this.graphic;
 	}
 
 	/**
@@ -133,9 +139,9 @@ class Entity extends SceneNode
 	 */
 	public function draw()
 	{
-		if (drawable)
+		if (graphic != null)
 		{
-			_graphic.draw(position);
+			graphic.draw(position);
 		}
 	}
 
@@ -253,9 +259,6 @@ class Entity extends SceneNode
 	 * Updates the Entity.
 	 */
 	public function update(elapsed:Float):Void { }
-
-	@:allow(haxepunk.scene.Scene)
-	private var _graphic:Graphic;
 
 	private var _group:String = "";
 	private var _name:String = "";

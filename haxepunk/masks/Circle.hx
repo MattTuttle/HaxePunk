@@ -1,6 +1,7 @@
 package haxepunk.masks;
 
-import haxepunk.math.Vector3;
+import haxepunk.graphics.*;
+import haxepunk.math.*;
 
 class Circle extends Mask
 {
@@ -30,27 +31,9 @@ class Circle extends Mask
 		register(Grid, intersectsGrid);
     }
 
-    override public function debugDraw(offset:Vector3, color:haxepunk.graphics.Color):Void
+    override public function debugDraw(offset:Vector3, color:Color):Void
 	{
-		// TODO: draw a smoother circle with shaders?
-		var sides = 24,
-			angle = 0.0,
-			angleStep = (Math.PI * 2) / sides,
-			posX = origin.x + offset.x,
-			posY = origin.y + offset.y,
-			lastX = posX + Math.cos(angle) * radius,
-			lastY = posX + Math.sin(angle) * radius,
-			pointX:Float,
-			pointY:Float;
-		for (i in 0...sides)
-		{
-			angle += angleStep;
-			pointX = posX + Math.cos(angle) * radius;
-			pointY = posY + Math.sin(angle) * radius;
-			haxepunk.graphics.Draw.line(lastX, lastY, pointX, pointY, color);
-			lastX = pointX;
-			lastY = pointY;
-		}
+		Draw.circle(origin.x + offset.x, origin.y + offset.y, radius, color);
 	}
 
 	override public function containsPoint(point:Vector3):Bool
@@ -98,26 +81,37 @@ class Circle extends Mask
 		return x*x + y*y <= radius * radius;
 	}
 
+	override public function project(axis:Vector3):Projection
+	{
+		var dot = origin.dot(axis);
+		return new Projection(dot - radius, dot + radius);
+	}
+
 	public function intersectsGrid(other:Grid):Bool
 	{
-		var entityDist = origin - other.origin;
+		// get position of circle on the grid
+		var gridPos = origin - other.origin;
 
-		var minx:Int = Math.floor((entityDist.x - radius) / other.cellWidth),
-			miny:Int = Math.floor((entityDist.y - radius) / other.cellHeight),
-			maxx:Int = Math.ceil((entityDist.x + radius) / other.cellWidth),
-			maxy:Int = Math.ceil((entityDist.y + radius) / other.cellHeight);
+		var minX:Int = Math.floor((gridPos.x - radius) / other.cellWidth),
+			minY:Int = Math.floor((gridPos.y - radius) / other.cellHeight),
+			maxX:Int = Math.ceil((gridPos.x + radius) / other.cellWidth),
+			maxY:Int = Math.ceil((gridPos.y + radius) / other.cellHeight);
 
-		if (minx < 0) minx = 0;
-		if (miny < 0) miny = 0;
-		if (maxx > other.columns) maxx = other.columns;
-		if (maxy > other.rows)    maxy = other.rows;
+		if (minX < 0) minX = 0;
+		if (minY < 0) minY = 0;
+		if (maxX > other.columns) maxX = other.columns;
+		if (maxY > other.rows)    maxY = other.rows;
 
+		// use an axis-aligned box to determine intersections for each cell
 		var box = new Box(other.cellWidth, other.cellHeight);
-		box.y = other.y + miny * other.cellHeight;
-		for (row in miny...maxy)
+		// calculate starting positions for grid cells
+		// grid position + cell position + half cell width
+		var startX = other.x + minX * other.cellWidth + other.cellWidth / 2;
+		box.y = other.y + minY * other.cellHeight + other.cellHeight / 2;
+		for (row in minY...maxY)
 		{
-			box.x = other.x + minx * other.cellWidth;
-			for (column in minx...maxx)
+			box.x = startX;
+			for (column in minX...maxX)
 			{
 				if (other.getCell(column, row) && intersectsBox(box))
 				{
