@@ -3,7 +3,7 @@ import haxepunk.HXP;
 import haxepunk.graphics.*;
 import haxepunk.math.*;
 import haxepunk.masks.*;
-import haxepunk.inputs.Mouse;
+import haxepunk.inputs.*;
 
 class MouseTrail extends haxepunk.scene.Entity
 {
@@ -11,9 +11,8 @@ class MouseTrail extends haxepunk.scene.Entity
 	public function new()
 	{
 		super();
-		graphic = trail = new Trail("assets/lime.png");
+		graphic = trail = new Spline("assets/lime.png", new Rectangle(101, 40, 310, 310));
 		trail.maxPoints = 30;
-		trail.tint.fromInt(0xFF00FFFF);
 	}
 
 	override public function update(elapsed:Float)
@@ -21,15 +20,10 @@ class MouseTrail extends haxepunk.scene.Entity
 		var width = 30,
 			change = width / trail.maxPoints;
 		trail.addPoint(new Vector3(Mouse.x, Mouse.y), width);
-		var width = 0.0;
-		for (i in 0...trail.numPoints)
-		{
-			trail.setThickness(i, width);
-			width += change;
-		}
+		trail.setThickness(function(i) { return i * change; });
 	}
 
-	private var trail:Trail;
+	private var trail:Spline;
 }
 
 class Main extends Engine
@@ -40,7 +34,7 @@ class Main extends Engine
 
 		scene.add(new MouseTrail());
 
-		/*haxepunk.debug.Console.enabled = true;
+		haxepunk.debug.Console.enabled = true;
 
 		scene.addMask(new Box(30, 30, -15, -15), 0, 300, 500);
 		scene.addMask(new Box(50, 50), 0, 400, 500);
@@ -55,7 +49,7 @@ class Main extends Engine
 		poly = Polygon.createRegular(5, 50);
 		poly.origin.x = poly.origin.y = 50;
 		poly.angle = 90 * Math.RAD;
-		scene.addMask(poly, 0, 50, 50);*/
+		scene.addMask(poly, 0, 50, 50);
 	}
 
 }

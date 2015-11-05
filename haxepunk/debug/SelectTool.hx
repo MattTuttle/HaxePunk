@@ -1,8 +1,7 @@
 package haxepunk.debug;
 
 import haxepunk.graphics.Draw;
-import haxepunk.inputs.Input;
-import haxepunk.inputs.Mouse;
+import haxepunk.inputs.*;
 import haxepunk.math.*;
 import haxepunk.scene.Scene;
 

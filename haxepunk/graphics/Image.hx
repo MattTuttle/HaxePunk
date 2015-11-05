@@ -35,6 +35,9 @@ class Image extends Graphic
 	 */
 	public var flipY:Bool = false;
 
+	/**
+	 * Tint color and alpha
+	 */
 	public var tint:Color;
 
 	/**
@@ -53,11 +56,12 @@ class Image extends Graphic
 	/**
 	 * Changes the opacity of the Image, a value from 0 to 1.
 	 */
-	public var alpha(default, set):Float;
+	public var alpha(get, set):Float;
+	private inline function get_alpha():Float { return tint.a; }
 	private function set_alpha(value:Float):Float
 	{
 		value = value < 0 ? 0 : (value > 1 ? 1 : value);
-		return (alpha == value) ? value : alpha = value;
+		return (tint.a == value) ? value : tint.a = value;
 	}
 
 	/**
@@ -69,12 +73,12 @@ class Image extends Graphic
 	{
 		super();
 
-		tint = new Color(1, 1, 1, 1);
+		tint = new Color(); // white
 
 #if !unit_test
 		this.material = source;
 		var texture = this.material.firstPass.getTexture(0);
-		if (texture == null) throw "Must have a texture attached for materials used in Image";
+		if (texture == null) throw "Must have a texture attached for materials used in " + Type.getClassName(Type.getClass(this));
 
 		this.clipRect = (clipRect == null ? new Rectangle(0, 0, texture.width, texture.height) : clipRect);
 #end

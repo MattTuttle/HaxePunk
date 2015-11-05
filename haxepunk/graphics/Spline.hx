@@ -3,36 +3,56 @@ package haxepunk.graphics;
 import haxepunk.graphics.Image;
 import haxepunk.math.*;
 
-class Trail extends Graphic
+/**
+ * Draws a list of points as a spline
+ * Useful for: rivers, roads, spaceship trails, etc...
+ */
+class Spline extends Image
 {
 
-	public var tint:Color;
+	/**
+	 * Sets the maximum number of points in the spline. If less than 0, it is infinite.
+	 */
+	public var maxPoints:Int = -1;
 
-	public var maxPoints:Int = 10;
-
+	/**
+	 * The number of points currently in the spline.
+	 */
 	public var numPoints(get, never):Int;
 	private inline function get_numPoints():Int { return _points.length; }
 
-    public function new(source:ImageSource)
+    public function new(source:ImageSource, ?clipRect:Rectangle)
     {
-		super();
-		tint = new Color();
-		_points = new Array<Vector3>();
-		_normals = new Array<Vector3>();
-
-#if !unit_test
-		this.material = source;
-#end
+		super(source, clipRect);
+		clear();
     }
 
-	public function setThickness(index:Int, thickness:Float):Void
+	/**
+	 * Removes all points from the spline.
+	 */
+	public function clear():Void
 	{
-		if (index >= 0 && index < _normals.length)
+		_points = new Array<Vector3>();
+		_normals = new Array<Vector3>();
+	}
+
+	/**
+	 * Set thickness of all points in the spline
+	 * @param callback  A function to return the thickness value of every point in the spline. The first parameter is the index of the point.
+	 */
+	public function setThickness(callback:Int->Float):Void
+	{
+		for (i in 0..._normals.length)
 		{
-			_normals[index].normalize(thickness / 2);
+			_normals[i].normalize(callback(i) / 2);
 		}
 	}
 
+	/**
+	 * Add a point to the spline.
+	 * @param point      The point to add.
+	 * @param thickness  The thickness value of the spline at that point
+	 */
 	public function addPoint(point:Vector3, thickness:Float):Void
 	{
 		_points.push(point);
@@ -57,14 +77,14 @@ class Trail extends Graphic
 		}
 
 		// remove first point
-		if (size > maxPoints)
+		if (maxPoints >= 0 && size > maxPoints)
 		{
 			_points.shift();
 			_normals.shift();
 		}
 	}
 
-	@:access(haxepunk.graphics.SpriteBatch)
+	@:dox(hide)
     override public function draw(offset:Vector3):Void
     {
         var r = tint.r,
@@ -73,6 +93,12 @@ class Trail extends Graphic
 			a = tint.a;
 
 		SpriteBatch.material = material;
+
+		// must be calculated AFTER setting material since that can change the texture
+		var u1 = clipRect.left * SpriteBatch.inverseTexWidth,
+			u2 = clipRect.right * SpriteBatch.inverseTexWidth,
+			v1 = clipRect.top * SpriteBatch.inverseTexHeight,
+			v2 = clipRect.bottom * SpriteBatch.inverseTexHeight;
 
 		// TODO: calculate uv coords from section of texture?
 		var point:Vector3,
@@ -84,16 +110,16 @@ class Trail extends Graphic
 			point = _points[i-1];
 			normal = _normals[i-1];
 			SpriteBatch.addVertex(offset.x + point.x + normal.x,
-				offset.y + point.y + normal.y, 0, 1, r, g, b, a);
+				offset.y + point.y + normal.y, u1, v2, r, g, b, a);
 			SpriteBatch.addVertex(offset.x + point.x - normal.x,
-				offset.y + point.y - normal.y, 0, 0, r, g, b, a);
+				offset.y + point.y - normal.y, u1, v1, r, g, b, a);
 			// current
 			point = _points[i];
 			normal = _normals[i];
 			SpriteBatch.addVertex(offset.x + point.x - normal.x,
-				offset.y + point.y - normal.y, 1, 0, r, g, b, a);
+				offset.y + point.y - normal.y, u2, v1, r, g, b, a);
 			SpriteBatch.addVertex(offset.x + point.x + normal.x,
-				offset.y + point.y + normal.y, 1, 1, r, g, b, a);
+				offset.y + point.y + normal.y, u2, v2, r, g, b, a);
 		}
     }
 

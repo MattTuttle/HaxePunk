@@ -6,7 +6,6 @@ import haxepunk.renderers.Renderer;
 /**
  * Draws colored primitives to the screen.
  */
-@:access(haxepunk.graphics.SpriteBatch)
 class Draw
 {
 

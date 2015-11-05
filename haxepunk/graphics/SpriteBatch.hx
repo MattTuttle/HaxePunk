@@ -13,6 +13,9 @@ enum TriangleFormat
 class SpriteBatch
 {
 
+	public static var inverseTexWidth(default, null):Float = 0;
+	public static var inverseTexHeight(default, null):Float = 0;
+
 	/**
 	 * The current material being used by SpriteBatch
 	 */
@@ -37,8 +40,8 @@ class SpriteBatch
 				var tex = value.firstPass.getTexture(0);
 				if (tex != null)
 				{
-					_invTexWidth = 1 / tex.width;
-					_invTexHeight = 1 / tex.height;
+					inverseTexWidth = 1 / tex.width;
+					inverseTexHeight = 1 / tex.height;
 				}
 			}
 			_material = value;
@@ -122,25 +125,25 @@ class SpriteBatch
 		var u1, u2;
 		if (flipX)
 		{
-			u1 = (texX + texWidth) * _invTexWidth;
-			u2 = texX * _invTexWidth;
+			u1 = (texX + texWidth) * inverseTexWidth;
+			u2 = texX * inverseTexWidth;
 		}
 		else
 		{
-			u1 = texX * _invTexWidth;
-			u2 = (texX + texWidth) * _invTexWidth;
+			u1 = texX * inverseTexWidth;
+			u2 = (texX + texWidth) * inverseTexWidth;
 		}
 
 		var v1, v2;
 		if (flipY)
 		{
-			v1 = (texY + texHeight) * _invTexHeight;
-			v2 = texY * _invTexHeight;
+			v1 = (texY + texHeight) * inverseTexHeight;
+			v2 = texY * inverseTexHeight;
 		}
 		else
 		{
-			v1 = texY * _invTexHeight;
-			v2 = (texY + texHeight) * _invTexHeight;
+			v1 = texY * inverseTexHeight;
+			v2 = (texY + texHeight) * inverseTexHeight;
 		}
 
 		var r, g, b, a;
@@ -234,8 +237,11 @@ class SpriteBatch
         }
 	}
 
-	/** @private Increase the quad count and flush if over the limit */
-	inline private static function addQuad()
+	/**
+	 * Increase the quad count and flush if over the limit.
+	 * IMPORTANT!! MUST call addVertex 4 times AFTER this!
+	 */
+	inline public static function addQuad()
 	{
 		if (_numQuads + 1 > MAX_QUADS)
 		{
@@ -244,8 +250,19 @@ class SpriteBatch
 		_numQuads += 1; // must increment after in case a flush occurs
 	}
 
-	/** @private Adds a vertex to the quad list */
-	inline private static function addVertex(x:Float=0, y:Float=0, u:Float=0, v:Float=0, r:Float=1, g:Float=1, b:Float=1, a:Float=1):Void
+	/**
+	 * Adds a vertex to the quad list.
+	 * IMPORTANT!! AddQuad must be called BEFORE this!
+	 * @param x the x-axis of the vertex
+	 * @param y the y-axis of the vertex
+	 * @param u the x-axis of the texture coordinate (0-1)
+	 * @param v the y-axis of the texture coordinate (0-1)
+	 * @param r the red tint value (0-1)
+	 * @param g the green tint value (0-1)
+	 * @param b the blue tint value (0-1)
+	 * @param a the alpha value (0-1)
+	 */
+	inline public static function addVertex(x:Float=0, y:Float=0, u:Float=0, v:Float=0, r:Float=1, g:Float=1, b:Float=1, a:Float=1):Void
 	{
 		_quadVertices[_vIndex++] = x;
 		_quadVertices[_vIndex++] = y;
@@ -354,8 +371,6 @@ class SpriteBatch
 	private static var _triVertices = new FloatArray(#if !flash MAX_VERTICES #end);
 	private static var _triVertexBuffer:VertexBuffer;
 
-	private static var _invTexWidth:Float = 0;
-	private static var _invTexHeight:Float = 0;
 	private static var _material:Material;
 
 }
