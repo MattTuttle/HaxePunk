@@ -29,6 +29,7 @@ class TestMain
 		// mask tests
 		runner.add(new haxepunk.masks.BoxTest());
 		runner.add(new haxepunk.masks.CircleTest());
+		runner.add(new haxepunk.masks.GridTest());
 		runner.add(new haxepunk.masks.PolygonTest());
 
 		runner.run();

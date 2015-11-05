@@ -60,7 +60,7 @@ class Mask
 		callback = other._intersects.get(_className);
 		if (callback != null) return callback(this);
 
-		throw "Not implemented";
+		throw '${_className} -> ${other._className} intersection not implemented';
  	}
 
 	/**
@@ -75,7 +75,7 @@ class Mask
 		callback = other._separation.get(_className);
 		if (callback != null) return callback(this);
 
-		throw "Not implemented";
+		throw '${_className} -> ${other._className} separation not implemented';
   	}
 
 	/**

@@ -27,10 +27,12 @@ class Circle extends Mask
         this.radius = radius;
 		register(Circle, intersectsCircle, separateCircle);
 		register(Box, intersectsBox);
+		register(Grid, intersectsGrid);
     }
 
     override public function debugDraw(offset:Vector3, color:haxepunk.graphics.Color):Void
 	{
+		// TODO: draw a smoother circle with shaders?
 		var sides = 24,
 			angle = 0.0,
 			angleStep = (Math.PI * 2) / sides,
@@ -94,6 +96,39 @@ class Circle extends Mask
 			y = delta.y - other.halfHeight;
 
 		return x*x + y*y <= radius * radius;
+	}
+
+	public function intersectsGrid(other:Grid):Bool
+	{
+		var entityDist = origin - other.origin;
+
+		var minx:Int = Math.floor((entityDist.x - radius) / other.cellWidth),
+			miny:Int = Math.floor((entityDist.y - radius) / other.cellHeight),
+			maxx:Int = Math.ceil((entityDist.x + radius) / other.cellWidth),
+			maxy:Int = Math.ceil((entityDist.y + radius) / other.cellHeight);
+
+		if (minx < 0) minx = 0;
+		if (miny < 0) miny = 0;
+		if (maxx > other.columns) maxx = other.columns;
+		if (maxy > other.rows)    maxy = other.rows;
+
+		var box = new Box(other.cellWidth, other.cellHeight);
+		box.y = other.y + miny * other.cellHeight;
+		for (row in miny...maxy)
+		{
+			box.x = other.x + minx * other.cellWidth;
+			for (column in minx...maxx)
+			{
+				if (other.getCell(column, row) && intersectsBox(box))
+				{
+					return true;
+				}
+				box.x += other.cellWidth;
+			}
+			box.y += other.cellHeight;
+		}
+
+		return false;
 	}
 
 }

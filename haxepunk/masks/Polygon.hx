@@ -137,7 +137,7 @@ class Polygon extends Mask
 			for (x in 0...other.columns)
 			{
 				box.x = x;
-				if (other.getTile(x, y) && intersectsWithAxes(box, axes))
+				if (other.getCell(x, y) && intersectsWithAxes(box, axes))
 				{
 					return true;
 				}
