@@ -3,11 +3,6 @@ package haxepunk.graphics;
 import haxepunk.math.*;
 import haxepunk.renderers.Renderer;
 
-typedef TrailPoint = {
-	position:Vector3,
-	width:Float
-};
-
 /**
  * Draws colored primitives to the screen.
  */
@@ -148,55 +143,6 @@ class Draw
 		SpriteBatch.addVertex(x1 - dx, y1 - dy, 0, 0, r, g, b, a);
 		SpriteBatch.addVertex(x2 - dx, y2 - dy, 0, 0, r, g, b, a);
 		SpriteBatch.addVertex(x2 + dx, y2 + dy, 0, 0, r, g, b, a);
-	}
-
-	/**
-	 * Draws a circle to the screen
-	 * @param x       the x-axis value of the circle
-	 * @param y       the y-axis value of the circle
-	 * @param radius  the radius of the circle
-	 * @param color   the color of the circle
-	 */
-	public static function trail(points:Array<TrailPoint>, color:Color):Void
-	{
-		var r = color.r,
-			g = color.g,
-			b = color.b,
-			a = color.a;
-
-		// calculate normals
-		var normals = [];
-		for (i in 0...points.length)
-		{
-			var point = points[i];
-			var current = point.position;
-			var previous = (i > 0) ? points[i-1].position : current;
-			var next = (i+1 < points.length) ? points[i+1].position : current;
-			// create perpendicular normal vector
-			var normal = (current - previous) + (next - current);
-			normal.normalize(point.width / 2);
-			var tmp = -normal.x;
-			normal.x = normal.y;
-			normal.y = tmp;
-			normals[i] = normal;
-		}
-
-		var point:Vector3,
-			normal:Vector3;
-		for (i in 1...points.length)
-		{
-			SpriteBatch.addQuad();
-			// previous
-			point = points[i-1].position;
-			normal = normals[i-1];
-			SpriteBatch.addVertex(point.x + normal.x, point.y + normal.y, 0, 0, r, g, b, a);
-			SpriteBatch.addVertex(point.x - normal.x, point.y - normal.y, 0, 0, r, g, b, a);
-			// current
-			point = points[i].position;
-			normal = normals[i];
-			SpriteBatch.addVertex(point.x - normal.x, point.y - normal.y, 0, 0, r, g, b, a);
-			SpriteBatch.addVertex(point.x + normal.x, point.y + normal.y, 0, 0, r, g, b, a);
-		}
 	}
 
 	/**

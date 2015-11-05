@@ -5,39 +5,31 @@ import haxepunk.math.*;
 import haxepunk.masks.*;
 import haxepunk.inputs.Mouse;
 
-class TrailEntity extends haxepunk.scene.Entity
+class MouseTrail extends haxepunk.scene.Entity
 {
 
 	public function new()
 	{
 		super();
-		drawable = true; // must be set to allow draw
+		graphic = trail = new Trail("assets/lime.png");
+		trail.maxPoints = 30;
+		trail.tint.fromInt(0xFF00FFFF);
 	}
 
 	override public function update(elapsed:Float)
 	{
-		var maxPoints = 30,
-			width = 30,
-			change = width / maxPoints;
-		points.push({
-			position: new Vector3(Mouse.x, Mouse.y),
-			width: width
-		});
-		if (points.length > maxPoints) points.shift();
-		for (point in points)
+		var width = 30,
+			change = width / trail.maxPoints;
+		trail.addPoint(new Vector3(Mouse.x, Mouse.y), width);
+		var width = 0.0;
+		for (i in 0...trail.numPoints)
 		{
-			point.width -= change;
+			trail.setThickness(i, width);
+			width += change;
 		}
 	}
 
-	override public function draw()
-	{
-		Draw.begin();
-		Draw.trail(points, color);
-	}
-
-	private var color = new Color(0, 255, 255, 1);
-	private var points = new Array<haxepunk.graphics.Draw.TrailPoint>();
+	private var trail:Trail;
 }
 
 class Main extends Engine
@@ -46,9 +38,9 @@ class Main extends Engine
 	{
 		super.ready();
 
-		scene.add(new TrailEntity());
+		scene.add(new MouseTrail());
 
-		haxepunk.debug.Console.enabled = true;
+		/*haxepunk.debug.Console.enabled = true;
 
 		scene.addMask(new Box(30, 30, -15, -15), 0, 300, 500);
 		scene.addMask(new Box(50, 50), 0, 400, 500);
@@ -63,7 +55,7 @@ class Main extends Engine
 		poly = Polygon.createRegular(5, 50);
 		poly.origin.x = poly.origin.y = 50;
 		poly.angle = 90 * Math.RAD;
-		scene.addMask(poly, 0, 50, 50);
+		scene.addMask(poly, 0, 50, 50);*/
 	}
 
 }
