@@ -6,15 +6,15 @@ class KeyboardTest extends haxe.unit.TestCase
 
 	public function testKeyDown()
 	{
-		Keyboard.onKeyDown(Keyboard.Key.LEFT, 0);
-		assertTrue(Input.check(Keyboard.Key.LEFT));
+		Keyboard.onKeyDown(Key.LEFT, 0);
+		assertTrue(Input.check(Key.LEFT));
 	}
 
 	public function testKeyUp()
 	{
-		for (key in Keyboard.Key.A...Keyboard.Key.Z)
+		for (key in Key.A...Key.Z)
 		{
-			var k:Keyboard.Key = cast key;
+			var k:Key = cast key;
 			Keyboard.onKeyUp(k, 0);
 			assertEquals(1, Input.released(k));
 		}
@@ -22,8 +22,8 @@ class KeyboardTest extends haxe.unit.TestCase
 
 	public function testDefine()
 	{
-		Input.define("jump", [Keyboard.Key.SPACE, Keyboard.Key.UP]);
-		Keyboard.onKeyDown(Keyboard.Key.SPACE, 0);
+		Input.define("jump", [Key.SPACE, Key.UP]);
+		Keyboard.onKeyDown(Key.SPACE, 0);
 		assertTrue(Input.check("jump"));
 	}
 

@@ -382,7 +382,7 @@ class Math
 	}
 
 	/**
-	 * A pseudo-random Float produced using HXP's random seed, where 0 <= Float < 1.
+	 * A time based random Float, where 0 <= Float < 1.
 	 */
 	public static function random():Float
 	{
