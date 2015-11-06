@@ -53,11 +53,22 @@ class RandomTest extends haxe.unit.TestCase
 	public function testBoolean()
 	{
 		Random.seed = 92475683;
-		assertEquals(false, Random.bool());
-		assertEquals(false, Random.bool());
-		assertEquals(true, Random.bool());
-		assertEquals(true, Random.bool(0.9));
-		assertEquals(false, Random.bool(0.1));
+		assertFalse(Random.bool());
+		assertFalse(Random.bool());
+		assertTrue(Random.bool());
+		assertTrue(Random.bool(0.9));
+		assertFalse(Random.bool(0.1));
+	}
+
+	public function testRandomizeSeed()
+	{
+		var seed = Random.seed;
+		Random.randomizeSeed();
+		assertTrue(seed != Random.seed);
+
+		seed = Random.seed;
+		Random.randomizeSeed();
+		assertTrue(seed != Random.seed);
 	}
 
 }

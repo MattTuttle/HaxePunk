@@ -32,7 +32,9 @@ class TestMain
 		runner.add(new haxepunk.masks.GridTest());
 		runner.add(new haxepunk.masks.PolygonTest());
 
+		// utils tests
 		runner.add(new haxepunk.utils.RandomTest());
+		runner.add(new haxepunk.utils.ArrayUtilsTest());
 
 		runner.run();
 	}
