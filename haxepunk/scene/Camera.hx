@@ -10,11 +10,13 @@ class Camera extends SceneNode
 
 	/**
 	 * The camera's viewport width.
+	 * If you change this the projection must be updated to take effect!
 	 */
 	public var width:Float;
 
 	/**
 	 * The camera's viewport height.
+	 * If you change this the projection must be updated to take effect!
 	 */
 	public var height:Float;
 
@@ -52,21 +54,40 @@ class Camera extends SceneNode
 		transform = new Matrix4();
 
 		this.clearColor = new Color(0.117, 0.117, 0.117, 1.0);
+
+		// default projection
 		this.width = width;
 		this.height = height;
+		ortho();
+		trace(_projection);
 	}
 
-	public function make2D():Void
+	/**
+	 * Change camera projection to orthographic.
+	 * @param near  The near clipping plane.
+	 * @param far  The far clipping plane.
+	 */
+	public function ortho(near:Float=500, far:Float=-500):Void
 	{
 		var invZoom = 1 / zoom; // invert for correct scaling
-		_projection = Matrix4.createOrtho(0, width * invZoom, height * invZoom, 0, 500, -500);
+		_projection = Matrix4.createOrtho(0, width * invZoom, height * invZoom, 0, near, far);
 	}
 
-	public function make3D(fov:Float):Void
+	/**
+	 * Change camera projection to perspective.
+	 * @param fov  Field of view, in radians.
+	 * @param near  The near clipping plane.
+	 * @param far  The far clipping plane.
+	 */
+	public function perspective(fov:Float, near:Float=100, far:Float=-100):Void
 	{
-		_projection = Matrix4.createPerspective(fov * Math.RAD, (width / height) / zoom, -100, 100);
+		_projection = Matrix4.createPerspective(fov, (width / height) / zoom, near, far);
 	}
 
+	/**
+	 * Transform camera to look at a position.
+	 * @param target  The position to look at.
+	 */
 	public function lookAt(target:Vector3):Void
 	{
 		transform.lookAt(position, target, Vector3.Y_AXIS);
@@ -91,14 +112,16 @@ class Camera extends SceneNode
 		_shakeDuration = 0;
 	}
 
+	/**
+	 * Updates the camera's transform matrix.
+	 */
 	public function update():Void
 	{
-		if (_projection == null) make2D();
-
+		// reset transform
 		transform.identity();
-		transform.rotateZ(angle);
-		transform.translate(-x, -y, -z);
 
+		// translate to position and then apply shake, if any.
+		transform.translate(-x, -y, -z);
 		if (_shakeDuration > 0)
 		{
 			_shakeDuration -= Time.elapsed;
@@ -109,6 +132,8 @@ class Camera extends SceneNode
 			);
 		}
 
+		// rotate and apply projection
+		transform.rotateZ(angle);
 		transform.multiply(_projection);
 	}
 

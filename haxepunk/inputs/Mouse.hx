@@ -137,6 +137,7 @@ class Mouse
 				camera = Engine.scene.camera,
 				width = camera.width == 0 ? ww : camera.width,
 				height = camera.height == 0 ? wh : camera.height;
+			// TODO: take camera rotation into effect
 			switch (HXP.scaleMode)
 			{
 				case NoScale:

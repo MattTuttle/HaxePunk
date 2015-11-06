@@ -68,6 +68,7 @@ class Engine extends Application
 		var camera = scene.camera;
 		if (camera.width == 0) camera.width = windowWidth;
 		if (camera.height == 0) camera.height = windowHeight;
+		camera.ortho();
 		var x = 0, y = 0, scale = 1.0,
 			width = camera.width, height = camera.height;
 		switch (HXP.scaleMode)
