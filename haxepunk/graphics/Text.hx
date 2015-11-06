@@ -32,13 +32,14 @@ class Font
 
 	private function new(asset:String)
 	{
-		this.font = lime.text.Font.fromFile(asset);
+		this.font = lime.Assets.getFont(asset);
 		_sizes = new Map<Int, GlyphImages>();
 		_textures = new Map<Int, Texture>();
 	}
 
 	private function loadGlyphs(size:Int):Void
 	{
+		if (font == null) return;
 		var images = font.renderGlyphs(font.getGlyphs(), size);
 		if (images == null)
 		{
