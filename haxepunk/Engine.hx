@@ -65,10 +65,11 @@ class Engine extends Application
 
 	private function setViewport(windowWidth:Int, windowHeight:Int)
 	{
-		if (scene.width == 0) scene.width = windowWidth;
-		if (scene.height == 0) scene.height = windowHeight;
+		var camera = scene.camera;
+		if (camera.width == 0) camera.width = windowWidth;
+		if (camera.height == 0) camera.height = windowHeight;
 		var x = 0, y = 0, scale = 1.0,
-			width = scene.width, height = scene.height;
+			width = camera.width, height = camera.height;
 		switch (HXP.scaleMode)
 		{
 			case NoScale:

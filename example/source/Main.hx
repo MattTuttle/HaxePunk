@@ -15,7 +15,7 @@ class MouseTrail extends haxepunk.scene.Entity
 		trail.maxPoints = 30;
 	}
 
-	override public function update(elapsed:Float)
+	override public function update()
 	{
 		var width = 30,
 			change = width / trail.maxPoints;
@@ -31,6 +31,7 @@ class Main extends Engine
 	override public function ready()
 	{
 		super.ready();
+		var scene = Engine.scene;
 
 		scene.add(new MouseTrail());
 

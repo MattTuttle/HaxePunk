@@ -82,13 +82,16 @@ class MathTest extends haxe.unit.TestCase
 		assertEquals(12, uuid.length);
 	}
 
-	public function testRand()
+	public function testRandom()
 	{
-		var rand = Math.rand(4);
-		assertTrue(rand >= 0 && rand <= 4);
+		var result = Math.random();
+		assertTrue(result >= 0 && result <= 1);
 
-		var randFloat = Math.random();
-		assertTrue(randFloat >= 0 && randFloat <= 1);
+		result = Math.random(50, 100);
+		assertTrue(result >= 50 && result <= 100);
+
+		result = Math.random(-15, 15);
+		assertTrue(result >= -15 && result <= 15);
 	}
 
 }

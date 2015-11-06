@@ -13,19 +13,15 @@ class Scene
 {
 
 	public var camera:Camera;
-	public var width:Int;
-	public var height:Int;
 
 	public function new(width:Int=0, height:Int=0)
 	{
-		camera = new Camera();
+		camera = new Camera(width, height);
 		_added = new Array<Entity>();
 		_entities = new Array<Entity>();
 		_groups = new StringMap<Array<Entity>>();
 		_entityNames = new StringMap<Entity>();
 		_frameList = new Array<Float>();
-		this.width = width;
-		this.height = height;
 	}
 
 	/**
@@ -367,7 +363,7 @@ class Scene
 	{
 		updateEntities();
 		if (Console.enabled) Console.instance.update(this);
-		camera.update(width, height);
+		camera.update();
 	}
 
 	/** @private Adds, updates, and removes entities from the scene */

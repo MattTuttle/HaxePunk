@@ -151,9 +151,9 @@ class Matrix4 implements ArrayAccess<MatrixValue>
 
 	public function translate(x:MatrixValue, y:MatrixValue, z:MatrixValue):Void
 	{
-		_41 = x;
-		_42 = y;
-		_43 = z;
+		_41 += x;
+		_42 += y;
+		_43 += z;
 		_isDirty = true;
 	}
 

@@ -382,21 +382,11 @@ class Math
 	}
 
 	/**
-	 * A time based random Float, where 0 <= Float < 1.
+	 * A time based random Float, where min <= Float < max.
 	 */
-	public static function random():Float
+	public static function random(min:Float=0, max:Float=1):Float
 	{
-		return std.Math.random();
-	}
-
-	/**
-	 * Returns a pseudo-random Int.
-	 * @param	amount		The returned Int will always be 0 <= Int < amount.
-	 * @return	The Int.
-	 */
-	public static inline function rand(amount:Int):Int
-	{
-		return Std.random(amount);
+		return std.Math.random() * (max - min) + min;
 	}
 
 	private static var UUID_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
