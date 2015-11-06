@@ -67,9 +67,8 @@ class Graphic
 
 	/**
 	 * Graphic update method, fired every frame
-	 * @param elapsed the time elapsed in seconds since the last frame
 	 */
-	public function update(elapsed:Float):Void {}
+	public function update():Void {}
 
 	private var _matrix:Matrix4;
 
@@ -128,11 +127,11 @@ class GraphicList extends Graphic
 	/**
 	 * Updates all of the Graphic objects in the list
 	 */
-	override public function update(elapsed:Float):Void
+	override public function update():Void
 	{
 		for (i in 0..._children.length)
 		{
-			_children[i].update(elapsed);
+			_children[i].update();
 		}
 	}
 

@@ -1,11 +1,11 @@
 package haxepunk;
 
-import haxepunk.math.Math;
-import haxepunk.math.Matrix4;
-import haxepunk.scene.Scene;
 import haxepunk.graphics.Material;
-import haxepunk.renderers.Renderer;
 import haxepunk.inputs.Input;
+import haxepunk.math.*;
+import haxepunk.renderers.Renderer;
+import haxepunk.scene.Scene;
+import haxepunk.utils.Time;
 import lime.app.Application;
 import lime.app.Config;
 import lime.graphics.RenderContext;
@@ -94,9 +94,9 @@ class Engine extends Application
 
 	override public function render(renderer:lime.graphics.Renderer):Void
 	{
-		var time = haxe.Timer.stamp();
+		var time = Time.current;
 		scene.draw();
-		HXP.renderTime = time - haxe.Timer.stamp();
+		Time.renderFrameTime = time - Time.current;
 
 		#if flash
 		// must reset program and texture at end of each frame...
@@ -107,12 +107,16 @@ class Engine extends Application
 
 	override public function update(deltaTime:Int):Void
 	{
-		var time = haxe.Timer.stamp();
-		scene.update(deltaTime / 1000.0);
+		var time = Time.current;
+		Time.elapsed = deltaTime / 1000.0;
+		Time.totalElapsed += Time.elapsed;
+		Time.frames += 1;
+
+		scene.update();
 
 		// Update the input system
 		Input.update();
-		HXP.updateTime = time - haxe.Timer.stamp();
+		Time.updateFrameTime = time - Time.current;
 	}
 
 	/**

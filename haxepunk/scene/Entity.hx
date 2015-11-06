@@ -258,7 +258,7 @@ class Entity extends SceneNode
 	/**
 	 * Updates the Entity.
 	 */
-	public function update(elapsed:Float):Void { }
+	public function update():Void { }
 
 	private var _group:String = "";
 	private var _name:String = "";

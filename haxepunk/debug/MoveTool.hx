@@ -6,7 +6,7 @@ import haxepunk.scene.Scene;
 class MoveTool implements Tool
 {
 
-	public function update(scene:Scene, elapsed:Float)
+	public function update(scene:Scene)
 	{
 
 	}

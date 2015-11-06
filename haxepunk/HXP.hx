@@ -26,9 +26,6 @@ class HXP
 	@:allow(haxepunk.scene.Scene)
 	public static var frameRate(default, null):Float = 0;
 
-	public static var updateTime(default, null):Float = 0;
-	public static var renderTime(default, null):Float = 0;
-
 	public static var entityColor:Color = new Color(1, 0, 0, 0.3);
 	public static var maskColor:Color = new Color(0, 1, 0, 0.3);
 	public static var selectColor:Color = new Color(0.9, 0.9, 0.9);

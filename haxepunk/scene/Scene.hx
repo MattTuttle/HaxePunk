@@ -363,15 +363,15 @@ class Scene
 	 * Updates the scene
 	 * @param elapsed The elapsed time, in seconds, since the last update.
 	 */
-	public function update(elapsed:Float):Void
+	public function update():Void
 	{
-		updateEntities(elapsed);
-		if (Console.enabled) Console.instance.update(this, elapsed);
+		updateEntities();
+		if (Console.enabled) Console.instance.update(this);
 		camera.update(width, height);
 	}
 
 	/** @private Adds, updates, and removes entities from the scene */
-	private inline function updateEntities(elapsed:Float=0):Void
+	private inline function updateEntities():Void
 	{
 		var removed = new Array<Entity>(),
 			e:Entity;
@@ -397,9 +397,9 @@ class Scene
 			else
 			{
 				var layer = e.layer;
-				e.update(elapsed);
+				e.update();
 				// remove need to call super.update() on base Entity
-				if (e.graphic != null) e.graphic.update(elapsed);
+				if (e.graphic != null) e.graphic.update();
 				if (layer != e.layer)
 				{
 					layerDirty = true;

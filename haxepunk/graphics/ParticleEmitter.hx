@@ -4,6 +4,7 @@ import haxepunk.graphics.Image;
 import haxepunk.math.Vector3;
 import haxepunk.math.Matrix4;
 import haxepunk.scene.Camera;
+import haxepunk.utils.Time;
 
 class Particle
 {
@@ -29,13 +30,13 @@ class Particle
 		_life = life;
 	}
 
-	public function update(elapsed:Float)
+	public function update()
 	{
 		velocity += acceleration;
 		position += velocity;
 		angle += angularVelocity;
 		scale += growth;
-		_life -= elapsed;
+		_life -= Time.elapsed;
 	}
 
 	private var _life:Float;
@@ -103,11 +104,11 @@ class ParticleEmitter extends Graphic
 		}
 	}
 
-	override public function update(elapsed:Float):Void
+	override public function update():Void
 	{
 		for (p in _particles)
 		{
-			p.update(elapsed);
+			p.update();
 		}
 	}
 

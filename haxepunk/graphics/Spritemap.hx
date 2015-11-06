@@ -1,10 +1,9 @@
 package haxepunk.graphics;
 
 import haxepunk.graphics.Image;
-import haxepunk.math.Matrix4;
-import haxepunk.math.Vector3;
-import haxepunk.math.Math;
+import haxepunk.math.*;
 import haxepunk.scene.Camera;
+import haxepunk.utils.Time;
 import haxe.ds.StringMap;
 import lime.app.Event;
 
@@ -312,12 +311,12 @@ class Spritemap extends Image
 	}
 
 	/** @private Updates the animation. */
-	override public function update(elapsed:Float):Void
+	override public function update():Void
 	{
 		if (_anim != null && !complete)
 		{
-			// _time += (HXP.fixed ? _anim.frameRate / HXP.assignedFrameRate : _anim.frameRate * HXP.elapsed) * rate;
-			_time += (_anim.frameRate * elapsed) * rate;
+			// _time += (HXP.fixed ? _anim.frameRate / HXP.assignedFrameRate : _anim.frameRate * Time.elapsed) * rate;
+			_time += (_anim.frameRate * Time.elapsed) * rate;
 			if (_time >= 1)
 			{
 				do {

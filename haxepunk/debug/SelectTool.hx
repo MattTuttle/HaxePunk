@@ -13,7 +13,7 @@ class SelectTool implements Tool
 		_selectRect = new Rectangle();
 	}
 
-	public function update(scene:Scene, elapsed:Float)
+	public function update(scene:Scene)
 	{
 		if (Input.pressed(MouseButton.LEFT) > 0)
 		{

@@ -5,6 +5,6 @@ import haxepunk.scene.Scene;
 
 interface Tool
 {
-	public function update(scene:Scene, elapsed:Float):Void;
+	public function update(scene:Scene):Void;
 	public function draw(cameraPosition:Vector3):Void;
 }

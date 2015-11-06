@@ -3,7 +3,7 @@ package haxepunk.debug;
 import haxepunk.graphics.*;
 import haxepunk.math.*;
 import haxepunk.scene.*;
-import haxepunk.utils.LibInfo;
+import haxepunk.utils.*;
 
 typedef FrameInfo = {
 	var frameRate:Float;
@@ -36,18 +36,18 @@ class Console
 		_entityText = new Text("0 Entities");
 	}
 
-	public function update(scene:Scene, elapsed:Float):Void
+	public function update(scene:Scene):Void
 	{
 		_frameInfos.add({
 			frameRate: Std.int(HXP.frameRate) / 100,
-			updateTime: HXP.updateTime * 20,
-			renderTime: HXP.renderTime * 150,
+			updateTime: Time.updateFrameTime * 20,
+			renderTime: Time.renderFrameTime * 150,
 		});
 		_logText.text = lines.join("\n") + "\n> " + input;
 		_fpsText.text = "FPS: " + Std.int(HXP.frameRate);
 		_entityText.text = scene.entityCount + (scene.entityCount == 1 ? " Entity" : " Entities");
 
-		_tool.update(scene, elapsed);
+		_tool.update(scene);
 	}
 
 	public function draw(scene:Scene):Void
