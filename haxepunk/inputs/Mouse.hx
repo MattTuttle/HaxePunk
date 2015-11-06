@@ -134,8 +134,8 @@ class Mouse
 		{
 			var ww = HXP.window.width,
 				wh = HXP.window.height,
-				width = HXP.scene.width == 0 ? ww : HXP.scene.width,
-				height = HXP.scene.height == 0 ? wh : HXP.scene.height;
+				width = Engine.scene.width == 0 ? ww : Engine.scene.width,
+				height = Engine.scene.height == 0 ? wh : Engine.scene.height;
 			switch (HXP.scaleMode)
 			{
 				case NoScale:

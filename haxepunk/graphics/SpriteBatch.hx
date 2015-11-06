@@ -325,7 +325,7 @@ class SpriteBatch
 		}
 
 		// grab the camera transform
-		var cameraTransform = HXP.scene.camera.transform;
+		var cameraTransform = Engine.scene.camera.transform;
 
 		// loop material passes
 		for (pass in material.passes)

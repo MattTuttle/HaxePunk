@@ -20,9 +20,6 @@ class HXP
 
 	public static var scaleMode:ScaleMode = LetterBox;
 
-	// TODO: change this so it can't get out of sync with Engine
-	public static var scene(default, null):Scene;
-
 	@:allow(haxepunk.scene.Scene)
 	public static var frameRate(default, null):Float = 0;
 
