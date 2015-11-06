@@ -59,7 +59,6 @@ class Camera extends SceneNode
 		this.width = width;
 		this.height = height;
 		ortho();
-		trace(_projection);
 	}
 
 	/**
