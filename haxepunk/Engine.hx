@@ -94,9 +94,9 @@ class Engine extends Application
 
 	override public function render(renderer:lime.graphics.Renderer):Void
 	{
-		var time = Time.current;
+		var startTime = Time.current;
 		scene.draw();
-		Time.renderFrameTime = time - Time.current;
+		Time.renderFrameTime = Time.since(startTime);
 
 		#if flash
 		// must reset program and texture at end of each frame...
@@ -107,7 +107,7 @@ class Engine extends Application
 
 	override public function update(deltaTime:Int):Void
 	{
-		var time = Time.current;
+		var startTime = Time.current;
 		Time.elapsed = deltaTime / 1000.0;
 		Time.totalElapsed += Time.elapsed;
 		Time.frames += 1;
@@ -116,7 +116,7 @@ class Engine extends Application
 
 		// Update the input system
 		Input.update();
-		Time.updateFrameTime = time - Time.current;
+		Time.updateFrameTime = Time.since(startTime);
 	}
 
 	/**

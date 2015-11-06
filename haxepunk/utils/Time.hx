@@ -22,40 +22,19 @@ class Time
 	/** The timescale applied to Time.elapsed. */
 	public static var scale:Float;
 
+	/** Time taken for the last update frame */
 	public static var updateFrameTime(default, null):Float = 0;
+
+	/** Time taken for the last render frame */
 	public static var renderFrameTime(default, null):Float = 0;
 
-	public function new()
-	{
-
-	}
-
 	/**
-	 * Sets a named time flag.
+	 * Returns the delta time (in miliseconds)
+	 * @param time The start time to determine the delta.
 	 */
-	public function start():Void
+	public inline static function since(time:Float):Float
 	{
-		flag = Time.current;
+		return Time.current - time;
 	}
-
-	/*
-	 * Returns the time (in miliseconds) since the time flag [name] was set and removes it.
-	 */
-	public function stop():Float
-	{
-		var time = flag;
-		flag = -1;
-		return time;
-	}
-
-	/*
-	 * Returns the delta time (in miliseconds) of a previous measured interval using start() and stop().
-	 */
-	public function get():Float
-	{
-		return Time.current - flag;
-	}
-
-	private var flag:Float = -1;
 
 }
