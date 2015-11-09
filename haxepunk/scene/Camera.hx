@@ -47,12 +47,18 @@ class Camera extends SceneNode
 	 */
 	public var transform(default, null):Matrix4;
 
+	/**
+	 * The window viewport.
+	 */
+	public var viewport(default, null):Rectangle;
+
 	public function new(width:Float, height:Float)
 	{
 		super();
 		transform = new Matrix4();
 
 		this.clearColor = new Color(0.117, 0.117, 0.117, 1.0);
+		this.viewport = new Rectangle();
 
 		// default projection
 		this.width = width;
@@ -60,11 +66,59 @@ class Camera extends SceneNode
 		ortho();
 	}
 
+	public function setViewport(windowWidth:Int, windowHeight:Int):Rectangle
+	{
+		if (width == 0) width = windowWidth;
+		if (height == 0) height = windowHeight;
+		ortho(); // TODO: There MUST be a better way to do this!
+		var scale = 1.0,
+			width = this.width,
+			height = this.height;
+		switch (HXP.scaleMode)
+		{
+			case NoScale:
+				// Nothing to do
+			case Zoom:
+				scale = windowWidth / width;
+				if (scale * height < windowHeight)
+				{
+					scale = windowHeight / height;
+				}
+			case LetterBox:
+				scale = windowWidth / width;
+				if (scale * height > windowHeight)
+				{
+					scale = windowHeight / height;
+				}
+			case Stretch:
+				width = windowWidth;
+				height = windowHeight;
+		}
+		width = Std.int(width * scale);
+		height = Std.int(height * scale);
+		var pixelScale = HXP.window.scale; // for retina devices
+		viewport.x = Std.int((windowWidth - width) / 2 * pixelScale);
+		viewport.y = Std.int((windowHeight - height) / 2 * pixelScale);
+		viewport.width = Std.int(width * pixelScale);
+		viewport.height = Std.int(height * pixelScale);
+		return viewport;
+	}
+
+	public function cameraToScreen(point:Vector3):Vector3
+	{
+		return transform * point;
+	}
+
+	/**
+	 * Convert screen to camera coordinates.
+	 * @param point  The screen position to convert.
+	 * @return The point in world/camera coordinates.
+	 */
 	public function screenToCamera(point:Vector3):Vector3
 	{
 		var result = new Vector3(
-			2 * (point.x / width) - 1, // x coord (-1 to 1)
-			1 - 2 * (point.y / height), // y coord (1 to -1) inverted because of OpenGL
+			2 * ((point.x - viewport.x) / viewport.width) - 1, // x coord (-1 to 1)
+			1 - 2 * ((point.y - viewport.y) / viewport.height), // y coord (1 to -1) inverted because of OpenGL
 			0
 		);
 		return transform.inverse() * result;

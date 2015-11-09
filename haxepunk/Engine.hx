@@ -63,40 +63,13 @@ class Engine extends Application
 	 */
 	public function ready() { }
 
-	private function setViewport(windowWidth:Int, windowHeight:Int)
+	/**
+	 * Update the viewport
+	 */
+	private function setViewport(windowWidth:Int, windowHeight:Int):Void
 	{
-		var camera = scene.camera;
-		if (camera.width == 0) camera.width = windowWidth;
-		if (camera.height == 0) camera.height = windowHeight;
-		camera.ortho();
-		var x = 0, y = 0, scale = 1.0,
-			width = camera.width, height = camera.height;
-		switch (HXP.scaleMode)
-		{
-			case NoScale:
-				// Nothing to do
-			case Zoom:
-				scale = windowWidth / width;
-				if (scale * height < windowHeight)
-				{
-					scale = windowHeight / height;
-				}
-			case LetterBox:
-				scale = windowWidth / width;
-				if (scale * height > windowHeight)
-				{
-					scale = windowHeight / height;
-				}
-			case Stretch:
-				width = windowWidth;
-				height = windowHeight;
-		}
-		width = Std.int(width * scale);
-		height = Std.int(height * scale);
-		var pixelScale = HXP.window.scale; // for retina devices
-		x = Std.int((windowWidth - width) / 2 * pixelScale);
-		y = Std.int((windowHeight - height) / 2 * pixelScale);
-		Renderer.setViewport(x, y, Std.int(width * pixelScale), Std.int(height * pixelScale));
+		var viewport = scene.camera.setViewport(windowWidth, windowHeight);
+		Renderer.setViewport(viewport);
 	}
 
 	override public function render(renderer:lime.graphics.Renderer):Void

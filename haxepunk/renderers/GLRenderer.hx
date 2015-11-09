@@ -22,9 +22,9 @@ class GLRenderer
 		GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
 	}
 
-	public static inline function setViewport(x:Int, y:Int, width:Int, height:Int):Void
+	public static inline function setViewport(viewport:Rectangle):Void
 	{
-		GL.viewport(x, y, width, height);
+		GL.viewport(Std.int(viewport.x), Std.int(viewport.y), Std.int(viewport.width), Std.int(viewport.height));
 	}
 
 	public static inline function attribute(program:ShaderProgram, a:String):Int
