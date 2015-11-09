@@ -77,8 +77,7 @@ class Camera extends SceneNode
 	 */
 	public function ortho(near:Float=500, far:Float=-500):Void
 	{
-		var invZoom = 1 / zoom; // invert for correct scaling
-		_projection = Matrix4.createOrtho(0, width * invZoom, height * invZoom, 0, near, far);
+		_projection = Matrix4.createOrtho(0, width, height, 0, near, far);
 	}
 
 	/**
@@ -89,7 +88,7 @@ class Camera extends SceneNode
 	 */
 	public function perspective(fov:Float, near:Float=100, far:Float=-100):Void
 	{
-		_projection = Matrix4.createPerspective(fov, (width / height) / zoom, near, far);
+		_projection = Matrix4.createPerspective(fov, (width / height), near, far);
 	}
 
 	/**
@@ -128,6 +127,7 @@ class Camera extends SceneNode
 		// reset transform
 		transform.identity();
 		transform.rotateZ(angle);
+		transform.scale(zoom, zoom, zoom);
 
 		// translate to position and then apply shake, if any.
 		transform.translate(-x, -y, -z);
