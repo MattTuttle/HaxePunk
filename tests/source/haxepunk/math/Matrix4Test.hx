@@ -43,10 +43,10 @@ class Matrix4Test extends haxe.unit.TestCase
 	{
 		var a = new Matrix4();
 		a.rotateZ(Math.PI);
+		a.rotateY(Math.PI*2.4);
 		a.translate(0, 3, 5);
 
-		var b = a.clone();
-		assertTrue(b.invert());
+		var b = a.inverse();
 		a.multiply(b);
 		isIdentityMatrix(a);
 
@@ -90,25 +90,26 @@ class Matrix4Test extends haxe.unit.TestCase
 
 	private function isIdentityMatrix(matrix:Matrix4)
 	{
-		assertEquals(1.0, matrix._11);
-		assertEquals(0.0, matrix._12);
-		assertEquals(0.0, matrix._13);
-		assertEquals(0.0, matrix._14);
+		// Using roundTo to prevent any errors
+		assertEquals(1.0, Math.roundTo(matrix._11, 6));
+		assertEquals(0.0, Math.roundTo(matrix._12, 6));
+		assertEquals(0.0, Math.roundTo(matrix._13, 6));
+		assertEquals(0.0, Math.roundTo(matrix._14, 6));
 
-		assertEquals(0.0, matrix._21);
-		assertEquals(1.0, matrix._22);
-		assertEquals(0.0, matrix._23);
-		assertEquals(0.0, matrix._24);
+		assertEquals(0.0, Math.roundTo(matrix._21, 6));
+		assertEquals(1.0, Math.roundTo(matrix._22, 6));
+		assertEquals(0.0, Math.roundTo(matrix._23, 6));
+		assertEquals(0.0, Math.roundTo(matrix._24, 6));
 
-		assertEquals(0.0, matrix._31);
-		assertEquals(0.0, matrix._32);
-		assertEquals(1.0, matrix._33);
-		assertEquals(0.0, matrix._34);
+		assertEquals(0.0, Math.roundTo(matrix._31, 6));
+		assertEquals(0.0, Math.roundTo(matrix._32, 6));
+		assertEquals(1.0, Math.roundTo(matrix._33, 6));
+		assertEquals(0.0, Math.roundTo(matrix._34, 6));
 
-		assertEquals(0.0, matrix._41);
-		assertEquals(0.0, matrix._42);
-		assertEquals(0.0, matrix._43);
-		assertEquals(1.0, matrix._44);
+		assertEquals(0.0, Math.roundTo(matrix._41, 6));
+		assertEquals(0.0, Math.roundTo(matrix._42, 6));
+		assertEquals(0.0, Math.roundTo(matrix._43, 6));
+		assertEquals(1.0, Math.roundTo(matrix._44, 6));
 	}
 
 }

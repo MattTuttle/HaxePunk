@@ -155,27 +155,12 @@ abstract Vector3 (Point3D)
 		return new Vector3(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x);
 	}
 
-	@:op(A % B) private static inline function _cross(a:Vector3, b:Vector3):Vector3
-	{
-		return a.cross(b);
-	}
-
-	@:op(A %= B) private static inline function _crossEquals(a:Vector3, b:Vector3):Vector3
-	{
-		var x = a.y * b.z - a.z * b.y;
-		var y = a.z * b.x - a.x * b.z;
-		var z = a.x * b.y - a.y * b.x;
-		a.x = x;
-		a.y = y;
-		a.z = z;
-		return a;
-	}
-
 	@:op(A *= B) private static inline function _multiplyEqualsMatrix(v:Vector3, m:Matrix4):Vector3
 	{
-		v.x = m._11 * v.x + m._12 * v.y + m._13 * v.z + m._41;
-		v.y = m._21 * v.x + m._22 * v.y + m._23 * v.z + m._42;
-		v.z = m._31 * v.x + m._32 * v.y + m._33 * v.z + m._43;
+		var x = v.x, y = v.y, z = v.z;
+		v.x = m._11 * x + m._12 * y + m._13 * z + m._41;
+		v.y = m._21 * x + m._22 * y + m._23 * z + m._42;
+		v.z = m._31 * x + m._32 * y + m._33 * z + m._43;
 		return v;
 	}
 

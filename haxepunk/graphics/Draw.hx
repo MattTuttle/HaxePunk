@@ -12,7 +12,7 @@ class Draw
 	/**
 	 * Resets SpriteBatch to be able to draw solid colors
 	 */
-	public static inline function begin(batch:SpriteBatch)
+	public static function begin(batch:SpriteBatch)
 	{
 		if (_defaultMaterial == null)
 		{
@@ -23,6 +23,11 @@ class Draw
 		}
 		batch.material = _defaultMaterial;
 		_spriteBatch = batch;
+	}
+
+	public static inline function end()
+	{
+		_spriteBatch.end();
 	}
 
 	/**

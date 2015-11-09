@@ -12,17 +12,27 @@ import haxepunk.graphics.SpriteBatch;
 class Scene
 {
 
+	/**
+	 * The active camera to draw the scene.
+	 * Will not change until the end of the frame.
+	 */
 	public var camera:Camera;
+
+	/**
+	 * The scene's sprite batcher.
+	 */
+	public var spriteBatch(default, null):SpriteBatch;
 
 	public function new(width:Int=0, height:Int=0)
 	{
 		camera = new Camera(width, height);
+		spriteBatch = new SpriteBatch();
+
 		_added = new Array<Entity>();
 		_entities = new Array<Entity>();
 		_groups = new StringMap<Array<Entity>>();
 		_entityNames = new StringMap<Entity>();
 		_frameList = new Array<Float>();
-		_spriteBatch = new SpriteBatch();
 	}
 
 	/**
@@ -322,14 +332,13 @@ class Scene
 	{
 		var e;
 		Renderer.clear(camera.clearColor);
-		_spriteBatch.transform = this.camera.transform;
-		_spriteBatch.begin();
+		spriteBatch.begin(camera.transform);
 		for (i in 0..._entities.length)
 		{
 			e = _entities[i];
-			if (e.drawable) e.draw(_spriteBatch);
+			if (e.drawable) e.draw(spriteBatch);
 		}
-		_spriteBatch.end();
+		spriteBatch.end();
 		if (Console.enabled) Console.instance.draw(this);
 		Renderer.present();
 
@@ -425,7 +434,6 @@ class Scene
 	private var _frameListSum:Float = 0;
 	private var _frameList:Array<Float>;
 
-	private var _spriteBatch:SpriteBatch;
 	private var _added:Array<Entity>;
 	private var _entities:Array<Entity>;
 	private var _groups:StringMap<Array<Entity>>;

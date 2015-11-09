@@ -1,7 +1,6 @@
 package haxepunk.graphics;
 
 import haxepunk.renderers.Renderer;
-import haxepunk.scene.Scene;
 import haxepunk.math.*;
 
 enum TriangleFormat
@@ -13,7 +12,11 @@ enum TriangleFormat
 class SpriteBatch
 {
 
+	/**
+	 * The world transform matrix to be applied to this batch.
+	 */
 	public var transform:Matrix4;
+
 	public var inverseTexWidth(default, null):Float = 0;
 	public var inverseTexHeight(default, null):Float = 0;
 
@@ -287,8 +290,12 @@ class SpriteBatch
 		_quadVertices[_vIndex++] = a;
 	}
 
-	inline public function begin()
+	inline public function begin(?transform:Matrix4)
 	{
+		if (transform != null)
+		{
+			this.transform = transform;
+		}
 	}
 
 	/**
@@ -302,7 +309,7 @@ class SpriteBatch
 	{
 		var drawQuads = _numQuads > 0,
 			drawTris = _iIndex > 0;
-		if (!drawQuads && !drawTris) return;
+		if ((!drawQuads && !drawTris) || transform == null) return;
 
 		if (drawTris)
 		{

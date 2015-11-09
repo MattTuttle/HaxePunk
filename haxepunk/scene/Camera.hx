@@ -1,6 +1,5 @@
 package haxepunk.scene;
 
-import haxepunk.HXP;
 import haxepunk.graphics.Color;
 import haxepunk.math.*;
 import haxepunk.utils.Time;
@@ -61,6 +60,16 @@ class Camera extends SceneNode
 		ortho();
 	}
 
+	public function screenToCamera(point:Vector3):Vector3
+	{
+		var result = new Vector3(
+			2 * (point.x / width) - 1, // x coord (-1 to 1)
+			1 - 2 * (point.y / height), // y coord (1 to -1) inverted because of OpenGL
+			0
+		);
+		return transform.inverse() * result;
+	}
+
 	/**
 	 * Change camera projection to orthographic.
 	 * @param near  The near clipping plane.
@@ -118,6 +127,7 @@ class Camera extends SceneNode
 	{
 		// reset transform
 		transform.identity();
+		transform.rotateZ(angle);
 
 		// translate to position and then apply shake, if any.
 		transform.translate(-x, -y, -z);
@@ -131,8 +141,7 @@ class Camera extends SceneNode
 			);
 		}
 
-		// rotate and apply projection
-		transform.rotateZ(angle);
+		// apply projection
 		transform.multiply(_projection);
 	}
 

@@ -124,9 +124,9 @@ class Matrix4 implements ArrayAccess<MatrixValue>
 	{
 		var zaxis = eye - target;
 		zaxis.normalize();
-		var yaxis = up % zaxis;
+		var yaxis = up.cross(zaxis);
 		yaxis.normalize();
-		var xaxis = zaxis % yaxis;
+		var xaxis = zaxis.cross(yaxis);
 
 		_11 = xaxis.x; _12 = yaxis.x; _13 = zaxis.x;
 		_21 = xaxis.y; _22 = yaxis.y; _23 = zaxis.y;
@@ -308,16 +308,23 @@ class Matrix4 implements ArrayAccess<MatrixValue>
 			+ (_13 * _24 - _14 * _23) * (_31 * _42 - _32 * _41));
 	}
 
+	public function inverse():Matrix4
+	{
+		var inverse = clone();
+		inverse.invert();
+		return inverse;
+	}
+
 	public function invert():Bool
 	{
 		var d = determinant;
 
 		if (d == 0) return false;
 
-		var m11:MatrixValue = _11; var m21:MatrixValue = _21; var m31:MatrixValue = _31; var m41:MatrixValue = _41;
-		var m12:MatrixValue = _12; var m22:MatrixValue = _22; var m32:MatrixValue = _32; var m42:MatrixValue = _42;
-		var m13:MatrixValue = _13; var m23:MatrixValue = _23; var m33:MatrixValue = _33; var m43:MatrixValue = _43;
-		var m14:MatrixValue = _14; var m24:MatrixValue = _24; var m34:MatrixValue = _34; var m44:MatrixValue = _44;
+		var m11 = _11; var m21 = _21; var m31 = _31; var m41 = _41;
+		var m12 = _12; var m22 = _22; var m32 = _32; var m42 = _42;
+		var m13 = _13; var m23 = _23; var m33 = _33; var m43 = _43;
+		var m14 = _14; var m24 = _24; var m34 = _34; var m44 = _44;
 
 		d = 1 / d;
 

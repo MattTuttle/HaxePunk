@@ -264,7 +264,7 @@ class Text extends Graphic
 		_matrix.identity();
 		_matrix.translateVector3(_drawPosition);
 		if (angle != 0) _matrix.rotateZ(angle);
-		_matrix.multiply(Engine.scene.camera.transform);
+		_matrix.multiply(batch.transform);
 
 		Renderer.bindBuffer(_vertexBuffer);
 		for (pass in material.passes)

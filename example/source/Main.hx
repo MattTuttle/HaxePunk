@@ -19,7 +19,8 @@ class MouseTrail extends haxepunk.scene.Entity
 	{
 		var width = 30,
 			change = width / trail.maxPoints;
-		trail.addPoint(new Vector3(Mouse.x, Mouse.y), width);
+		var mouse = scene.camera.screenToCamera(Mouse.position);
+		trail.addPoint(mouse, width);
 		trail.setThickness(function(i) { return i * change; });
 	}
 
@@ -32,6 +33,13 @@ class Main extends Engine
 	{
 		super.ready();
 		var scene = Engine.scene;
+		var camera = scene.camera;
+		camera.x = -camera.halfWidth;
+		camera.y = -camera.halfHeight;
+
+		var image = new Image("assets/lime.png");
+		image.centerOrigin();
+		scene.addGraphic(image);
 
 		scene.add(new MouseTrail());
 

@@ -5,6 +5,7 @@ import lime.ui.Window;
 
 import haxepunk.inputs.Input;
 import haxepunk.inputs.InputState;
+import haxepunk.math.*;
 
 /**
  * Get information on the mouse input.
@@ -20,17 +21,15 @@ class Mouse
 	/** The delta of the mouse wheel on the vertical axis, 0 if it wasn't moved this frame */
 	public static var wheelDeltaY(default, null):Float = 0;
 
-	/** X position of the mouse in the viewport */
-	public static var x(default, null):Float = 0;
-
-	/** Y position of the mouse in the viewport */
-	public static var y(default, null):Float = 0;
+	public static var position(default, null):Vector3 = new Vector3();
 
 	/** X position of the mouse on the screen */
-	public static var screenX(default, null):Float = 0;
+	public static var x(get, never):Float;
+	private static inline function get_x():Float { return position.x; }
 
 	/** Y position of the mouse on the screen */
-	public static var screenY(default, null):Float = 0;
+	public static var y(get, never):Float;
+	private static inline function get_y():Float { return position.y; }
 
 	/**
 	 * Returns the name of the mouse button.
@@ -130,47 +129,8 @@ class Mouse
 	 */
 	private static inline function onMouseMove(x:Float, y:Float):Void
 	{
-		if (HXP.window != null)
-		{
-			var ww = HXP.window.width,
-				wh = HXP.window.height,
-				camera = Engine.scene.camera,
-				width = camera.width == 0 ? ww : camera.width,
-				height = camera.height == 0 ? wh : camera.height;
-			// TODO: take camera rotation into effect
-			switch (HXP.scaleMode)
-			{
-				case NoScale:
-					Mouse.x = x - Std.int((ww - width) / 2);
-					Mouse.x = y - Std.int((wh - height) / 2);
-				case Zoom:
-					var scale = ww / width;
-					if (scale * height < wh)
-					{
-						scale = wh / height;
-					}
-					Mouse.x = (x - Std.int((ww - Std.int(width * scale)) / 2)) / scale;
-					Mouse.y = (y - Std.int((wh - Std.int(height * scale)) / 2)) / scale;
-				case LetterBox:
-					var scale = ww / width;
-					if (scale * height > wh)
-					{
-						scale = wh / height;
-					}
-					Mouse.x = (x - Std.int((ww - Std.int(width * scale)) / 2)) / scale;
-					Mouse.y = (y - Std.int((wh - Std.int(height * scale)) / 2)) / scale;
-				case Stretch:
-					Mouse.x = x * (width / ww);
-					Mouse.y = y * (height / wh);
-			}
-		}
-		else
-		{
-			Mouse.x = x;
-			Mouse.y = y;
-		}
-		Mouse.screenX = x;
-		Mouse.screenY = y;
+		Mouse.position.x = x;
+		Mouse.position.y = y;
 	}
 
 	/**

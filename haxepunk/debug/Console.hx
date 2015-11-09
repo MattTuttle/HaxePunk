@@ -44,15 +44,16 @@ class Console
 	{
 		if (HXP.window.width != _camera.width || HXP.window.height != _camera.height)
 		{
-			#if tvos
+#if tvos
+			// tv safe zone
 			_camera.width = HXP.window.width - 180;
 			_camera.height = HXP.window.height - 120;
 			_camera.x = 90;
 			_camera.y = 60;
-			#else
+#else
 			_camera.width = HXP.window.width;
 			_camera.height = HXP.window.height;
-			#end
+#end
 			_camera.ortho();
 			_camera.update();
 		}
@@ -70,20 +71,33 @@ class Console
 
 	public function draw(scene:Scene):Void
 	{
+		Draw.begin(scene.spriteBatch);
+		var bounds:Rectangle;
+		for (entity in scene.entities)
+		{
+			if (entity.mask != null)
+			{
+				entity.mask.debugDraw(entity.position, HXP.maskColor);
+			}
+			bounds = entity.bounds;
+			Draw.rect(bounds.x, bounds.y, bounds.width, bounds.height, HXP.entityColor);
+			Draw.pixel(entity.x, entity.y, HXP.entityColor, 4);
+		}
+		Draw.end();
+
 		var pos = _camera.position;
-		_spriteBatch.transform = _camera.transform;
-		_spriteBatch.begin();
+		_spriteBatch.begin(_camera.transform);
 		Draw.begin(_spriteBatch);
-
-		_logText.origin.y = -(_camera.height - _logText.height);
-		_logText.draw(_spriteBatch, pos);
-
-		_fpsText.draw(_spriteBatch, pos);
 
 		var x = _camera.width - _entityText.width;
 		_entityText.origin.x = -x;
 		Draw.fillRect(x + pos.x, pos.y, _entityText.width, _entityText.height, HXP.entityColor);
 		_entityText.draw(_spriteBatch, pos);
+
+		_logText.origin.y = -(_camera.height - _logText.height);
+		_logText.draw(_spriteBatch, pos);
+
+		_fpsText.draw(_spriteBatch, pos);
 
 		if (_frameInfos.length > 1)
 		{
@@ -106,17 +120,6 @@ class Console
 			}
 		}
 
-		var bounds:Rectangle;
-		for (entity in scene.entities)
-		{
-			if (entity.mask != null)
-			{
-				entity.mask.debugDraw(entity.position, HXP.maskColor);
-			}
-			bounds = entity.bounds;
-			Draw.rect(bounds.x, bounds.y, bounds.width, bounds.height, HXP.entityColor);
-			Draw.pixel(entity.x, entity.y, HXP.entityColor, 4);
-		}
 		_tool.draw(pos);
 		_spriteBatch.end();
 	}
