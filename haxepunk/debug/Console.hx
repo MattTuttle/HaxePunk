@@ -34,10 +34,28 @@ class Console
 
 		_fpsText = new Text("");
 		_entityText = new Text("0 Entities");
+
+		// set up a separate batch for the console
+		_spriteBatch = new SpriteBatch();
+		_camera = new Camera(0, 0);
 	}
 
 	public function update(scene:Scene):Void
 	{
+		if (HXP.window.width != _camera.width || HXP.window.height != _camera.height)
+		{
+			#if tvos
+			_camera.width = HXP.window.width - 180;
+			_camera.height = HXP.window.height - 120;
+			_camera.x = 90;
+			_camera.y = 60;
+			#else
+			_camera.width = HXP.window.width;
+			_camera.height = HXP.window.height;
+			#end
+			_camera.ortho();
+			_camera.update();
+		}
 		_frameInfos.add({
 			frameRate: Std.int(HXP.frameRate) / 100,
 			updateTime: Time.updateFrameTime * 20,
@@ -52,19 +70,20 @@ class Console
 
 	public function draw(scene:Scene):Void
 	{
-		var pos = scene.camera.position;
+		var pos = _camera.position;
+		_spriteBatch.transform = _camera.transform;
+		_spriteBatch.begin();
+		Draw.begin(_spriteBatch);
 
-		Draw.begin();
+		_logText.origin.y = -(_camera.height - _logText.height);
+		_logText.draw(_spriteBatch, pos);
 
-		_logText.origin.y = -(HXP.window.height - _logText.height);
-		_logText.draw(pos);
+		_fpsText.draw(_spriteBatch, pos);
 
-		_fpsText.draw(pos);
-
-		var x = HXP.window.width - _entityText.width;
+		var x = _camera.width - _entityText.width;
 		_entityText.origin.x = -x;
 		Draw.fillRect(x + pos.x, pos.y, _entityText.width, _entityText.height, HXP.entityColor);
-		_entityText.draw(pos);
+		_entityText.draw(_spriteBatch, pos);
 
 		if (_frameInfos.length > 1)
 		{
@@ -99,6 +118,7 @@ class Console
 			Draw.pixel(entity.x, entity.y, HXP.entityColor, 4);
 		}
 		_tool.draw(pos);
+		_spriteBatch.end();
 	}
 
 	@:allow(haxepunk.scene.Scene)
@@ -110,6 +130,9 @@ class Console
 		}
 		return instance;
 	}
+
+	private var _camera:Camera;
+	private var _spriteBatch:SpriteBatch;
 
 	private var _frameInfos:HistoryQueue<FrameInfo>;
 	private var _tool:Tool;

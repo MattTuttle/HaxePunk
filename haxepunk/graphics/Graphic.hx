@@ -63,7 +63,7 @@ class Graphic
 	 * Graphic rendering method
 	 * @param offset an offset given to the graphic. Usually from an Entity object.
 	 */
-	public function draw(offset:Vector3):Void {}
+	public function draw(batch:SpriteBatch, offset:Vector3):Void {}
 
 	/**
 	 * Graphic update method, fired every frame
@@ -116,11 +116,11 @@ class GraphicList extends Graphic
 	/**
 	 * Renders all of the Graphic objects in the list
 	 */
-	override public function draw(offset:Vector3):Void
+	override public function draw(batch:SpriteBatch, offset:Vector3):Void
 	{
 		for (i in 0..._children.length)
 		{
-			_children[i].draw(offset);
+			_children[i].draw(batch, offset);
 		}
 	}
 

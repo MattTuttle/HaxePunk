@@ -9,12 +9,10 @@ import haxepunk.renderers.Renderer;
 class Draw
 {
 
-	private static var _defaultMaterial:Material;
-
 	/**
 	 * Resets SpriteBatch to be able to draw solid colors
 	 */
-	public static inline function begin()
+	public static inline function begin(batch:SpriteBatch)
 	{
 		if (_defaultMaterial == null)
 		{
@@ -23,7 +21,8 @@ class Draw
 			var frag = Assets.getText("hxp/shaders/color.frag");
 			_defaultMaterial.firstPass.shader = new Shader(vert, frag);
 		}
-		SpriteBatch.material = _defaultMaterial;
+		batch.material = _defaultMaterial;
+		_spriteBatch = batch;
 	}
 
 	/**
@@ -103,11 +102,11 @@ class Draw
 			b = color.b,
 			a = color.a;
 
-		SpriteBatch.addQuad();
-		SpriteBatch.addVertex(x, y, 0, 0, r, g, b, a);
-		SpriteBatch.addVertex(x + width, y, 0, 0, r, g, b, a);
-		SpriteBatch.addVertex(x + width, y + height, 0, 0, r, g, b, a);
-		SpriteBatch.addVertex(x, y + height, 0, 0, r, g, b, a);
+		_spriteBatch.addQuad();
+		_spriteBatch.addVertex(x, y, 0, 0, r, g, b, a);
+		_spriteBatch.addVertex(x + width, y, 0, 0, r, g, b, a);
+		_spriteBatch.addVertex(x + width, y + height, 0, 0, r, g, b, a);
+		_spriteBatch.addVertex(x, y + height, 0, 0, r, g, b, a);
 	}
 
 	/**
@@ -137,11 +136,11 @@ class Draw
 			b = color.b,
 			a = color.a;
 
-		SpriteBatch.addQuad();
-		SpriteBatch.addVertex(x1 + dx, y1 + dy, 0, 0, r, g, b, a);
-		SpriteBatch.addVertex(x1 - dx, y1 - dy, 0, 0, r, g, b, a);
-		SpriteBatch.addVertex(x2 - dx, y2 - dy, 0, 0, r, g, b, a);
-		SpriteBatch.addVertex(x2 + dx, y2 + dy, 0, 0, r, g, b, a);
+		_spriteBatch.addQuad();
+		_spriteBatch.addVertex(x1 + dx, y1 + dy, 0, 0, r, g, b, a);
+		_spriteBatch.addVertex(x1 - dx, y1 - dy, 0, 0, r, g, b, a);
+		_spriteBatch.addVertex(x2 - dx, y2 - dy, 0, 0, r, g, b, a);
+		_spriteBatch.addVertex(x2 + dx, y2 + dy, 0, 0, r, g, b, a);
 	}
 
 	/**
@@ -169,5 +168,8 @@ class Draw
             offset += step;
         }
     }
+
+	private static var _defaultMaterial:Material;
+	private static var _spriteBatch:SpriteBatch;
 
 }

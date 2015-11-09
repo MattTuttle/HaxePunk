@@ -1,6 +1,7 @@
 package haxepunk.scene;
 
 import haxepunk.graphics.Graphic;
+import haxepunk.graphics.SpriteBatch;
 import haxepunk.masks.*;
 import haxepunk.math.*;
 
@@ -137,11 +138,11 @@ class Entity extends SceneNode
 	/**
 	 * Draw the entity if a graphic exists
 	 */
-	public function draw()
+	public function draw(batch:SpriteBatch)
 	{
 		if (graphic != null)
 		{
-			graphic.draw(position);
+			graphic.draw(batch, position);
 		}
 	}
 

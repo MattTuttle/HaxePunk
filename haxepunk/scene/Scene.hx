@@ -22,6 +22,7 @@ class Scene
 		_groups = new StringMap<Array<Entity>>();
 		_entityNames = new StringMap<Entity>();
 		_frameList = new Array<Float>();
+		_spriteBatch = new SpriteBatch();
 	}
 
 	/**
@@ -321,13 +322,15 @@ class Scene
 	{
 		var e;
 		Renderer.clear(camera.clearColor);
+		_spriteBatch.transform = this.camera.transform;
+		_spriteBatch.begin();
 		for (i in 0..._entities.length)
 		{
 			e = _entities[i];
-			if (e.drawable) e.draw();
+			if (e.drawable) e.draw(_spriteBatch);
 		}
+		_spriteBatch.end();
 		if (Console.enabled) Console.instance.draw(this);
-		SpriteBatch.flush();
 		Renderer.present();
 
 		var t = haxe.Timer.stamp() * 1000;
@@ -422,6 +425,7 @@ class Scene
 	private var _frameListSum:Float = 0;
 	private var _frameList:Array<Float>;
 
+	private var _spriteBatch:SpriteBatch;
 	private var _added:Array<Entity>;
 	private var _entities:Array<Entity>;
 	private var _groups:StringMap<Array<Entity>>;

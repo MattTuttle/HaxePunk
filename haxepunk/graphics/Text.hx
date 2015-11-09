@@ -247,13 +247,13 @@ class Text extends Graphic
 	 * Draw the Text object to the screen
 	 * @param offset the offset of the Text object usually set from and Entity
 	 */
-	override public function draw(offset:Vector3):Void
+	override public function draw(batch:SpriteBatch, offset:Vector3):Void
 	{
 		#if !flash
 		if (_numTriangles <= 0 || _indexBuffer == null || _vertexBuffer == null) return;
 
 		// finish drawing whatever came before the text area
-		SpriteBatch.flush();
+		batch.end();
 
 		_drawPosition.x = -origin.x;
 		_drawPosition.y = -origin.y;

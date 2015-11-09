@@ -88,9 +88,9 @@ class Image extends Graphic
 	 * Renders the image using sprite batching
 	 * @param offset the image offset value typically passed from an Entity object
 	 */
-	override public function draw(offset:Vector3):Void
+	override public function draw(batch:SpriteBatch, offset:Vector3):Void
 	{
-		SpriteBatch.draw(material, offset.x - origin.x, offset.y - origin.y, width, height,
+		batch.draw(material, offset.x - origin.x, offset.y - origin.y, width, height,
 			clipRect.x, clipRect.y, clipRect.width, clipRect.height,
 			flipX, flipY, origin.x, origin.y, scale.x, scale.y, angle, tint);
 	}

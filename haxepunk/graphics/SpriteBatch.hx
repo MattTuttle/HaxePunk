@@ -2,7 +2,7 @@ package haxepunk.graphics;
 
 import haxepunk.renderers.Renderer;
 import haxepunk.scene.Scene;
-import haxepunk.math.Vector2;
+import haxepunk.math.*;
 
 enum TriangleFormat
 {
@@ -13,14 +13,20 @@ enum TriangleFormat
 class SpriteBatch
 {
 
-	public static var inverseTexWidth(default, null):Float = 0;
-	public static var inverseTexHeight(default, null):Float = 0;
+	public var transform:Matrix4;
+	public var inverseTexWidth(default, null):Float = 0;
+	public var inverseTexHeight(default, null):Float = 0;
+
+	public function new()
+	{
+		_quadVertices = new FloatArray(#if !flash MAX_VERTICES #end);
+	}
 
 	/**
 	 * The current material being used by SpriteBatch
 	 */
-	public static var material(get, set):Material;
-	private static function get_material():Material
+	public var material(get, set):Material;
+	private function get_material():Material
 	{
 		// always make sure we return a valid material
 		if (_material == null)
@@ -30,11 +36,11 @@ class SpriteBatch
 		}
 		return _material;
 	}
-	private static function set_material(value:Material):Material
+	private function set_material(value:Material):Material
 	{
 		if (value != _material)
 		{
-			flush();
+			end();
 			if (value != null)
 			{
 				var tex = value.firstPass.getTexture(0);
@@ -69,11 +75,11 @@ class SpriteBatch
 	 * @param angle the sprite's rotation in radians
 	 * @param tint the sprite's tint color
 	 */
-	public static function draw(material:Material, x:Float, y:Float, width:Float, height:Float,
+	public function draw(material:Material, x:Float, y:Float, width:Float, height:Float,
 		texX:Float, texY:Float, texWidth:Float, texHeight:Float, flipX:Bool=false, flipY:Bool=false,
 		originX:Float=0, originY:Float=0, scaleX:Float=1, scaleY:Float=1, angle:Float=0, ?tint:Color):Void
 	{
-		SpriteBatch.material = material;
+		this.material = material;
 
 		var worldOriginX = x + originX;
 		var worldOriginY = y + originY;
@@ -174,8 +180,15 @@ class SpriteBatch
 	 * @param format How to draw the triangle list, in a fan or strip.
 	 * @param tint The color to tint the vertices.
 	 */
-	public static function drawTriangles(material:Material, verts:Array<Vector2>, uvs:Array<Vector2>, ?format:TriangleFormat, ?tint:Color):Void
+	public function drawTriangles(material:Material, verts:Array<Vector2>, uvs:Array<Vector2>, ?format:TriangleFormat, ?tint:Color):Void
 	{
+		if (_triIndices == null)
+		{
+			// only initialize if this function is called
+			_triIndices = new IntArray(#if !flash MAX_INDICES #end);
+			_triVertices = new FloatArray(#if !flash MAX_VERTICES #end);
+		}
+
 		var r, g, b, a;
 		if (tint != null)
 		{
@@ -189,13 +202,13 @@ class SpriteBatch
 			r = g = b = a = 0;
 		}
 
-		SpriteBatch.material = material;
+		this.material = material;
 
 		// add indices
 		var tris = verts.length - 2;
 		if (_iIndex + tris * 3 > MAX_INDICES)
 		{
-			flush();
+			end();
 		}
 		var index = _index;
 		switch (format)
@@ -238,16 +251,16 @@ class SpriteBatch
 	}
 
 	/**
-	 * Increase the quad count and flush if over the limit.
+	 * Increase the quad count and end if over the limit.
 	 * IMPORTANT!! MUST call addVertex 4 times AFTER this!
 	 */
-	inline public static function addQuad()
+	inline public function addQuad()
 	{
 		if (_numQuads + 1 > MAX_QUADS)
 		{
-			flush();
+			end();
 		}
-		_numQuads += 1; // must increment after in case a flush occurs
+		_numQuads += 1; // must increment after in case a end occurs
 	}
 
 	/**
@@ -262,7 +275,7 @@ class SpriteBatch
 	 * @param b the blue tint value (0-1)
 	 * @param a the alpha value (0-1)
 	 */
-	inline public static function addVertex(x:Float=0, y:Float=0, u:Float=0, v:Float=0, r:Float=1, g:Float=1, b:Float=1, a:Float=1):Void
+	inline public function addVertex(x:Float=0, y:Float=0, u:Float=0, v:Float=0, r:Float=1, g:Float=1, b:Float=1, a:Float=1):Void
 	{
 		_quadVertices[_vIndex++] = x;
 		_quadVertices[_vIndex++] = y;
@@ -274,6 +287,10 @@ class SpriteBatch
 		_quadVertices[_vIndex++] = a;
 	}
 
+	inline public function begin()
+	{
+	}
+
 	/**
 	 * Flushes the current SpriteBatch.
 	 * This is automatically called on several conditions:
@@ -281,7 +298,7 @@ class SpriteBatch
 	 *   2. The material has been changed
 	 *   3. End of the scene's draw frame
 	 */
-	public static function flush():Void
+	public function end():Void
 	{
 		var drawQuads = _numQuads > 0,
 			drawTris = _iIndex > 0;
@@ -303,7 +320,7 @@ class SpriteBatch
 			if (_quadVertexBuffer == null)
 			{
 				_quadVertexBuffer = Renderer.createBuffer(8);
-				// create static quad index buffer
+				// create quad index buffer
 				var indices = new IntArray(#if !flash MAX_INDICES #end);
 				var i = 0, j = 0;
 				while (i < MAX_INDICES)
@@ -324,14 +341,11 @@ class SpriteBatch
 			Renderer.updateBuffer(_quadVertices, STATIC_DRAW);
 		}
 
-		// grab the camera transform
-		var cameraTransform = Engine.scene.camera.transform;
-
 		// loop material passes
 		for (pass in material.passes)
 		{
 			pass.use();
-			Renderer.setMatrix(pass.shader.uniform("uMatrix"), cameraTransform);
+			Renderer.setMatrix(pass.shader.uniform("uMatrix"), transform);
 			Renderer.setAttribute(pass.shader.attribute("aVertexPosition"), 0, 2);
 			Renderer.setAttribute(pass.shader.attribute("aTexCoord"), 2, 2);
 			Renderer.setAttribute(pass.shader.attribute("aColor"), 4, 4);
@@ -352,25 +366,25 @@ class SpriteBatch
 		_numQuads = _vIndex = _iIndex = _index = 0;
 	}
 
-	private static var _index:Int = 0;
-	private static var _iIndex:Int = 0;
-	private static var _vIndex:Int = 0;
-	private static var _numQuads:Int = 0;
+	private var _index:Int = 0;
+	private var _iIndex:Int = 0;
+	private var _vIndex:Int = 0;
+	private var _numQuads:Int = 0;
 
 	private static inline var MAX_VERTICES = 16384;
 	private static inline var MAX_INDICES = 4092;
 	private static inline var MAX_QUADS = 682; // MAX_INDICES / 6
 
-	private static var _triIndices = new IntArray(#if !flash MAX_INDICES #end);
-	private static var _triIndexBuffer:IndexBuffer;
-	private static var _quadIndexBuffer:IndexBuffer;
+	private var _triIndices:IntArray;
+	private var _triIndexBuffer:IndexBuffer;
+	private var _quadIndexBuffer:IndexBuffer;
 
-	private static var _quadVertices = new FloatArray(#if !flash MAX_VERTICES #end);
-	private static var _quadVertexBuffer:VertexBuffer;
+	private var _quadVertices:FloatArray;
+	private var _quadVertexBuffer:VertexBuffer;
 
-	private static var _triVertices = new FloatArray(#if !flash MAX_VERTICES #end);
-	private static var _triVertexBuffer:VertexBuffer;
+	private var _triVertices:FloatArray;
+	private var _triVertexBuffer:VertexBuffer;
 
-	private static var _material:Material;
+	private var _material:Material;
 
 }

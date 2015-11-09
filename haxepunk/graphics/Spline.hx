@@ -85,40 +85,40 @@ class Spline extends Image
 	}
 
 	@:dox(hide)
-    override public function draw(offset:Vector3):Void
+    override public function draw(batch:SpriteBatch, offset:Vector3):Void
     {
         var r = tint.r,
 			g = tint.g,
 			b = tint.b,
 			a = tint.a;
 
-		SpriteBatch.material = material;
+		batch.material = material;
 
 		// must be calculated AFTER setting material since that can change the texture
-		var u1 = clipRect.left * SpriteBatch.inverseTexWidth,
-			u2 = clipRect.right * SpriteBatch.inverseTexWidth,
-			v1 = clipRect.top * SpriteBatch.inverseTexHeight,
-			v2 = clipRect.bottom * SpriteBatch.inverseTexHeight;
+		var u1 = clipRect.left * batch.inverseTexWidth,
+			u2 = clipRect.right * batch.inverseTexWidth,
+			v1 = clipRect.top * batch.inverseTexHeight,
+			v2 = clipRect.bottom * batch.inverseTexHeight;
 
 		// TODO: calculate uv coords from section of texture?
 		var point:Vector3,
 			normal:Vector3;
 		for (i in 1..._points.length)
 		{
-			SpriteBatch.addQuad();
+			batch.addQuad();
 			// previous
 			point = _points[i-1];
 			normal = _normals[i-1];
-			SpriteBatch.addVertex(offset.x + point.x + normal.x,
+			batch.addVertex(offset.x + point.x + normal.x,
 				offset.y + point.y + normal.y, u1, v2, r, g, b, a);
-			SpriteBatch.addVertex(offset.x + point.x - normal.x,
+			batch.addVertex(offset.x + point.x - normal.x,
 				offset.y + point.y - normal.y, u1, v1, r, g, b, a);
 			// current
 			point = _points[i];
 			normal = _normals[i];
-			SpriteBatch.addVertex(offset.x + point.x - normal.x,
+			batch.addVertex(offset.x + point.x - normal.x,
 				offset.y + point.y - normal.y, u2, v1, r, g, b, a);
-			SpriteBatch.addVertex(offset.x + point.x + normal.x,
+			batch.addVertex(offset.x + point.x + normal.x,
 				offset.y + point.y + normal.y, u2, v2, r, g, b, a);
 		}
     }
