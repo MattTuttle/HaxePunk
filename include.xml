@@ -11,6 +11,7 @@
 	<library type="material" handler="HaxePunk" />
 
 	<haxelib name="lime" />
+	<haxelib name="mint" />
 	<haxelib name="format" />
 
 	<icon path="assets/HaxePunk.svg" />

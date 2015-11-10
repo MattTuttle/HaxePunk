@@ -16,8 +16,8 @@ class Time
 	public static var frames(default, null):Int = 0;
 
 	/** The current time in miliseconds. */
-	public static var current(get, null):Float;
-	private inline static function get_current():Float { return haxe.Timer.stamp(); }
+	public static var now(get, null):Float;
+	private inline static function get_now():Float { return haxe.Timer.stamp(); }
 
 	/** The timescale applied to Time.elapsed. */
 	public static var scale:Float;
@@ -34,7 +34,7 @@ class Time
 	 */
 	public inline static function since(time:Float):Float
 	{
-		return Time.current - time;
+		return Time.now - time;
 	}
 
 }

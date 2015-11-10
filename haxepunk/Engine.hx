@@ -74,7 +74,7 @@ class Engine extends Application
 
 	override public function render(renderer:lime.graphics.Renderer):Void
 	{
-		var startTime = Time.current;
+		var startTime = Time.now;
 		scene.draw();
 		Time.renderFrameTime = Time.since(startTime);
 
@@ -87,7 +87,7 @@ class Engine extends Application
 
 	override public function update(deltaTime:Int):Void
 	{
-		var startTime = Time.current;
+		var startTime = Time.now;
 		Time.elapsed = deltaTime / 1000.0;
 		Time.totalElapsed += Time.elapsed;
 		Time.frames += 1;

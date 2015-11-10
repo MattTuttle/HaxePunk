@@ -78,15 +78,16 @@ class Color
 		return Math.max(r, Math.max(g, b));
 	}
 
-	public function fromRGB(r:Float, g:Float, b:Float, a:Float=1.0)
+	public function fromRGB(r:Float, g:Float, b:Float, a:Float=1.0):Color
 	{
 		this.r = r;
 		this.g = g;
 		this.b = b;
 		this.a = a;
+		return this;
 	}
 
-	public function fromInt(value:Int, withAlpha:Bool=false):Void
+	public function fromInt(value:Int, withAlpha:Bool=false):Color
 	{
 		if (withAlpha)
 		{
@@ -102,6 +103,7 @@ class Color
 			b = (value & 0xFF) / 0xFF;
 			a = 1;
 		}
+		return this;
 	}
 
 	/**
