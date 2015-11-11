@@ -6,6 +6,8 @@
 *.build
 
 # font files
+*/font/*.svg
+*.woff
 *.eot
 *.hash
 

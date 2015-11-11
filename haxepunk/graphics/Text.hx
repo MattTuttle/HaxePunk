@@ -14,6 +14,7 @@ typedef GlyphImages = Map<lime.text.Glyph, lime.graphics.Image>;
 class Font
 {
 
+	public static var DEFAULT_GLYPHS:String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^`'\"/\\&*()[]{}<>|:;_-+=?,. ";
 	public var font(default, null):lime.text.Font;
 
 	public static function fromFile(asset:String)
@@ -39,8 +40,9 @@ class Font
 
 	private function loadGlyphs(size:Int):Void
 	{
+#if (cpp || neko || nodejs)
 		if (font == null) return;
-		var images = font.renderGlyphs(font.getGlyphs(), size);
+		var images = font.renderGlyphs(font.getGlyphs(DEFAULT_GLYPHS), size);
 		if (images == null)
 		{
 			throw "Failed to load font glyphs";
@@ -54,6 +56,7 @@ class Font
 			_textures.set(size, texture);
 		}
 		_sizes.set(size, images);
+#end
 	}
 
 	public function getTexture(size:Int):Texture
@@ -174,22 +177,25 @@ class Text extends Graphic
 	private function layout()
 	{
 		// hoisted variables
-		var x:Float, y:Float, line:String, image;
+		var x:Float, y:Float, line:String, image,
+			idx:Int = 0;
+		_chars = [];
 		// TODO: handle carriage return!!
 		var lines = _textLayout.text.split("\n");
-		_rects = [];
+		var positions = _textLayout.positions;
 		for (i in 0...lines.length)
 		{
 			line = lines[i];
 			// TODO: remove magic number (lineHeight * 0.8)
 			y = lineHeight * i + lineHeight * 0.8;
 			x = 0.0;
-			for (p in _textLayout.positions)
+			for (j in 0...positions.length)
 			{
+				var p = positions[j];
 				image = _images.get(p.glyph);
 				if (image != null)
 				{
-					_rects.push({
+					_chars[idx++] = {
 						x: x + p.offset.x + image.x,
 						y: y + p.offset.y - image.y,
 						u: image.offsetX,
@@ -197,7 +203,7 @@ class Text extends Graphic
 						w: image.width,
 						h: image.height,
 						c: color
-					});
+					};
 				}
 
 				x += p.advance.x;
@@ -217,9 +223,9 @@ class Text extends Graphic
 		var r,
 			x = offset.x - origin.x,
 			y = offset.y - origin.y;
-		for (i in 0..._rects.length)
+		for (i in 0..._chars.length)
 		{
-			r = _rects[i];
+			r = _chars[i];
 			batch.draw(material,
 				x + r.x, y + r.y, r.w, r.h, // position
 				r.u, r.v, r.w, r.h, // texture coords
@@ -227,7 +233,7 @@ class Text extends Graphic
 		}
 	}
 
-	private var _rects:Array<{x:Float, y:Float, u:Float, v:Float, w:Float, h:Float, c:Color}>;
+	private var _chars:Array<{x:Float, y:Float, u:Float, v:Float, w:Float, h:Float, c:Color}>;
 	private var _textLayout:TextLayout;
 	private var _font:Font;
 	private var _texture:Texture;

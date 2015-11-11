@@ -357,6 +357,7 @@ class Scene
 	 */
 	public function capture(filename:String):Void
 	{
+#if !(html5 || flash)
 		try {
 			var file = sys.io.File.write(filename);
 			var format = filename.substr(filename.lastIndexOf(".") + 1);
@@ -367,6 +368,7 @@ class Scene
 		} catch (e:Dynamic) {
 			trace("Failed to capture screen: " + e);
 		}
+#end
 	}
 
 	/**
