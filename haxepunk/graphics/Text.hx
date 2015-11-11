@@ -123,87 +123,15 @@ class Text extends Graphic
 	 */
 	public var text(default, set):String;
 	private function set_text(value:String):String {
-		#if !flash
 		if (text != value)
 		{
-			if (value.trim() == "")
-			{
-				_numTriangles = 0;
-			}
-			else if (text != null && text.startsWith(value))
-			{
-				// don't recreate the buffer if it's the same
-				_numTriangles = value.replace("\n", "").length * 2;
-			}
-			else
-			{
-				_textLayout.text = value;
-				var x:Float, y:Float;
-				var lines = value.split("\n");
-				var vertIndex = 0;
-				_numTriangles = 0;
-				for (i in 0...lines.length)
-				{
-					var line = lines[i];
-					// TODO: remove magic number (lineHeight * 0.8)
-					y = lineHeight * i + lineHeight * 0.8;
-					x = 0.0;
-					for (p in _textLayout.positions)
-					{
-						var image = _images.get(p.glyph);
-						if (image != null)
-						{
-							// uv
-							var ratio  = 1 / _texture.width;
-							var left   = image.offsetX * ratio;
-							var right  = left + image.width * ratio;
-							ratio      = 1 / _texture.height;
-							var top    = image.offsetY * ratio;
-							var bottom = top + image.height * ratio;
+			// replace tabs with appropriate spaces
+			var tab = "";
+			for (i in 0...tabWidth) tab += " ";
+			value = value.replace("\t", tab);
 
-							var pointLeft = x + p.offset.x + image.x;
-							var pointTop = y + p.offset.y - image.y;
-							var pointRight = pointLeft + image.width;
-							var pointBottom = pointTop + image.height;
-
-							_vertices[vertIndex++] = pointRight;
-							_vertices[vertIndex++] = pointBottom;
-							_vertices[vertIndex++] = right;
-							_vertices[vertIndex++] = bottom;
-
-							_vertices[vertIndex++] = pointLeft;
-							_vertices[vertIndex++] = pointBottom;
-							_vertices[vertIndex++] = left;
-							_vertices[vertIndex++] = bottom;
-
-							_vertices[vertIndex++] = pointRight;
-							_vertices[vertIndex++] = pointTop;
-							_vertices[vertIndex++] = right;
-							_vertices[vertIndex++] = top;
-
-							_vertices[vertIndex++] = pointLeft;
-							_vertices[vertIndex++] = pointTop;
-							_vertices[vertIndex++] = left;
-							_vertices[vertIndex++] = top;
-
-							_numTriangles += 2;
-#if debug
-							// TODO: remove this limitation
-							if (_numTriangles > 1024) throw "Text doesn't support more than 512 characters currently";
-#end
-						}
-
-						x += p.advance.x;
-						y -= p.advance.y;
-					}
-					if (x > width) width = x;
-				}
-				height = lineHeight * lines.length;
-				Renderer.bindBuffer(_vertexBuffer);
-				Renderer.updateBuffer(_vertices, STATIC_DRAW);
-			}
+			_textLayout.text = value;
 		}
-		#end
 		return text = value;
 	}
 
@@ -215,8 +143,6 @@ class Text extends Graphic
 	public function new(text:String, size:Int=14)
 	{
 		super();
-		_vertices = new FloatArray(#if !flash 8192 #end);
-		if (_indexBuffer == null) createIndices();
 		color = new Color();
 
 		#if flash
@@ -232,11 +158,9 @@ class Text extends Graphic
 		#end
 
 		var shader = new Shader(vert, frag);
-		material = Material.fromAsset("hxp/materials/text.material");
+		material = new Material();
 		var pass = material.firstPass;
 		pass.shader = shader;
-
-		_vertexBuffer = Renderer.createBuffer(4);
 
 		// Must be set AFTER material is created
 		this.lineHeight = this.size = size;
@@ -249,66 +173,42 @@ class Text extends Graphic
 	 */
 	override public function draw(batch:SpriteBatch, offset:Vector3):Void
 	{
-		#if !flash
-		if (_numTriangles <= 0 || _indexBuffer == null || _vertexBuffer == null) return;
-
-		// finish drawing whatever came before the text area
-		batch.end();
-
-		_drawPosition.x = -origin.x;
-		_drawPosition.y = -origin.y;
-		_drawPosition.z = 0;
-		_drawPosition *= scale;
-		_drawPosition += offset;
-
-		_matrix.identity();
-		_matrix.translateVector3(_drawPosition);
-		if (angle != 0) _matrix.rotateZ(angle);
-		_matrix.multiply(batch.transform);
-
-		Renderer.bindBuffer(_vertexBuffer);
-		for (pass in material.passes)
+		// hoisted variables
+		var x:Float, y:Float, line:String, image;
+		// TODO: handle carriage return!!
+		var lines = text.split("\n");
+		batch.material = material;
+		var delta = offset - origin;
+		for (i in 0...lines.length)
 		{
-			pass.use();
-			Renderer.setMatrix(pass.shader.uniform("uMatrix"), _matrix);
-			Renderer.setColor(pass.shader.uniform("uColor"), color);
-			Renderer.setAttribute(pass.shader.attribute("aVertexPosition"), 0, 2);
-			Renderer.setAttribute(pass.shader.attribute("aTexCoord"), 2, 2);
-			Renderer.draw(_indexBuffer, _numTriangles);
+			line = lines[i];
+			// TODO: remove magic number (lineHeight * 0.8)
+			y = lineHeight * i + lineHeight * 0.8;
+			x = 0.0;
+			for (p in _textLayout.positions)
+			{
+				image = _images.get(p.glyph);
+				if (image != null)
+				{
+					batch.draw(material,
+						delta.x + x + p.offset.x + image.x,
+						delta.y + y + p.offset.y - image.y,
+						image.width, image.height,
+						image.offsetX, image.offsetY, image.width, image.height,
+						false, false, origin.x, origin.y, scale.x, scale.y, 0, color);
+				}
+
+				x += p.advance.x;
+				y -= p.advance.y;
+			}
+			if (x > width) width = x;
 		}
-
-		#end
-	}
-
-	private function createIndices()
-	{
-		var maxIndices = 4092;
-		var indices = new IntArray(#if !flash maxIndices #end);
-		var i = 0, j = 0;
-		while (i < maxIndices)
-		{
-			indices[i++] = j;
-			indices[i++] = j+1;
-			indices[i++] = j+2;
-
-			indices[i++] = j+1;
-			indices[i++] = j+2;
-			indices[i++] = j+3;
-			j += 4;
-		}
-		_indexBuffer = Renderer.updateIndexBuffer(indices, STATIC_DRAW, _indexBuffer);
+		height = lineHeight * lines.length;
 	}
 
 	private var _textLayout:TextLayout;
 	private var _font:Font;
 	private var _texture:Texture;
-
 	private var _images:GlyphImages;
-	private var _vertices:FloatArray;
-	private var _vertexBuffer:VertexBuffer;
-	private var _numTriangles:Int = 0;
-
-	private static var _indexBuffer:IndexBuffer;
-	private static var _drawPosition = new Vector3();
 
 }
