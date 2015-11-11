@@ -32,6 +32,16 @@ class GUIEntity extends Entity
 			w_min: 256, h_min:256,
 			collapsible:true
 		});
+
+		var button = new mint.Button({
+            parent: canvas,
+            name: 'button1',
+            x: 10, y: 52, w: 60, h: 32,
+            text: 'mint',
+            text_size: 14,
+            options: { label: { color:new Color().fromInt(0x9dca63) } },
+            onclick: function(e,c) {trace('mint button! ${Time.now}' );}
+        });
 	}
 
 	override private function set_scene(value:Scene):Scene {

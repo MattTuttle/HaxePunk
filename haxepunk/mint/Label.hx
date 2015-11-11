@@ -3,18 +3,28 @@ package haxepunk.mint;
 import haxepunk.math.*;
 import haxepunk.graphics.*;
 import haxepunk.scene.Entity;
+import mint.core.Macros.*;
 
 class Label extends mint.render.Render
 {
+
+    public var color_hover:Color;
+    public var color:Color;
 
     public function new(render:HaxePunkMintRender, control:mint.Label)
     {
         super(render, control);
         var opt = control.options.options;
 
+        color = def(opt.color, new Color().fromInt(0x373737));
+        color_hover = def(opt.color_hover, new Color().fromInt(0x9dca63));
+
         text = new Text(control.text);
-        if (opt.color != null) text.color = opt.color;
+        text.color = color;
         entity = render.scene.addGraphic(text, 0, control.x, control.y);
+
+        control.onmouseenter.listen(function(e,c){ text.color = color_hover; });
+        control.onmouseleave.listen(function(e,c){ text.color = color; });
     }
 
     function ontext(value:String)

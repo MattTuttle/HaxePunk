@@ -20,8 +20,8 @@ class HaxePunkMintRender extends mint.render.Rendering
             case mint.Label:        new haxepunk.mint.Label(this, cast control);
             case mint.Window:       new haxepunk.mint.Window(this, cast control);
             case mint.Panel:        new haxepunk.mint.Canvas(this, cast control);
-            /*case mint.Button:       new haxepunk.mint.Button(this, cast control);
-            case mint.Image:        new haxepunk.mint.Image(this, cast control);
+            case mint.Button:       new haxepunk.mint.Button(this, cast control);
+            /*case mint.Image:        new haxepunk.mint.Image(this, cast control);
             case mint.List:         new haxepunk.mint.List(this, cast control);
             case mint.Scroll:       new haxepunk.mint.Scroll(this, cast control);
             case mint.Checkbox:     new haxepunk.mint.Checkbox(this, cast control);
