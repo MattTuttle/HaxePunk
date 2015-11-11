@@ -131,6 +131,7 @@ class Text extends Graphic
 			value = value.replace("\t", tab);
 
 			_textLayout.text = value;
+			layout();
 		}
 		return text = value;
 	}
@@ -168,17 +169,15 @@ class Text extends Graphic
 	}
 
 	/**
-	 * Draw the Text object to the screen
-	 * @param offset the offset of the Text object usually set from and Entity
+	 * Calculate the layout values for every character.
 	 */
-	override public function draw(batch:SpriteBatch, offset:Vector3):Void
+	private function layout()
 	{
 		// hoisted variables
 		var x:Float, y:Float, line:String, image;
 		// TODO: handle carriage return!!
-		var lines = text.split("\n");
-		batch.material = material;
-		var delta = offset - origin;
+		var lines = _textLayout.text.split("\n");
+		_rects = [];
 		for (i in 0...lines.length)
 		{
 			line = lines[i];
@@ -190,12 +189,15 @@ class Text extends Graphic
 				image = _images.get(p.glyph);
 				if (image != null)
 				{
-					batch.draw(material,
-						delta.x + x + p.offset.x + image.x,
-						delta.y + y + p.offset.y - image.y,
-						image.width, image.height,
-						image.offsetX, image.offsetY, image.width, image.height,
-						false, false, origin.x, origin.y, scale.x, scale.y, 0, color);
+					_rects.push({
+						x: x + p.offset.x + image.x,
+						y: y + p.offset.y - image.y,
+						u: image.offsetX,
+						v: image.offsetY,
+						w: image.width,
+						h: image.height,
+						c: color
+					});
 				}
 
 				x += p.advance.x;
@@ -206,6 +208,26 @@ class Text extends Graphic
 		height = lineHeight * lines.length;
 	}
 
+	/**
+	 * Draw the Text object to the screen
+	 * @param offset the offset of the Text object usually set from and Entity
+	 */
+	override public function draw(batch:SpriteBatch, offset:Vector3):Void
+	{
+		var r,
+			x = offset.x - origin.x,
+			y = offset.y - origin.y;
+		for (i in 0..._rects.length)
+		{
+			r = _rects[i];
+			batch.draw(material,
+				x + r.x, y + r.y, r.w, r.h, // position
+				r.u, r.v, r.w, r.h, // texture coords
+				false, false, origin.x, origin.y, scale.x, scale.y, 0, r.c);
+		}
+	}
+
+	private var _rects:Array<{x:Float, y:Float, u:Float, v:Float, w:Float, h:Float, c:Color}>;
 	private var _textLayout:TextLayout;
 	private var _font:Font;
 	private var _texture:Texture;
