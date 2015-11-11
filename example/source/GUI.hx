@@ -4,13 +4,14 @@ import haxepunk.inputs.*;
 import haxepunk.graphics.*;
 import haxepunk.utils.*;
 import haxepunk.math.*;
+import haxepunk.scene.*;
 
-class GUIEntity extends haxepunk.scene.Entity
+class GUIEntity extends Entity
 {
 	public function new()
 	{
 		super();
-	    var rendering = new HaxePunkMintRender();
+	    rendering = new HaxePunkMintRender();
 
 		canvas = new mint.Canvas({
             name:'canvas',
@@ -33,6 +34,11 @@ class GUIEntity extends haxepunk.scene.Entity
 		});
 	}
 
+	override private function set_scene(value:Scene):Scene {
+		rendering.scene = value;
+		return super.set_scene(value);
+	}
+
 	override public function draw(batch:SpriteBatch)
 	{
 		super.draw(batch);
@@ -41,17 +47,26 @@ class GUIEntity extends haxepunk.scene.Entity
 
 	override public function update()
 	{
-		var pos = Engine.scene.camera.screenToCamera(Mouse.position);
-		canvas.mousemove({
+		var pos = scene.camera.screenToCamera(Mouse.position);
+		var event:mint.types.Types.MouseEvent = {
 			timestamp: Time.now,
-			state: move,
 			x: Std.int(pos.x),
 			y: Std.int(pos.y),
 			xrel: Std.int(last.x - pos.x),
 			yrel: Std.int(last.y - pos.y),
 			button: Input.check(MouseButton.LEFT) ? left : none,
-			bubble: false
-		});
+			state: none, // isn't used...
+			bubble: false // not used...
+		};
+		if (Input.pressed(MouseButton.LEFT) > 0)
+		{
+			canvas.mousedown(event);
+		}
+		else if (Input.released(MouseButton.LEFT) > 0)
+		{
+			canvas.mouseup(event);
+		}
+		canvas.mousemove(event);
 		last = pos;
 
 		canvas.update(Time.elapsed);
@@ -59,6 +74,7 @@ class GUIEntity extends haxepunk.scene.Entity
 
 	private var last:Vector3 = Vector3.ZERO;
 	private var canvas:mint.Canvas;
+	private var rendering:HaxePunkMintRender;
 
 }
 

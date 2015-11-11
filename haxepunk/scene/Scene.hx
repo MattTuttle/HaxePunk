@@ -9,6 +9,8 @@ import haxepunk.math.*;
 import haxepunk.renderers.Renderer;
 import haxepunk.graphics.SpriteBatch;
 
+using haxepunk.utils.ArrayUtils;
+
 class Scene
 {
 
@@ -29,7 +31,9 @@ class Scene
 		spriteBatch = new SpriteBatch();
 
 		_added = new Array<Entity>();
+		_removed = new Array<Entity>();
 		_entities = new Array<Entity>();
+		_layerList = new Array<Entity>();
 		_groups = new StringMap<Array<Entity>>();
 		_entityNames = new StringMap<Entity>();
 		_frameList = new Array<Float>();
@@ -330,12 +334,10 @@ class Scene
 	 */
 	public function draw()
 	{
-		var e;
 		Renderer.clear(camera.clearColor);
 		spriteBatch.begin(camera.transform);
-		for (i in 0..._entities.length)
+		for (e in _layerList)
 		{
-			e = _entities[i];
 			if (e.drawable) e.draw(spriteBatch);
 		}
 		spriteBatch.end();
@@ -381,53 +383,53 @@ class Scene
 	/** @private Adds, updates, and removes entities from the scene */
 	private inline function updateEntities():Void
 	{
-		var removed = new Array<Entity>(),
-			e:Entity;
+		var e:Entity;
 
 		// add any entities for this update
-		for (e in _added)
+		for (i in 0..._added.length)
 		{
+			e = _added[i];
 			_entities.push(e);
+			_layerList.insertSortedKey(e, sortByLayer);
 			e.scene = this;
 			if (e.group != "") addGroup(e);
 			if (e.name != "") registerName(e);
 		}
-		_added.splice(0, _added.length); // clear added array
+		_added.clear();
 
-		var layerDirty = false;
+		// update every entity
 		for (i in 0..._entities.length)
 		{
 			e = _entities[i];
 			if (e.remove)
 			{
-				removed.push(e);
+				_removed.push(e);
 			}
 			else
 			{
-				var layer = e.layer;
 				e.update();
 				// remove need to call super.update() on base Entity
 				if (e.graphic != null) e.graphic.update();
-				if (layer != e.layer)
+				// remove and add entity if layer changed
+				if (e.layer != e.z)
 				{
-					layerDirty = true;
+					e.z = e.layer; // keep z and layer matching
+					_layerList.remove(e);
+					_layerList.insertSortedKey(e, sortByLayer);
 				}
 			}
 		}
-		if (layerDirty)
-		{
-			// TODO: only sort entities that changed
-			_entities.sort(sortByLayer);
-		}
 
 		// remove any entities no longer used
-		for (e in removed)
+		for (i in 0..._removed.length)
 		{
+			e = _removed[i];
 			e.scene = null;
 			_entities.remove(e);
 			if (e.group != "") removeGroup(e);
 			if (e.name != "") unregisterName(e);
 		}
+		_removed.clear();
 	}
 
 	private var _frameLast:Float = 0;
@@ -435,7 +437,9 @@ class Scene
 	private var _frameList:Array<Float>;
 
 	private var _added:Array<Entity>;
+	private var _removed:Array<Entity>;
 	private var _entities:Array<Entity>;
+	private var _layerList:Array<Entity>;
 	private var _groups:StringMap<Array<Entity>>;
 	private var _entityNames:StringMap<Entity>;
 

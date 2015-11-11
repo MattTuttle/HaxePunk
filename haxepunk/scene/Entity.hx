@@ -20,9 +20,8 @@ class Entity extends SceneNode
 		return graphic = value;
 	}
 
-	public var layer(get, set):Float;
-	private inline function get_layer():Float { return position.z; }
-	private inline function set_layer(value:Float) { return position.z = value; }
+	public var layer(default, set):Float;
+	private inline function set_layer(value:Float) { return layer = value; }
 
 	/**
 	 * Generate world boundaries based on applied mask

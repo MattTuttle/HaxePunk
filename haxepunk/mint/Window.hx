@@ -1,6 +1,7 @@
 package haxepunk.mint;
 
 import haxepunk.math.*;
+import haxepunk.scene.*;
 
 class Window extends mint.render.Render
 {
@@ -10,20 +11,19 @@ class Window extends mint.render.Render
         super(render, control);
         var opt = control.options.options;
 
-        var e = new haxepunk.scene.Entity();
+        entity = new haxepunk.scene.Entity();
 
         window = new BoxShape(new Rectangle(control.x, control.y, control.w, control.h), opt.color);
-        e.addGraphic(window);
+        entity.addGraphic(window);
 
         titlebar = new BoxShape(new Rectangle(control.title.x, control.title.y, control.title.w, control.title.h), opt.color_titlebar);
-        e.addGraphic(titlebar);
+        entity.addGraphic(titlebar);
 
-        Engine.scene.add(e);
+        render.scene.add(entity);
     }
 
     override function onbounds()
     {
-        trace("hi");
         var wind:mint.Window = cast control;
         window.rect.x = wind.x;
         window.rect.y = wind.y;
@@ -36,6 +36,17 @@ class Window extends mint.render.Render
         titlebar.rect.height = wind.title.h;
     }
 
+    override function onvisible(visible:Bool)
+    {
+        entity.drawable = visible;
+    }
+
+    override function ondepth(depth:Float)
+    {
+        entity.layer = depth;
+    }
+
+    private var entity:Entity;
     private var window:BoxShape;
     private var titlebar:BoxShape;
 

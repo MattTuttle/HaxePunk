@@ -3,11 +3,15 @@ package haxepunk.mint;
 import mint.Control;
 import mint.types.Types;
 
-class HaxePunkMintRender extends mint.render.Rendering {
+class HaxePunkMintRender extends mint.render.Rendering
+{
+
+    public var scene:haxepunk.scene.Scene;
 
     public function new()
     {
         super();
+        scene = Engine.scene;
     }
 
     override function get<T:Control, T1>( type:Class<T>, control:T ) : T1 {

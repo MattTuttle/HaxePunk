@@ -257,7 +257,7 @@ class Text extends Graphic
 
 		_drawPosition.x = -origin.x;
 		_drawPosition.y = -origin.y;
-		// _drawPosition.z = 0;
+		_drawPosition.z = 0;
 		_drawPosition *= scale;
 		_drawPosition += offset;
 
