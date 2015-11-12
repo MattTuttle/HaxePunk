@@ -31,11 +31,6 @@ class Label extends BaseRender
         visual.text = value;
     }
 
-    override function onclip(disable:Bool, x:Float, y:Float, w:Float, h:Float)
-    {
-
-    }
-
     private var visual:Text;
 
 }

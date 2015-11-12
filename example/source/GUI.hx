@@ -48,11 +48,40 @@ class GUIEntity extends Entity
 			x:10, y:30, w:236, h:236
 		});
 
+		new mint.Checkbox({
+			parent: window, name: 'checkbox',
+			x: 10, y: 280
+		});
+
 		new mint.Image({
             parent: scroll, name: 'icon_2',
             x:0, y:0, w:512, h:512,
             path: 'assets/lime.png'
         });
+
+		var platform = new mint.Dropdown({
+            parent: canvas,
+            name: 'dropdown', text: 'Platform...',
+            options: { color:new Color().fromInt(0x343439) },
+            x:10, y:256, w:150, h:24,
+        });
+
+        var plist = ['windows', 'linux', 'ios', 'android', 'web'];
+
+        inline function add_plat(name:String) {
+            var first = plist.indexOf(name) == 0;
+            platform.add_item(
+                new mint.Label({
+                    parent: platform, text: '$name',
+                    name: 'plat-$name', w:125, h:24, text_size: 14
+                }),
+                10, (first) ? 0 : 10
+            );
+        }
+
+        for(p in plist) add_plat(p);
+
+		platform.onselect.listen(function(idx,_,_){ platform.label.text = plist[idx]; });
 	}
 
 	override private function set_scene(value:Scene):Scene {
