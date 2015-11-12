@@ -9,10 +9,10 @@ class HaxePunkMintRender extends mint.render.Rendering
     public var scene:haxepunk.scene.Scene;
     public var depth:Float = 0;
 
-    public function new()
+    public function new(window:haxepunk.Window)
     {
         super();
-        scene = HXP.window.scene;
+        scene = window.scene;
     }
 
     override function get<T:Control, T1>( type:Class<T>, control:T ) : T1 {

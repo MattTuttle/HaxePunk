@@ -58,8 +58,8 @@ class Player extends Entity
 
 		position += velocity;
 
-		scene.camera.position.x = position.x - HXP.window.width / 2;
-		scene.camera.position.y = position.y - HXP.window.height / 2;
+		scene.camera.position.x = position.x - scene.camera.halfWidth;
+		scene.camera.position.y = position.y - scene.camera.halfHeight;
 	}
 
 	private var sprite:Spritemap;

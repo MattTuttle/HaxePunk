@@ -8,10 +8,10 @@ import haxepunk.mint.HaxePunkMintRender;
 
 class GUIEntity extends Entity
 {
-	public function new()
+	public function new(rendering:HaxePunkMintRender)
 	{
 		super();
-	    rendering = new HaxePunkMintRender();
+		this.rendering = rendering;
 
 		canvas = new mint.Canvas({
             name:'canvas',
@@ -133,8 +133,8 @@ class GUI extends Engine
 
 	override public function ready(window:Window)
 	{
-		window.scene.add(new GUIEntity());
-		if (++numWindows < 2) addWindow(320, 240);
+		window.scene.add(new GUIEntity(new HaxePunkMintRender(window)));
+		if (++numWindows < 2) addWindow(640, 480);
 	}
 
 	private var numWindows:Int = 0;

@@ -16,6 +16,8 @@ class GLRenderer
 
 	public static inline var MAX_BUFFER_SIZE:Int = 65535;
 
+	public static var window:Window;
+
 	public static function clear(color:Color):Void
 	{
 		GL.clearColor(color.r, color.g, color.b, color.a);
@@ -77,14 +79,16 @@ class GLRenderer
 		}
 	}
 
-	public static function capture(x:Int, y:Int, width:Int, height:Int):Image
+	public static function capture(rect:Rectangle):Image
 	{
+		var width = Std.int(rect.width),
+			height = Std.int(rect.height);
 		var bytesPerRow = width * 4;
 		var pixels = new UInt8Array(height * bytesPerRow);
-		GL.readPixels(x, y, width, height, GL.RGBA, GL.UNSIGNED_BYTE, pixels);
+		GL.readPixels(Std.int(rect.x), Std.int(rect.y), width, height, GL.RGBA, GL.UNSIGNED_BYTE, pixels);
 		// flip result vertically
 		var tmp, row = 0, flippedRow = height * bytesPerRow;
-		for (y in 0...Std.int(height / 2))
+		for (y in 0...Std.int(rect.height / 2))
 		{
 			flippedRow -= bytesPerRow; // start at beginning of row
 			for (x in 0...bytesPerRow)
@@ -250,10 +254,10 @@ class GLRenderer
 		}
 		else
 		{
-			var scale = HXP.window.pixelScale; // retina window scale
+			var scale = window.pixelScale; // retina window scale
 			GL.enable(GL.SCISSOR_TEST);
 			// flip from top left to bottom left
-			GL.scissor(Std.int(clip.x * scale), Std.int((HXP.window.height - (clip.y + clip.height)) * scale),
+			GL.scissor(Std.int(clip.x * scale), Std.int((window.height - (clip.y + clip.height)) * scale),
 				Std.int(clip.width * scale), Std.int(clip.height * scale));
 		}
 	}

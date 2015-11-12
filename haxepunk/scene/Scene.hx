@@ -1,7 +1,6 @@
 package haxepunk.scene;
 
 import haxe.ds.StringMap;
-import haxepunk.debug.Console;
 import haxepunk.graphics.Graphic;
 import haxepunk.graphics.Draw;
 import haxepunk.masks.Mask;
@@ -25,6 +24,11 @@ class Scene
 	 * The scene's sprite batcher.
 	 */
 	public var spriteBatch(default, null):SpriteBatch;
+
+	/**
+	 * An average fps of the last several frames.
+	 */
+	public var frameRate(default, null):Float = 0;
 
 	public function new(width:Int=0, height:Int=0)
 	{
@@ -342,13 +346,11 @@ class Scene
 			if (e.drawable) e.draw(spriteBatch);
 		}
 		spriteBatch.end();
-		if (Console.enabled) Console.instance.draw(this);
-		Renderer.present();
 
 		var t = Time.now * 1000;
 		_frameListSum += _frameList[_frameList.length] = Std.int(t - _frameLast);
 		if (_frameList.length > 10) _frameListSum -= _frameList.shift();
-		HXP.frameRate = 1000 / (_frameListSum / _frameList.length);
+		frameRate = 1000 / (_frameListSum / _frameList.length);
 		_frameLast = t;
 	}
 
@@ -360,9 +362,10 @@ class Scene
 	{
 #if !(html5 || flash)
 		try {
+			var viewport = camera.viewport;
 			var file = sys.io.File.write(filename);
 			var format = filename.substr(filename.lastIndexOf(".") + 1);
-			var image = Renderer.capture(0, 0, HXP.window.width, HXP.window.height);
+			var image = Renderer.capture(viewport);
 			var bytes = image.encode(format);
 			file.writeBytes(bytes, 0, bytes.length);
 			file.close();
@@ -379,7 +382,6 @@ class Scene
 	public function update():Void
 	{
 		updateEntities();
-		if (Console.enabled) Console.instance.update(this);
 		camera.update();
 	}
 

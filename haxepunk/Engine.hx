@@ -15,7 +15,7 @@ class Engine extends Application
 		for (wnd in windows)
 		{
 			if (_windows.exists(wnd.renderer)) continue;
-			var window = HXP.window = new Window(window);
+			var window = new Window(window);
 			_windows.set(wnd.renderer, window);
 			// check that rendering context is supported
 			switch (wnd.renderer.context)
@@ -57,7 +57,6 @@ class Engine extends Application
 	override public function render(renderer:Renderer):Void
 	{
 		var window = _windows.get(renderer);
-		HXP.window = window; // HACK! Remove this!!!
 		window.render();
 	}
 
@@ -69,7 +68,6 @@ class Engine extends Application
 
 		for (window in _windows)
 		{
-			HXP.window = window; // HACK! Remove this!!!
 			window.update();
 		}
 	}

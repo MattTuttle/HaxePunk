@@ -4,6 +4,14 @@ import haxepunk.graphics.Color;
 import haxepunk.math.*;
 import haxepunk.utils.Time;
 
+enum ScaleMode
+{
+	NoScale;
+	Stretch;
+	Zoom;
+	LetterBox;
+}
+
 class Camera extends SceneNode
 {
 
@@ -48,6 +56,11 @@ class Camera extends SceneNode
 	public var transform(default, null):Matrix4;
 
 	/**
+	 * Determines how the viewport should scale when drawing with this camera.
+	 */
+	public var scaleMode:ScaleMode = LetterBox;
+
+	/**
 	 * The window viewport.
 	 */
 	public var viewport(default, null):Rectangle;
@@ -70,7 +83,7 @@ class Camera extends SceneNode
 		if (width == 0) width = windowWidth;
 		if (height == 0) height = windowHeight;
 		ortho(); // TODO: There MUST be a better way to do this!
-		switch (HXP.scaleMode)
+		switch (scaleMode)
 		{
 			case NoScale:
 				viewport.width = width;
@@ -78,8 +91,8 @@ class Camera extends SceneNode
 			case Zoom, LetterBox:
 				var scale = windowWidth / this.width;
 				var dy = scale * this.height - windowHeight;
-				if ((HXP.scaleMode == Zoom && dy < 0) ||
-					(HXP.scaleMode == LetterBox && dy > 0))
+				if ((scaleMode == Zoom && dy < 0) ||
+					(scaleMode == LetterBox && dy > 0))
 				{
 					scale = windowHeight / this.height;
 				}

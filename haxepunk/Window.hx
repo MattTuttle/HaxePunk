@@ -1,5 +1,6 @@
 package haxepunk;
 
+import haxepunk.debug.Console;
 import haxepunk.graphics.Color;
 import haxepunk.inputs.Input;
 import haxepunk.math.*;
@@ -74,8 +75,11 @@ class Window
 	public function render()
 	{
 		var startTime = Time.now;
+		Renderer.window = this;
 		Renderer.clear(scene.camera.clearColor == null ? backgroundColor : scene.camera.clearColor);
 		scene.draw();
+		if (Console.enabled) Console.instance.draw(this);
+		Renderer.present();
 		renderFrameTime = Time.since(startTime);
 
 		#if flash
@@ -94,6 +98,8 @@ class Window
 
 		// Update the input system
 		Input.update();
+
+		if (Console.enabled) Console.instance.update(this);
 
 		updateFrameTime = Time.since(startTime);
 	}

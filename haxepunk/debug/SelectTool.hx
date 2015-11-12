@@ -13,7 +13,7 @@ class SelectTool implements Tool
 		_selectRect = new Rectangle();
 	}
 
-	public function update(scene:Scene)
+	public function update(window:Window)
 	{
 		if (Input.pressed(MouseButton.LEFT) > 0)
 		{
@@ -26,7 +26,7 @@ class SelectTool implements Tool
 		{
 			_mousePressed = false;
 			var point = new Vector3(Mouse.x, Mouse.y);
-			for (entity in HXP.window.scene.entities)
+			for (entity in window.scene.entities)
 			{
 				if (entity.collidePoint(point))
 				{
@@ -64,7 +64,7 @@ class SelectTool implements Tool
 	{
 		if (_mousePressed)
 		{
-			Draw.rect(_selectRect.x + cameraPosition.x, _selectRect.y + cameraPosition.y, _selectRect.width, _selectRect.height, HXP.selectColor);
+			Draw.rect(_selectRect.x + cameraPosition.x, _selectRect.y + cameraPosition.y, _selectRect.width, _selectRect.height, Console.selectColor);
 		}
 	}
 

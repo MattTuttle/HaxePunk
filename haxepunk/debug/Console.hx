@@ -14,6 +14,11 @@ typedef FrameInfo = {
 class Console
 {
 
+	// default colors
+	public static var entityColor:Color = new Color(1, 0, 0, 0.3);
+	public static var maskColor:Color = new Color(0, 1, 0, 0.3);
+	public static var selectColor:Color = new Color(0.9, 0.9, 0.9);
+
 	public static var enabled:Bool = false;
 
 	public static function log(line:String)
@@ -40,48 +45,51 @@ class Console
 		_camera = new Camera(0, 0);
 	}
 
-	public function update(scene:Scene):Void
+	public function update(window:Window):Void
 	{
-		if (HXP.window.width != _camera.width || HXP.window.height != _camera.height)
+		var scene = window.scene;
+		if (window.width != _camera.width || window.height != _camera.height)
 		{
 #if tvos
 			// tv safe zone
-			_camera.width = HXP.window.width - 180;
-			_camera.height = HXP.window.height - 120;
+			_camera.width = window.width - 180;
+			_camera.height = window.height - 120;
 			_camera.x = 90;
 			_camera.y = 60;
 #else
-			_camera.width = HXP.window.width;
-			_camera.height = HXP.window.height;
+			_camera.width = window.width;
+			_camera.height = window.height;
 #end
 			_camera.ortho();
 			_camera.update();
 		}
 		_frameInfos.add({
-			frameRate: Std.int(HXP.frameRate) / 100,
-			updateTime: HXP.window.updateFrameTime * 20,
-			renderTime: HXP.window.renderFrameTime * 150,
+			frameRate: Std.int(scene.frameRate) / 100,
+			updateTime: window.updateFrameTime * 20,
+			renderTime: window.renderFrameTime * 150,
 		});
 		_logText.text = lines.join("\n") + "\n> " + input;
-		_fpsText.text = "FPS: " + Std.int(HXP.frameRate);
-		_entityText.text = scene.entityCount + (scene.entityCount == 1 ? " Entity" : " Entities");
+		_fpsText.text = "FPS: " + Std.int(scene.frameRate);
+		var entities = scene.entityCount;
+		_entityText.text = entities + (entities == 1 ? " Entity" : " Entities");
 
-		_tool.update(scene);
+		_tool.update(window);
 	}
 
-	public function draw(scene:Scene):Void
+	public function draw(window:Window):Void
 	{
+		var scene = window.scene;
 		Draw.begin(scene.spriteBatch);
 		var bounds:Rectangle;
 		for (entity in scene.entities)
 		{
 			if (entity.mask != null)
 			{
-				entity.mask.debugDraw(entity.position, HXP.maskColor);
+				entity.mask.debugDraw(entity.position, Console.maskColor);
 			}
 			bounds = entity.bounds;
-			Draw.rect(bounds.x, bounds.y, bounds.width, bounds.height, HXP.entityColor);
-			Draw.pixel(entity.x, entity.y, HXP.entityColor, 4);
+			Draw.rect(bounds.x, bounds.y, bounds.width, bounds.height, Console.entityColor);
+			Draw.pixel(entity.x, entity.y, Console.entityColor, 4);
 		}
 		Draw.end();
 
@@ -91,7 +99,7 @@ class Console
 
 		var x = _camera.width - _entityText.width;
 		_entityText.origin.x = -x;
-		Draw.fillRect(x + pos.x, pos.y, _entityText.width, _entityText.height, HXP.entityColor);
+		Draw.fillRect(x + pos.x, pos.y, _entityText.width, _entityText.height, Console.entityColor);
 		_entityText.draw(_spriteBatch, pos);
 
 		_logText.origin.y = -(_camera.height - _logText.height);
@@ -124,7 +132,7 @@ class Console
 		_spriteBatch.end();
 	}
 
-	@:allow(haxepunk.scene.Scene)
+	@:allow(haxepunk.Window)
 	private static var instance(get, null):Console;
 	private static inline function get_instance():Console {
 		if (instance == null)

@@ -12,7 +12,7 @@ class DrawEntity extends haxepunk.scene.Entity
 		var color = new Color();
 		color.fromInt(0xFF00FF);
 		var x = 0;
-		while (x < HXP.window.width)
+		while (x < scene.camera.width)
 		{
 			var nx = x + 25;
 			Draw.line(x, 0, nx, 50, color);
@@ -35,8 +35,8 @@ class DrawEntity extends haxepunk.scene.Entity
 
 class Main extends haxepunk.Engine
 {
-	override public function ready()
+	override public function ready(window:Window)
 	{
-		scene.add(new DrawEntity());
+		window.scene.add(new DrawEntity());
 	}
 }
