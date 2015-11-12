@@ -132,6 +132,6 @@ class GUI extends Engine
 {
 	override public function ready()
 	{
-		Engine.scene.add(new GUIEntity());
+		haxepunk.HXP.window.scene.add(new GUIEntity());
 	}
 }

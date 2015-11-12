@@ -1,6 +1,5 @@
 package haxepunk;
 
-import lime.ui.Window;
 import haxepunk.scene.Scene;
 import haxepunk.graphics.SpriteBatch;
 import haxepunk.graphics.Color;

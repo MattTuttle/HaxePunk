@@ -114,7 +114,7 @@ class Input
 	/**
 	 * Init the input systems.
 	 */
-	@:allow(haxepunk.Engine)
+	@:allow(haxepunk.Window)
 	private static function init(window:Window)
 	{
 		Keyboard.init(window);
@@ -190,7 +190,7 @@ class Input
 	/**
 	 * Update all input subsystems.
 	 */
-	@:allow(haxepunk.Engine)
+	@:allow(haxepunk.Window)
 	private static function update():Void
 	{
 		Keyboard.update();

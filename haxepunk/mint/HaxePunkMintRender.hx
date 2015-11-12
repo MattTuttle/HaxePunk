@@ -12,7 +12,7 @@ class HaxePunkMintRender extends mint.render.Rendering
     public function new()
     {
         super();
-        scene = Engine.scene;
+        scene = HXP.window.scene;
     }
 
     override function get<T:Control, T1>( type:Class<T>, control:T ) : T1 {

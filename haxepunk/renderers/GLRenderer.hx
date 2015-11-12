@@ -250,7 +250,7 @@ class GLRenderer
 		}
 		else
 		{
-			var scale = HXP.window.scale; // retina window scale
+			var scale = HXP.window.pixelScale; // retina window scale
 			GL.enable(GL.SCISSOR_TEST);
 			// flip from top left to bottom left
 			GL.scissor(Std.int(clip.x * scale), Std.int((HXP.window.height - (clip.y + clip.height)) * scale),

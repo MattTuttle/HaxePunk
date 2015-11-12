@@ -22,12 +22,6 @@ class Time
 	/** The timescale applied to Time.elapsed. */
 	public static var scale:Float;
 
-	/** Time taken for the last update frame */
-	public static var updateFrameTime(default, null):Float = 0;
-
-	/** Time taken for the last render frame */
-	public static var renderFrameTime(default, null):Float = 0;
-
 	/**
 	 * Returns the delta time (in miliseconds)
 	 * @param time The start time to determine the delta.

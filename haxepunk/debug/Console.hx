@@ -59,8 +59,8 @@ class Console
 		}
 		_frameInfos.add({
 			frameRate: Std.int(HXP.frameRate) / 100,
-			updateTime: Time.updateFrameTime * 20,
-			renderTime: Time.renderFrameTime * 150,
+			updateTime: HXP.window.updateFrameTime * 20,
+			renderTime: HXP.window.renderFrameTime * 150,
 		});
 		_logText.text = lines.join("\n") + "\n> " + input;
 		_fpsText.text = "FPS: " + Std.int(HXP.frameRate);

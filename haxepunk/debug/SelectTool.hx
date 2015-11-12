@@ -26,7 +26,7 @@ class SelectTool implements Tool
 		{
 			_mousePressed = false;
 			var point = new Vector3(Mouse.x, Mouse.y);
-			for (entity in Engine.scene.entities)
+			for (entity in HXP.window.scene.entities)
 			{
 				if (entity.collidePoint(point))
 				{

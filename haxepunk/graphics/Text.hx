@@ -131,10 +131,24 @@ class Text extends Graphic
 	 */
 	public var tabWidth:Int = 4;
 
+	/**
+	 * The width of the rendered text.
+	 */
 	public var textWidth(default, null):Float;
+
+	/**
+	 * The height of the rendered text.
+	 */
 	public var textHeight(default, null):Float;
 
+	/**
+	 * Horizontal text alignment.
+	 */
 	public var align:TextHorizontalAlign = Left;
+
+	/**
+	 * Vertical text alignment.
+	 */
 	public var verticalAlign:TextVerticalAlign = Top;
 
 	/**
@@ -217,6 +231,7 @@ class Text extends Graphic
 		// TODO: handle carriage return!!
 		var lines = _textLayout.text.split("\n");
 		var positions = _textLayout.positions;
+		textWidth = textHeight = 0; // reset text dimensions
 		_lines = [];
 		for (i in 0...lines.length)
 		{
