@@ -379,14 +379,14 @@ class Scene
 	 * Updates the scene
 	 * @param elapsed The elapsed time, in seconds, since the last update.
 	 */
-	public function update():Void
+	public function update(window:Window):Void
 	{
-		updateEntities();
+		updateEntities(window);
 		camera.update();
 	}
 
 	/** @private Adds, updates, and removes entities from the scene */
-	private inline function updateEntities():Void
+	private inline function updateEntities(window:Window):Void
 	{
 		var e:Entity;
 
@@ -412,7 +412,7 @@ class Scene
 			}
 			else
 			{
-				e.update();
+				e.update(window);
 				// remove need to call super.update() on base Entity
 				if (e.graphic != null) e.graphic.update();
 				// remove and add entity if layer changed

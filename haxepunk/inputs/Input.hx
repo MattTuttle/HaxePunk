@@ -36,13 +36,17 @@ private abstract InputType(EitherInput)
  */
 class Input
 {
+
+	public var keyboard(default, null):Keyboard;
+	public var mouse(default, null):Mouse;
+
 	/**
 	 * Check if an input is held down.
 	 *
 	 * @param input An input to check for
 	 * @return If [input] is held down
 	 */
-	public static inline function check(input:InputType):Bool
+	public inline function check(input:InputType):Bool
 	{
 		return value(input, InputValue.On) > 0 || value(input, InputValue.Pressed) > 0;
 	}
@@ -54,7 +58,7 @@ class Input
 	 * @param keys The inputs to use for the Input, don't use string in the array
 	 * @param merge If the input is already defined merge the arrays instead of replacing it
 	 */
-	public static function define(name:String, inputs:Array<InputType>, merge:Bool=false):Void
+	public function define(name:String, inputs:Array<InputType>, merge:Bool=false):Void
 	{
 		for (input in inputs)
 		{
@@ -93,7 +97,7 @@ class Input
 	 * @param input An input to check for
 	 * @return The number of times [input] was pressed
 	 */
-	public static inline function pressed(input:InputType):Int
+	public inline function pressed(input:InputType):Int
 	{
 		return value(input, InputValue.Pressed);
 	}
@@ -104,7 +108,7 @@ class Input
 	 * @param input An input to check for
 	 * @return The number of times [input] was released
 	 */
-	public static inline function released(input:InputType):Int
+	public inline function released(input:InputType):Int
 	{
 		return value(input, InputValue.Released);
 	}
@@ -115,12 +119,10 @@ class Input
 	 * Init the input systems.
 	 */
 	@:allow(haxepunk.Window)
-	private static function init(window:Window)
+	private function new(window:Window)
 	{
-		Keyboard.init(window);
-		Mouse.init(window);
-		//Gamepad.init();
-		//Touch.init();
+		keyboard = new Keyboard(window);
+		mouse = new Mouse(window);
 	}
 
 	/**
@@ -132,7 +134,7 @@ class Input
 	 * @param v The value to get
 	 * @return The value [v] for the input [input]
 	 */
-	private static function value(input:InputType, v:InputValue):Int
+	private function value(input:InputType, v:InputValue):Int
 	{
 		switch (input.type)
 		{
@@ -157,6 +159,7 @@ class Input
 			default: // not a string
 				return subsystemValue(input, v);
 		}
+		return 0;
 	}
 
 	/**
@@ -166,7 +169,7 @@ class Input
 	 * @param v The value to get
 	 * @return The value [v] for the input [input]
 	 */
-	private static function subsystemValue(input:InputType, v:InputValue):Int
+	private function subsystemValue(input:InputType, v:InputValue):Int
 	{
 		return switch (input.type)
 		{
@@ -174,10 +177,10 @@ class Input
 				0; // ignore strings
 
 			case Key(k):
-				Keyboard.value(k, v);
+				keyboard.value(k, v);
 
 			case MouseButton(mb):
-				Mouse.value(mb, v);
+				mouse.value(mb, v);
 
 			/*case GamepadButton(gb):
 				Gamepad.value(gb, v);
@@ -191,14 +194,14 @@ class Input
 	 * Update all input subsystems.
 	 */
 	@:allow(haxepunk.Window)
-	private static function update():Void
+	private function update():Void
 	{
-		Keyboard.update();
-		Mouse.update();
+		keyboard.update();
+		mouse.update();
 		//Gamepad.update();
 		//Touch.update();
 	}
 
 	/** Stocks the inputs the user defined using its name as key. */
-	private static var _defines = new Map<String, Array<InputType>>();
+	private var _defines = new Map<String, Array<InputType>>();
 }

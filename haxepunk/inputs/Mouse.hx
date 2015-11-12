@@ -13,23 +13,23 @@ import haxepunk.math.*;
 class Mouse
 {
 	/** Holds the last mouse button detected */
-	public static var last(default, null):MouseButton = MouseButton.ANY;
+	public var last(default, null):MouseButton = MouseButton.ANY;
 
 	/** The delta of the mouse wheel on the horizontal axis, 0 if it wasn't moved this frame */
-	public static var wheelDeltaX(default, null):Float = 0;
+	public var wheelDeltaX(default, null):Float = 0;
 
 	/** The delta of the mouse wheel on the vertical axis, 0 if it wasn't moved this frame */
-	public static var wheelDeltaY(default, null):Float = 0;
+	public var wheelDeltaY(default, null):Float = 0;
 
-	public static var position(default, null):Vector3 = new Vector3();
+	public var position(default, null):Vector3 = new Vector3();
 
 	/** X position of the mouse on the screen */
-	public static var x(get, never):Float;
-	private static inline function get_x():Float { return position.x; }
+	public var x(get, never):Float;
+	private inline function get_x():Float { return position.x; }
 
 	/** Y position of the mouse on the screen */
-	public static var y(get, never):Float;
-	private static inline function get_y():Float { return position.y; }
+	public var y(get, never):Float;
+	private inline function get_y():Float { return position.y; }
 
 	/**
 	 * Returns the name of the mouse button.
@@ -41,7 +41,7 @@ class Mouse
 	 * @param button The mouse button to name
 	 * @return The name
 	 */
-	public static function nameOf(button:MouseButton):String
+	public function nameOf(button:MouseButton):String
 	{
 		if (button > 2) // The button isn't defined in MouseButton
 		{
@@ -71,7 +71,7 @@ class Mouse
 	 * Setup the mouse input support.
 	 */
 	@:allow(haxepunk.inputs.Input)
-	private static function init(window:Window):Void
+	private function new(window:Window):Void
 	{
 		// Register the events from lime
 		window.onMouseMove.add(onMouseMove);
@@ -88,7 +88,7 @@ class Mouse
 	 * @return The value of [v] for [button]
 	 */
 	@:allow(haxepunk.inputs.Input)
-	private static inline function value(button:MouseButton, v:InputValue):Int
+	private inline function value(button:MouseButton, v:InputValue):Int
 	{
 		if (button < 0) // Any
 		{
@@ -109,7 +109,7 @@ class Mouse
 	 * Updates the mouse state.
 	 */
 	@:allow(haxepunk.inputs.Input)
-	private static function update():Void
+	private function update():Void
 	{
 		// Was On last frame if was on the previous one and there is at least the same amount of Pressed than Released.
 		// Or wasn't On last frame and Pressed > 0
@@ -127,16 +127,16 @@ class Mouse
 	/**
 	 * Lime onMouseMove event.
 	 */
-	private static inline function onMouseMove(x:Float, y:Float):Void
+	private inline function onMouseMove(x:Float, y:Float):Void
 	{
-		Mouse.position.x = x;
-		Mouse.position.y = y;
+		position.x = x;
+		position.y = y;
 	}
 
 	/**
 	 * Lime onMouseDown event.
 	 */
-	private static function onMouseDown(x:Float, y:Float, button:Int):Void
+	private function onMouseDown(x:Float, y:Float, button:Int):Void
 	{
 		onMouseMove(x, y);
 
@@ -147,7 +147,7 @@ class Mouse
 	/**
 	 * Lime onMouseUp event.
 	 */
-	private static function onMouseUp(x:Float, y:Float, button:Int):Void
+	private function onMouseUp(x:Float, y:Float, button:Int):Void
 	{
 		onMouseMove(x, y);
 
@@ -158,7 +158,7 @@ class Mouse
 	/**
 	 * Lime onMouseWheel event.
 	 */
-	private static function onMouseWheel(deltaX:Float, deltaY:Float):Void
+	private function onMouseWheel(deltaX:Float, deltaY:Float):Void
 	{
 		wheelDeltaX = deltaX;
 		wheelDeltaY = deltaY;
@@ -167,7 +167,7 @@ class Mouse
 	/**
 	 * Gets a mouse state object from a button number.
 	 */
-	private static function getInputState(button:Int):InputState
+	private function getInputState(button:Int):InputState
 	{
 		var state:InputState;
 		if (_states.exists(button))
@@ -183,5 +183,5 @@ class Mouse
 	}
 
 	/** States for On,Pressed,Released for each button */
-	private static var _states:IntMap<InputState> = new IntMap<InputState>();
+	private var _states:IntMap<InputState> = new IntMap<InputState>();
 }

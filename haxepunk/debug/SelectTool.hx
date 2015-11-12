@@ -15,17 +15,19 @@ class SelectTool implements Tool
 
 	public function update(window:Window)
 	{
-		if (Input.pressed(MouseButton.LEFT) > 0)
+		var input = window.input,
+			mouse = input.mouse;
+		if (input.pressed(MouseButton.LEFT) > 0)
 		{
-			_mouseOriginX = _selectRect.x = Mouse.x;
-			_mouseOriginY = _selectRect.y = Mouse.y;
+			_mouseOriginX = _selectRect.x = mouse.x;
+			_mouseOriginY = _selectRect.y = mouse.y;
 			_selectRect.width = _selectRect.height = 0;
 			_mousePressed = true;
 		}
-		else if (Input.released(MouseButton.LEFT) > 0)
+		else if (input.released(MouseButton.LEFT) > 0)
 		{
 			_mousePressed = false;
-			var point = new Vector3(Mouse.x, Mouse.y);
+			var point = new Vector3(mouse.x, mouse.y);
 			for (entity in window.scene.entities)
 			{
 				if (entity.collidePoint(point))
@@ -34,28 +36,28 @@ class SelectTool implements Tool
 				}
 			}
 		}
-		else if (Input.check(MouseButton.LEFT) && _mousePressed)
+		else if (input.check(MouseButton.LEFT) && _mousePressed)
 		{
-			if (Mouse.x < _mouseOriginX)
+			if (mouse.x < _mouseOriginX)
 			{
-				_selectRect.x = Mouse.x;
+				_selectRect.x = mouse.x;
 				_selectRect.right = _mouseOriginX;
 			}
 			else
 			{
 				_selectRect.x = _mouseOriginX;
-				_selectRect.right = Mouse.x;
+				_selectRect.right = mouse.x;
 			}
 
-			if (Mouse.y < _mouseOriginY)
+			if (mouse.y < _mouseOriginY)
 			{
-				_selectRect.y = Mouse.y;
+				_selectRect.y = mouse.y;
 				_selectRect.bottom = _mouseOriginY;
 			}
 			else
 			{
 				_selectRect.y = _mouseOriginY;
-				_selectRect.bottom = Mouse.y;
+				_selectRect.bottom = mouse.y;
 			}
 		}
 	}

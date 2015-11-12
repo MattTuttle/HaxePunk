@@ -21,13 +21,15 @@ class Window
 	/**
 	 * The width of the window
 	 */
-	public var width(get, never):Int;
+	public var width(get, set):Int;
+	private inline function set_width(value:Int):Int { return _window.width = value; }
 	private inline function get_width():Int { return _window.width; }
 
 	/**
 	 * The height of the window
 	 */
-	public var height(get, never):Int;
+	public var height(get, set):Int;
+	private inline function set_height(value:Int):Int { return _window.height = value; }
 	private inline function get_height():Int { return _window.height; }
 
 	/**
@@ -35,6 +37,12 @@ class Window
 	 */
 	public var pixelScale(get, never):Float;
 	private inline function get_pixelScale():Float { return _window.scale; }
+
+	/**
+	 * Window identifier.
+	 */
+	public var id(get, never):Int;
+	private inline function get_id():Int { return _window.id; }
 
 	/**
 	 * Time taken for last render frame.
@@ -50,6 +58,11 @@ class Window
 	 * The background color for the window.
 	 */
 	public var backgroundColor:Color;
+
+	/**
+	 * Input handler
+	 */
+	public var input:Input;
 
     public function new(window:lime.ui.Window)
     {
@@ -69,7 +82,7 @@ class Window
 		setViewport(width, height);
 
 		// Init the input system
-		Input.init(window);
+		input = new Input(window);
     }
 
 	public function render()
@@ -94,10 +107,10 @@ class Window
 		var startTime = Time.now;
 		// only change active scene during update
 		_scene = _scenes.first();
-		scene.update();
+		scene.update(this);
 
 		// Update the input system
-		Input.update();
+		input.update();
 
 		if (Console.enabled) Console.instance.update(this);
 

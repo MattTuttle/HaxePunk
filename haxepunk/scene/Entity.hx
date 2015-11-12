@@ -280,7 +280,7 @@ class Entity extends SceneNode
 	/**
 	 * Updates the Entity.
 	 */
-	public function update():Void { }
+	public function update(window:Window):Void { }
 
 	private var _group:String = "";
 	private var _name:String = "";

@@ -95,24 +95,25 @@ class GUIEntity extends Entity
 		canvas.render();
 	}
 
-	override public function update()
+	override public function update(window:Window)
 	{
-		var pos = scene.camera.screenToCamera(Mouse.position);
+		var input = window.input;
+		var pos = scene.camera.screenToCamera(input.mouse.position);
 		var event:mint.types.Types.MouseEvent = {
 			timestamp: Time.now,
 			x: Std.int(pos.x),
 			y: Std.int(pos.y),
 			xrel: Std.int(last.x - pos.x),
 			yrel: Std.int(last.y - pos.y),
-			button: Input.check(MouseButton.LEFT) ? left : none,
+			button: input.check(MouseButton.LEFT) ? left : none,
 			state: none, // isn't used...
 			bubble: false // not used...
 		};
-		if (Input.pressed(MouseButton.LEFT) > 0)
+		if (input.pressed(MouseButton.LEFT) > 0)
 		{
 			canvas.mousedown(event);
 		}
-		else if (Input.released(MouseButton.LEFT) > 0)
+		else if (input.released(MouseButton.LEFT) > 0)
 		{
 			canvas.mouseup(event);
 		}
@@ -134,9 +135,8 @@ class GUI extends Engine
 	override public function ready(window:Window)
 	{
 		window.scene.add(new GUIEntity(new HaxePunkMintRender(window)));
-		if (++numWindows < 2) addWindow(640, 480);
+		trace(window.id);
+		if (window.id == 1) addWindow(640, 480);
 	}
-
-	private var numWindows:Int = 0;
 
 }
