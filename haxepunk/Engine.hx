@@ -68,8 +68,12 @@ class Engine extends Application
 	 */
 	private function setViewport(windowWidth:Int, windowHeight:Int):Void
 	{
-		var viewport = scene.camera.setViewport(windowWidth, windowHeight);
-		Renderer.setViewport(viewport);
+		// get camera viewport
+		var vp = scene.camera.setViewport(windowWidth, windowHeight);
+		var pixelScale = HXP.window.scale; // for retina devices
+		// set the window viewport
+		Renderer.setViewport(new Rectangle(vp.x * pixelScale, vp.y * pixelScale,
+			vp.width * pixelScale, vp.height * pixelScale));
 	}
 
 	override public function render(renderer:lime.graphics.Renderer):Void

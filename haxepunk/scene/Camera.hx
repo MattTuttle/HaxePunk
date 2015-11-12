@@ -71,36 +71,27 @@ class Camera extends SceneNode
 		if (width == 0) width = windowWidth;
 		if (height == 0) height = windowHeight;
 		ortho(); // TODO: There MUST be a better way to do this!
-		var scale = 1.0,
-			width = this.width,
-			height = this.height;
 		switch (HXP.scaleMode)
 		{
 			case NoScale:
-				// Nothing to do
-			case Zoom:
-				scale = windowWidth / width;
-				if (scale * height < windowHeight)
+				viewport.width = width;
+				viewport.height = height;
+			case Zoom, LetterBox:
+				var scale = windowWidth / this.width;
+				var dy = scale * this.height - windowHeight;
+				if ((HXP.scaleMode == Zoom && dy < 0) ||
+					(HXP.scaleMode == LetterBox && dy > 0))
 				{
-					scale = windowHeight / height;
+					scale = windowHeight / this.height;
 				}
-			case LetterBox:
-				scale = windowWidth / width;
-				if (scale * height > windowHeight)
-				{
-					scale = windowHeight / height;
-				}
+				viewport.width = width * scale;
+				viewport.height = height * scale;
 			case Stretch:
-				width = windowWidth;
-				height = windowHeight;
+				viewport.width = windowWidth;
+				viewport.height = windowHeight;
 		}
-		width = Std.int(width * scale);
-		height = Std.int(height * scale);
-		var pixelScale = HXP.window.scale; // for retina devices
-		viewport.x = Std.int((windowWidth - width) / 2 * pixelScale);
-		viewport.y = Std.int((windowHeight - height) / 2 * pixelScale);
-		viewport.width = Std.int(width * pixelScale);
-		viewport.height = Std.int(height * pixelScale);
+		viewport.x = (windowWidth - viewport.width) / 2;
+		viewport.y = (windowHeight - viewport.height) / 2;
 		return viewport;
 	}
 
