@@ -130,10 +130,8 @@ class Texture
 	@:allow(haxepunk.graphics, haxepunk.Assets)
 	private function new(?id:String)
 	{
-		if (_id == null)
-		{
-			_id = Math.uuid();
-		}
+		_id = (id == null) ? Math.uuid() : id;
+		// TODO: throw warning if duplicate id found?
 		_textures.set(_id, this);
 		_texture = new Map<Int, NativeTexture>();
 	}
@@ -194,6 +192,7 @@ class Texture
 		else
 		{
 			var texture = Renderer.createTextureFromBytes(UInt8Array.fromBytes(_data), width, height, bitsPerPixel);
+			// Renderer.bindTexture(texture, sampler);
 			_texture.set(id, texture);
 		}
 	}
