@@ -9,6 +9,35 @@ import lime.text.TextLayout;
 
 using StringTools;
 
+enum TextHorizontalAlign
+{
+	Left;
+	Center;
+	Right;
+}
+
+enum TextVerticalAlign
+{
+	Top;
+	Middle;
+	Bottom;
+}
+
+typedef TextLineChar = {
+	x:Float,
+	y:Float,
+	u:Float,
+	v:Float,
+	w:Float,
+	h:Float,
+	c:Null<Color>
+};
+
+typedef TextLine = {
+	width:Float,
+	chars:Array<TextLineChar>
+};
+
 typedef GlyphImages = Map<lime.text.Glyph, lime.graphics.Image>;
 
 class Font
@@ -102,6 +131,12 @@ class Text extends Graphic
 	 */
 	public var tabWidth:Int = 4;
 
+	public var textWidth(default, null):Float;
+	public var textHeight(default, null):Float;
+
+	public var align:TextHorizontalAlign = Left;
+	public var verticalAlign:TextVerticalAlign = Top;
+
 	/**
 	 * The font size of the Text
 	 */
@@ -179,39 +214,47 @@ class Text extends Graphic
 		// hoisted variables
 		var x:Float, y:Float, line:String, image,
 			idx:Int = 0;
-		_chars = [];
 		// TODO: handle carriage return!!
 		var lines = _textLayout.text.split("\n");
 		var positions = _textLayout.positions;
+		_lines = [];
 		for (i in 0...lines.length)
 		{
 			line = lines[i];
-			// TODO: remove magic number (lineHeight * 0.8)
-			y = lineHeight * i + lineHeight * 0.8;
+			// text aligns at bottom of characters
+			y = lineHeight * (i + 1);
 			x = 0.0;
+			var chars = new Array<TextLineChar>();
 			for (j in 0...positions.length)
 			{
 				var p = positions[j];
 				image = _images.get(p.glyph);
 				if (image != null)
 				{
-					_chars[idx++] = {
+					chars[idx++] = {
 						x: x + p.offset.x + image.x,
 						y: y + p.offset.y - image.y,
 						u: image.offsetX,
 						v: image.offsetY,
 						w: image.width,
 						h: image.height,
-						c: color
+						c: null
 					};
 				}
 
 				x += p.advance.x;
 				y -= p.advance.y;
 			}
-			if (x > width) width = x;
+			_lines[i] = {
+				width: x,
+				chars: chars
+			};
+			if (x > textWidth) textWidth = x;
 		}
-		height = lineHeight * lines.length;
+		textHeight = lineHeight * lines.length;
+		// assign if not already
+		if (width == 0) width = textWidth;
+		if (height == 0) height = textHeight;
 	}
 
 	/**
@@ -220,20 +263,34 @@ class Text extends Graphic
 	 */
 	override public function draw(batch:SpriteBatch, offset:Vector3):Void
 	{
-		var r,
+		var r, l,
 			x = offset.x - origin.x,
 			y = offset.y - origin.y;
-		for (i in 0..._chars.length)
+		var oy = switch (verticalAlign) {
+			case Top: 0;
+			case Middle: (height - textHeight) / 2;
+			case Bottom: (height - textHeight);
+		};
+		for (i in 0..._lines.length)
 		{
-			r = _chars[i];
-			batch.draw(material,
-				x + r.x, y + r.y, r.w, r.h, // position
-				r.u, r.v, r.w, r.h, // texture coords
-				false, false, origin.x, origin.y, scale.x, scale.y, 0, r.c);
+			l = _lines[i];
+			var ox = switch (align) {
+				case Left: 0;
+				case Center: (width - l.width) / 2;
+				case Right: width - l.width;
+			}
+			for (j in 0...l.chars.length)
+			{
+				r = l.chars[j];
+				batch.draw(material,
+					ox + x + r.x, oy + y + r.y, r.w, r.h, // position
+					r.u, r.v, r.w, r.h, // texture coords
+					false, false, origin.x, origin.y, scale.x, scale.y, 0, r.c == null ? color : r.c);
+			}
 		}
 	}
 
-	private var _chars:Array<{x:Float, y:Float, u:Float, v:Float, w:Float, h:Float, c:Color}>;
+	private var _lines:Array<TextLine>;
 	private var _textLayout:TextLayout;
 	private var _font:Font;
 	private var _texture:Texture;
