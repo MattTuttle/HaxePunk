@@ -242,6 +242,21 @@ class GLRenderer
 		return shader;
 	}
 
+	public static inline function setScissor(?clip:Rectangle)
+	{
+		if (clip == null)
+		{
+			GL.disable(GL.SCISSOR_TEST);
+		}
+		else
+		{
+			GL.enable(GL.SCISSOR_TEST);
+			// flip from top left to bottom left
+			GL.scissor(Std.int(clip.x), Std.int(HXP.window.height - clip.y + clip.height),
+				Std.int(clip.width), Std.int(clip.height));
+		}
+	}
+
 	public static inline function setDepthTest(depthMask:Bool, ?test:DepthTestCompare):Void
 	{
 		if (_activeState.depthTest == test) return;

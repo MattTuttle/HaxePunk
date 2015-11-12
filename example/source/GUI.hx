@@ -36,16 +36,21 @@ class GUIEntity extends Entity
 		var button = new mint.Button({
             parent: canvas,
             name: 'button1',
-            x: 10, y: 52, w: 60, h: 32,
+            x: 10, y: 52, w: 100, h: 32,
             text: 'mint',
             text_size: 14,
             options: { label: { color:new Color().fromInt(0x9dca63) } },
             onclick: function(e,c) {trace('mint button! ${Time.now}' );}
         });
 
+		var scroll = new mint.Scroll({
+			parent: window, name: 'scroll',
+			x:10, y:30, w:236, h:236
+		});
+
 		new mint.Image({
-            parent: window, name: 'icon_2',
-            x:50, y:50, w:80, h:80,
+            parent: scroll, name: 'icon_2',
+            x:0, y:0, w:280, h:80,
             path: 'assets/lime.png'
         });
 	}

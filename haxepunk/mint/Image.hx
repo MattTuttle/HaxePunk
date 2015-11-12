@@ -28,24 +28,6 @@ class Image extends BaseRender
         visual.height = control.h;
     }
 
-    override function onclip(disable:Bool, x:Float, y:Float, w:Float, h:Float)
-    {
-        if (disable)
-        {
-            visual.clipRect.x = visual.clipRect.y = 0;
-            var texture = visual.material.firstPass.getTexture(0);
-            visual.clipRect.width = texture.width;
-            visual.clipRect.height = texture.height;
-        }
-        else
-        {
-            visual.clipRect.x = x;
-            visual.clipRect.y = y;
-            visual.clipRect.width = w;
-            visual.clipRect.height = h;
-        }
-    }
-
     private var visual:haxepunk.graphics.Image;
 
 }

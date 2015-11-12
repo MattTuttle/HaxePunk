@@ -4,10 +4,12 @@ import haxepunk.graphics.Graphic;
 import haxepunk.graphics.SpriteBatch;
 import haxepunk.masks.*;
 import haxepunk.math.*;
+import haxepunk.renderers.Renderer;
 
 class Entity extends SceneNode
 {
 
+	public var clipRect:Rectangle;
 	public var mask(default, null):Mask;
 	public var collidable:Bool = true;
 
@@ -140,7 +142,25 @@ class Entity extends SceneNode
 	 */
 	public function draw(batch:SpriteBatch)
 	{
-		if (graphic != null)
+		if (graphic == null) return;
+		if (clipRect != null)
+		{
+			batch.end();
+			// convert from screen to window coordinates
+			var vec = new Vector3(clipRect.x, clipRect.y);
+			var tl = scene.camera.cameraToScreen(vec); // top left
+			vec.x = clipRect.x + clipRect.width;
+			vec.y = clipRect.y + clipRect.height;
+			var br = scene.camera.cameraToScreen(vec); // bottom right
+			var rect = new Rectangle(tl.x, tl.y, br.x - tl.x, br.y - tl.y);
+			// draw with scissor test
+			Renderer.setScissor(rect);
+			batch.begin();
+			graphic.draw(batch, position);
+			batch.end();
+			Renderer.setScissor();
+		}
+		else
 		{
 			graphic.draw(batch, position);
 		}

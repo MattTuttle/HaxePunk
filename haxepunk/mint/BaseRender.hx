@@ -1,5 +1,6 @@
 package haxepunk.mint;
 
+import haxepunk.math.Rectangle;
 import haxepunk.scene.Entity;
 
 class BaseRender extends mint.render.Render
@@ -11,6 +12,24 @@ class BaseRender extends mint.render.Render
         entity = new Entity(control.x, control.y, control.depth);
         entity.name = control.name;
         render.scene.add(entity);
+
+        var clip = control.clip_with;
+        if (clip != null)
+        {
+            onclip(true, clip.x, clip.y, clip.w, clip.h);
+        }
+    }
+
+    override function onclip(disable:Bool, x:Float, y:Float, w:Float, h:Float)
+    {
+        if (disable)
+        {
+            entity.clipRect = null;
+        }
+        else
+        {
+            entity.clipRect = new Rectangle(x, y, w, h);
+        }
     }
 
     override function ondestroy()
