@@ -27,7 +27,7 @@ class TileSheet
 		}
 
 		material = new Material();
-		material.firstPass.addTexture(texture);
+		material.firstPass.insertTexture(texture);
     }
 
 	public function getTileRect(tile:Int):Rectangle

@@ -1,5 +1,6 @@
 package haxepunk.graphics;
 
+import haxe.ds.IntMap;
 import haxepunk.math.Matrix4;
 import haxepunk.renderers.Renderer;
 
@@ -7,7 +8,7 @@ using StringTools;
 
 class Pass
 {
-	public var shader(default, set):Shader;
+	public var shader:Shader;
 	public var ambient:Color;
 	public var diffuse:Color;
 	public var specular:Color;
@@ -26,57 +27,54 @@ class Pass
 		shader = _defaultShader;
 #end
 
-		_textures = new Array<Texture>();
-	}
-
-	private function set_shader(value:Shader):Shader
-	{
-		// must grab the matrix uniform first to set it as 0
-		value.uniform("uMatrix");
-
-		_ambientLocation = value.uniform("uAmbientColor");
-		_diffuseLocation = value.uniform("uDiffuseColor");
-		_specularLocation = value.uniform("uSpecularColor");
-		_emissiveLocation = value.uniform("uEmissiveColor");
-		_shininessLocation = value.uniform("uShininess");
-		return shader = value;
+		_textures = new IntMap<Texture>();
 	}
 
 	public function removeTexture(texture:Texture)
 	{
-		_textures.remove(texture);
+		for (idx in _textures.keys())
+		{
+			if (_textures.get(idx) == texture)
+			{
+				_textures.remove(idx);
+				break;
+			}
+		}
 	}
 
-	public function addTexture(texture:Texture, uniformName:String="uImage0")
+	public function insertTexture(texture:Texture, index:Int=0):Void
 	{
-		// keep uniform to allow removal of textures?
-		// var uniform = shader.uniform(uniformName);
-		// shader.use();
-		_textures.push(texture);
+		_textures.set(index, texture);
 	}
 
-	public function getTexture(index:Int):Texture
+	public function getTexture(index:Int):Null<Texture>
 	{
-		if (index < 0 || index >= _textures.length) return null;
-		return _textures[index];
+		return _textures.get(index);
 	}
 
-	public function use()
+	public function use(lighting:Bool=false)
 	{
 		shader.use();
-		Renderer.setColor(_ambientLocation, ambient);
-		Renderer.setColor(_diffuseLocation, diffuse);
-		Renderer.setColor(_specularLocation, specular);
-		Renderer.setColor(_emissiveLocation, emissive);
-		Renderer.setFloat(_shininessLocation, shininess);
 
+		// TODO: figure out better place for lighting
+		if (lighting)
+		{
+			var program = shader.program;
+			Renderer.setColor(program.uniform("uAmbientColor"), ambient);
+			Renderer.setColor(program.uniform("uDiffuseColor"), diffuse);
+			Renderer.setColor(program.uniform("uSpecularColor"), specular);
+			Renderer.setColor(program.uniform("uEmissiveColor"), emissive);
+			Renderer.setFloat(program.uniform("uShininess"), shininess);
+		}
+
+		// TODO: don't always use blending and depth testing!!
 		Renderer.setDepthTest(depthCheck, LESS_EQUAL);
 		Renderer.setBlendMode(SOURCE_ALPHA, ONE_MINUS_SOURCE_ALPHA);
 
 		// assign any textures
-		for (i in 0..._textures.length)
+		for (i in _textures.keys())
 		{
-			_textures[i].bind(i);
+			_textures.get(i).bind(i);
 		}
 	}
 
@@ -96,12 +94,7 @@ class Pass
 		return _defaultShader;
 	}
 
-	private var _textures:Array<Texture>;
-	private var _ambientLocation:Location;
-	private var _diffuseLocation:Location;
-	private var _specularLocation:Location;
-	private var _emissiveLocation:Location;
-	private var _shininessLocation:Location;
+	private var _textures:IntMap<Texture>;
 
 }
 
@@ -303,7 +296,7 @@ class Material
 		var texture = next();
 		if (Assets.exists(texture))
 		{
-			// addTexture(Texture.fromAsset(texture));
+			// insertTexture(Texture.fromAsset(texture));
 		}
 		else
 		{

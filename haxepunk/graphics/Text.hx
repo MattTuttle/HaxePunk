@@ -156,6 +156,7 @@ class Text extends Graphic
 	 */
 	public var size(default, set):Int;
 	private function set_size(value:Int):Int {
+		#if !flash
 		if (size != value)
 		{
 			// TODO: change texture
@@ -165,8 +166,9 @@ class Text extends Graphic
 				material.firstPass.removeTexture(_texture);
 			}
 			_texture = _font.getTexture(value);
-			material.firstPass.addTexture(_texture);
+			material.firstPass.insertTexture(_texture);
 		}
+		#end
 		return size = value;
 	}
 
@@ -198,22 +200,13 @@ class Text extends Graphic
 		super();
 		color = new Color();
 
-		#if flash
-		var vert = "m44 op, va0, vc0\nmov v0, va1";
-		var frag = "tex ft0, v0, fs0 <linear nomip 2d wrap>\nmov ft0.xyz, fc1.xyz\nmov oc, ft0";
-		#else
+		#if !flash
 		_font = Font.fromFile(defaultFont);
 		_textLayout = new TextLayout("", _font.font, size, LEFT_TO_RIGHT, LATIN, "en");
-		_texture = _font.getTexture(size);
-
-		var vert = Assets.getText("hxp/shaders/default.vert");
-		var frag = Assets.getText("hxp/shaders/text.frag");
 		#end
 
-		var shader = new Shader(vert, frag);
 		material = new Material();
-		var pass = material.firstPass;
-		pass.shader = shader;
+		material.firstPass.shader = _defaultShader;
 
 		// Must be set AFTER material is created
 		this.lineHeight = this.size = size;
@@ -303,6 +296,23 @@ class Text extends Graphic
 					false, false, origin.x, origin.y, scale.x, scale.y, 0, r.c == null ? color : r.c);
 			}
 		}
+	}
+
+	private var _defaultShader(get, null):Shader;
+	private inline function get__defaultShader():Shader
+	{
+		if (_defaultShader == null)
+		{
+			#if flash
+			var vert = "m44 op, va0, vc0\nmov v0, va1";
+			var frag = "tex ft0, v0, fs0 <linear nomip 2d wrap>\nmov ft0.xyz, fc1.xyz\nmov oc, ft0";
+			#else
+			var vert = Assets.getText("hxp/shaders/default.vert");
+			var frag = Assets.getText("hxp/shaders/text.frag");
+			#end
+			_defaultShader = new Shader(vert, frag);
+		}
+		return _defaultShader;
 	}
 
 	private var _lines:Array<TextLine>;

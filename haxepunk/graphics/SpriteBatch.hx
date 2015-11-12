@@ -352,10 +352,11 @@ class SpriteBatch
 		for (pass in material.passes)
 		{
 			pass.use();
-			Renderer.setMatrix(pass.shader.uniform("uMatrix"), transform);
-			Renderer.setAttribute(pass.shader.attribute("aVertexPosition"), 0, 2);
-			Renderer.setAttribute(pass.shader.attribute("aTexCoord"), 2, 2);
-			Renderer.setAttribute(pass.shader.attribute("aColor"), 4, 4);
+			var program = pass.shader.program;
+			Renderer.setMatrix(program.uniform("uMatrix"), transform);
+			Renderer.setAttribute(program.attribute("aVertexPosition"), 0, 2);
+			Renderer.setAttribute(program.attribute("aTexCoord"), 2, 2);
+			Renderer.setAttribute(program.attribute("aColor"), 4, 4);
 
 			if (drawTris)
 			{

@@ -14,7 +14,7 @@ abstract ImageSource(Material) to Material from Material
 	static inline private function fromAsset(asset:String):ImageSource
 	{
 		var material = new Material();
-		material.firstPass.addTexture(Assets.getTexture(asset));
+		material.firstPass.insertTexture(Assets.getTexture(asset));
 		return new ImageSource(material);
 	}
 }

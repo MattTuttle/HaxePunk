@@ -1,22 +1,15 @@
 package haxepunk.graphics;
 
-import haxe.ds.StringMap;
+import haxe.ds.*;
 import haxepunk.renderers.Renderer;
 import haxepunk.math.Matrix4;
 
-/**
- * Shader object for GLSL and AGAL
- */
-class Shader
+class Program
 {
 
-	/**
-	 * Creates a new Shader
-	 * @param sources  A list of glsl shader sources to compile and link into a program
-	 */
-	public function new(vertex:String, fragment:String)
+	public function new(program:ShaderProgram)
 	{
-		_program = Renderer.compileShaderProgram(vertex, fragment);
+		_program = program;
 		_uniforms = new StringMap<Location>();
 		_attributes = new StringMap<Int>();
 	}
@@ -49,16 +42,55 @@ class Shader
 		return _uniforms.get(u);
 	}
 
+	@:allow(haxepunk.graphics.Shader)
+	private var _program:ShaderProgram;
+	private var _attributes:StringMap<Int>;
+	private var _uniforms:StringMap<Location>;
+
+}
+
+/**
+ * Shader object for GLSL and AGAL
+ */
+class Shader
+{
+
+	public var program(get, never):Program;
+	private function get_program():Program
+	{
+		var id = Renderer.window.id;
+		if (_program.exists(id))
+		{
+			return _program.get(id);
+		}
+		{
+			var program = new Program(Renderer.compileShaderProgram(_vertex, _fragment));
+			_program.set(id, program);
+			return program;
+		}
+	}
+
+	/**
+	 * Creates a new Shader
+	 * @param sources  A list of glsl shader sources to compile and link into a program
+	 */
+	public function new(vertex:String, fragment:String)
+	{
+		_vertex = vertex;
+		_fragment = fragment;
+		_program = new IntMap<Program>();
+	}
+
 	/**
 	 * Bind the program for rendering
 	 */
 	public inline function use():Void
 	{
-		Renderer.bindProgram(_program);
+		Renderer.bindProgram(program._program);
 	}
 
-	private var _attributes:StringMap<Int>;
-	private var _uniforms:StringMap<Location>;
-	private var _program:ShaderProgram;
+	private var _vertex:String;
+	private var _fragment:String;
+	private var _program:IntMap<Program>;
 
 }

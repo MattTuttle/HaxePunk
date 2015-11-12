@@ -31,6 +31,14 @@ class Texture
 	public var sourceHeight(default, null):Int = 0;
 
 	/**
+	 * Number of color bits per pixel
+	 * RGBA = 32 bits (8 red, 8 green, 8 blue, 8 alpha)
+	 * RGB = 24 bits (8 red, 8 green, 8 alpha)
+	 * Alpha = 8 bits (8 alpha)
+	 */
+	public var bitsPerPixel(default, null):Int = 0;
+
+	/**
 	 * Create a texture from RGBA data.
 	 * @param data the RGBA texture data. Must be 4 Int values per pixel.
 	 * @param stride the byte width of the texture.
@@ -127,6 +135,7 @@ class Texture
 			_id = Math.uuid();
 		}
 		_textures.set(_id, this);
+		_texture = new Map<Int, NativeTexture>();
 	}
 
 	private function loadFromBytes(bytes:UInt8Array, stride:Int)
@@ -141,7 +150,8 @@ class Texture
 			bytes[i * 4 + 2] = tmp;
 		}
 		#end
-		_texture = Renderer.createTextureFromBytes(bytes, width, height);
+		bitsPerPixel = 32;
+		_data = bytes.toBytes();
 	}
 
 	@:allow(haxepunk.graphics, haxepunk.Assets)
@@ -152,9 +162,10 @@ class Texture
 		sourceWidth = buffer.width;
 		sourceHeight = buffer.height;
 
-		_texture = Renderer.createTexture(buffer);
+		bitsPerPixel = buffer.bitsPerPixel;
 		width = buffer.width;
 		height = buffer.height;
+		_data = buffer.data.toBytes();
 	}
 
 	/**
@@ -162,7 +173,10 @@ class Texture
 	 */
 	public function destroy()
 	{
-		Renderer.deleteTexture(_texture);
+		for (texture in _texture)
+		{
+			Renderer.deleteTexture(texture);
+		}
 		_textures.remove(_id);
 	}
 
@@ -170,12 +184,22 @@ class Texture
 	 * Binds the texture for drawing
 	 * @param sampler the id of the sampler to use
 	 */
-	public inline function bind(sampler:Int=0):Void
+	public function bind(sampler:Int=0):Void
 	{
-		Renderer.bindTexture(_texture, sampler);
+		var id = Renderer.window.id;
+		if (_texture.exists(id))
+		{
+			Renderer.bindTexture(_texture.get(id), sampler);
+		}
+		else
+		{
+			var texture = Renderer.createTextureFromBytes(UInt8Array.fromBytes(_data), width, height, bitsPerPixel);
+			_texture.set(id, texture);
+		}
 	}
 
-	private var _texture:NativeTexture;
+	private var _data:Bytes;
+	private var _texture:Map<Int, NativeTexture>;
 	private var _id:String;
 
 	@:allow(haxepunk.Assets)

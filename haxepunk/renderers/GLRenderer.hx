@@ -14,8 +14,6 @@ import lime.utils.UInt8Array;
 class GLRenderer
 {
 
-	public static inline var MAX_BUFFER_SIZE:Int = 65535;
-
 	public static var window:Window;
 
 	public static function clear(color:Color):Void
@@ -102,14 +100,14 @@ class GLRenderer
 		return new Image(new ImageBuffer(pixels, width, height), 0, 0, width, height);
 	}
 
-	public static inline function createTexture(image:ImageBuffer):NativeTexture
+	public static inline function createTextureFromBytes(bytes:UInt8Array, width:Int, height:Int, bitsPerPixel:Int=32):NativeTexture
 	{
-		var format = image.bitsPerPixel == 8 ? GL.ALPHA : GL.RGBA;
-		return createTextureFromBytes(image.data, image.width, image.height, format);
-	}
-
-	public static inline function createTextureFromBytes(bytes:UInt8Array, width:Int, height:Int, format:Int=GL.RGBA):NativeTexture
-	{
+		var format = switch (bitsPerPixel) {
+			case 8: GL.ALPHA;
+			case 24: GL.RGB;
+			case 32: GL.RGBA;
+			default: throw "Unsupported bits per pixel: " + bitsPerPixel;
+		};
 		var texture = GL.createTexture();
 		GL.bindTexture(GL.TEXTURE_2D, texture);
 		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);

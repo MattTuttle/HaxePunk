@@ -30,7 +30,6 @@ class Assets
 			if (Assets.exists(id))
 			{
 				texture.loadFromImage(lime.Assets.getImage(id));
-				Texture._textures.set(id, texture);
 			}
 			else
 			{
