@@ -98,9 +98,9 @@ class Camera extends SceneNode
 	public function cameraToScreen(point:Vector3):Vector3
 	{
 		var result = transform * point;
-		result.x = ((result.x + 1) / 2) * viewport.width;
-		result.y = ((1 - result.y) / 2) * viewport.height;
-		return result * HXP.window.scale;
+		result.x = ((result.x + 1) / 2) * viewport.width + viewport.x;
+		result.y = ((1 - result.y) / 2) * viewport.height + viewport.y;
+		return result;
 	}
 
 	/**

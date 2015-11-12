@@ -8,15 +8,17 @@ class BaseRender extends mint.render.Render
 
     public function new(render:HaxePunkMintRender, control:mint.Control)
     {
+        this.render = render;
         super(render, control);
-        entity = new Entity(control.x, control.y, control.depth);
+        entity = new Entity(control.x, control.y, render.depth + control.depth);
         entity.name = control.name;
+        entity.drawable = control.visible;
         render.scene.add(entity);
 
         var clip = control.clip_with;
         if (clip != null)
         {
-            onclip(true, clip.x, clip.y, clip.w, clip.h);
+            onclip(false, clip.x, clip.y, clip.w, clip.h);
         }
     }
 
@@ -34,7 +36,7 @@ class BaseRender extends mint.render.Render
 
     override function ondestroy()
     {
-        cast(rendering, HaxePunkMintRender).scene.remove(entity);
+        render.scene.remove(entity);
     }
 
     override function onbounds()
@@ -50,9 +52,10 @@ class BaseRender extends mint.render.Render
 
     override function ondepth(depth:Float)
     {
-        entity.layer = depth;
+        entity.layer = render.depth + depth;
     }
 
     private var entity:Entity;
+    private var render:HaxePunkMintRender;
 
 }

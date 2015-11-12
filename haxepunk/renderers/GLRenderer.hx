@@ -250,10 +250,11 @@ class GLRenderer
 		}
 		else
 		{
+			var scale = HXP.window.scale; // retina window scale
 			GL.enable(GL.SCISSOR_TEST);
 			// flip from top left to bottom left
-			GL.scissor(Std.int(clip.x), Std.int(HXP.window.height - clip.y + clip.height),
-				Std.int(clip.width), Std.int(clip.height));
+			GL.scissor(Std.int(clip.x * scale), Std.int((HXP.window.height - (clip.y + clip.height)) * scale),
+				Std.int(clip.width * scale), Std.int(clip.height * scale));
 		}
 	}
 

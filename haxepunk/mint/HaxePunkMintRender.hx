@@ -7,6 +7,7 @@ class HaxePunkMintRender extends mint.render.Rendering
 {
 
     public var scene:haxepunk.scene.Scene;
+    public var depth:Float = 0;
 
     public function new()
     {

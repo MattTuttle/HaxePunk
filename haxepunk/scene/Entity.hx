@@ -146,6 +146,7 @@ class Entity extends SceneNode
 		if (clipRect != null)
 		{
 			batch.end();
+			// TODO: don't calculate this every frame!!
 			// convert from screen to window coordinates
 			var vec = new Vector3(clipRect.x, clipRect.y);
 			var tl = scene.camera.cameraToScreen(vec); // top left

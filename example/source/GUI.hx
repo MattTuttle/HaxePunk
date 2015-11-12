@@ -50,7 +50,7 @@ class GUIEntity extends Entity
 
 		new mint.Image({
             parent: scroll, name: 'icon_2',
-            x:0, y:0, w:280, h:80,
+            x:0, y:0, w:512, h:512,
             path: 'assets/lime.png'
         });
 	}

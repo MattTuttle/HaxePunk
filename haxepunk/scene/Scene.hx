@@ -115,7 +115,8 @@ class Scene
 	 */
 	public function addGraphic(graphic:Graphic, layer:Float=0, x:Float=0, y:Float=0):Entity
 	{
-		var e = new Entity(x, y, layer);
+		var e = new Entity(x, y);
+		e.layer = layer;
 		e.addGraphic(graphic);
 		add(e);
 		return e;
