@@ -1,5 +1,6 @@
 package haxepunk;
 
+import haxepunk.graphics.Color;
 import haxepunk.inputs.Input;
 import haxepunk.math.*;
 import haxepunk.renderers.Renderer;
@@ -19,12 +20,20 @@ class Window
 	/**
 	 * The width of the window
 	 */
-	public var width(default, null):Int;
+	public var width(get, never):Int;
+	private inline function get_width():Int { return _window.width; }
 
 	/**
 	 * The height of the window
 	 */
-	public var height(default, null):Int;
+	public var height(get, never):Int;
+	private inline function get_height():Int { return _window.height; }
+
+	/**
+	 * Pixel scale for window (retina mode).
+	 */
+	public var pixelScale(get, never):Float;
+	private inline function get_pixelScale():Float { return _window.scale; }
 
 	/**
 	 * Time taken for last render frame.
@@ -37,35 +46,35 @@ class Window
 	public var updateFrameTime(default, null):Float;
 
 	/**
-	 * Pixel scale for window (retina mode).
+	 * The background color for the window.
 	 */
-	public var pixelScale(default, null):Float;
+	public var backgroundColor:Color;
 
-    public function new(config:lime.ui.Window)
+    public function new(window:lime.ui.Window)
     {
 		_scenes = new List<Scene>();
 		_scene = new Scene();
 		pushScene(_scene);
 
-		width = config.width;
-		height = config.height;
-		pixelScale = config.scale;
+		_window = window;
+		backgroundColor = new Color().fromInt(window.config.background);
 
 		// reset viewport when window is resized or moved
-		config.onResize.add(setViewport);
-		config.onMove.add(function(x, y) {
+		window.onResize.add(setViewport);
+		window.onMove.add(function(x, y) {
 			// for some reason the viewport needs to be set when the window moves
 			setViewport(width, height);
 		});
 		setViewport(width, height);
 
 		// Init the input system
-		Input.init(config);
+		Input.init(window);
     }
 
 	public function render()
 	{
 		var startTime = Time.now;
+		Renderer.clear(scene.camera.clearColor == null ? backgroundColor : scene.camera.clearColor);
 		scene.draw();
 		renderFrameTime = Time.since(startTime);
 
@@ -131,6 +140,7 @@ class Window
 		return scene;
 	}
 
+	private var _window:lime.ui.Window;
 	private var _scene:Scene;
 	private var _scenes:List<Scene>;
 

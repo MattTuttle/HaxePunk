@@ -1,5 +1,6 @@
 package haxepunk;
 
+import haxepunk.graphics.Color;
 import haxepunk.utils.Time;
 import lime.app.Application;
 import lime.app.Config;
@@ -11,18 +12,20 @@ class Engine extends Application
 
 	override public function exec():Int
 	{
-		for (window in windows)
+		for (wnd in windows)
 		{
-			var wnd = HXP.window = new Window(window);
-			_windows.push(wnd);
-			switch (window.renderer.context)
+			if (_windows.exists(wnd.renderer)) continue;
+			var window = HXP.window = new Window(window);
+			_windows.set(wnd.renderer, window);
+			// check that rendering context is supported
+			switch (wnd.renderer.context)
 			{
 				#if flash
-				case FLASH(stage):
-					Renderer.init(stage, ready);
+				case FLASH(context):
+					Renderer.init(context, function() { ready(window); });
 				#end
-				case OPENGL(gl):
-					ready();
+				case OPENGL(_):
+					ready(window);
 				default:
 					throw "Rendering context is not supported!";
 			}
@@ -30,18 +33,32 @@ class Engine extends Application
 		return super.exec();
 	}
 
-	/**
-	 * This function is called when the engine is ready. All initialization code should go here.
-	 */
-	public function ready() { }
+	public function ready(window:Window) {}
+
+	public function addWindow(width:Int, height:Int, title:String="", ?background:Color):Window
+	{
+		var wnd = new lime.ui.Window({
+			width: width,
+			height: height,
+			depthBuffer: true,
+			resizable: true,
+			x: 0, y: 0,
+			hardware: true,
+			title: title
+		});
+		createWindow(wnd);
+		var window = new Window(wnd);
+		if (background != null) window.backgroundColor = background;
+		_windows.set(wnd.renderer, window);
+		ready(window);
+		return window;
+	}
 
 	override public function render(renderer:Renderer):Void
 	{
-		for (window in _windows)
-		{
-			HXP.window = window; // HACK! Remove this!!!
-			window.render();
-		}
+		var window = _windows.get(renderer);
+		HXP.window = window; // HACK! Remove this!!!
+		window.render();
 	}
 
 	override public function update(deltaTime:Int):Void
@@ -57,6 +74,6 @@ class Engine extends Application
 		}
 	}
 
-	private var _windows:Array<Window> = [];
+	private var _windows = new Map<Renderer, Window>();
 
 }

@@ -5,10 +5,8 @@ import haxepunk.math.Vector3;
 
 class StressTest extends Engine
 {
-	override public function ready()
+	override public function ready(window:Window)
 	{
-		super.ready();
-
 		var material = new Material();
 		material.firstPass.addTexture(Assets.getTexture("assets/lime.png"));
 		var num = Std.int(Math.random() * 50 + 150);
@@ -24,14 +22,14 @@ class StressTest extends Engine
 			sprite.play("walk");
 			sprite.centerOrigin();
 
-			scene.addGraphic(sprite,
+			window.scene.addGraphic(sprite,
 				Std.int(Math.random() * -50),
 				Math.random() * HXP.window.width,
 				Math.random() * HXP.window.height);
 		}
 
 		fps = new Text("", 32);
-		scene.addGraphic(fps);
+		window.scene.addGraphic(fps);
 	}
 
 	override public function update(deltaTime:Int)

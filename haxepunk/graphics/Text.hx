@@ -226,8 +226,7 @@ class Text extends Graphic
 	private function layout()
 	{
 		// hoisted variables
-		var x:Float, y:Float, line:String, image,
-			idx:Int = 0;
+		var x:Float, y:Float, line:String, image;
 		// TODO: handle carriage return!!
 		var lines = _textLayout.text.split("\n");
 		var positions = _textLayout.positions;
@@ -240,6 +239,7 @@ class Text extends Graphic
 			y = lineHeight * (i + 1);
 			x = 0.0;
 			var chars = new Array<TextLineChar>();
+			var idx = 0;
 			for (j in 0...positions.length)
 			{
 				var p = positions[j];

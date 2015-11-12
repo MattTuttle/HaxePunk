@@ -57,7 +57,6 @@ class Camera extends SceneNode
 		super();
 		transform = new Matrix4();
 
-		this.clearColor = new Color(0.117, 0.117, 0.117, 1.0);
 		this.viewport = new Rectangle();
 
 		// default projection

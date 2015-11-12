@@ -1,5 +1,4 @@
-import haxepunk.Engine;
-import haxepunk.HXP;
+import haxepunk.*;
 import haxepunk.graphics.*;
 import haxepunk.math.*;
 import haxepunk.masks.*;
@@ -29,14 +28,13 @@ class MouseTrail extends haxepunk.scene.Entity
 
 class Main extends Engine
 {
-	override public function ready()
+	override public function ready(window:Window)
 	{
-		super.ready();
-		var scene = Engine.scene;
+		var scene = window.scene;
 		var camera = scene.camera;
 		camera.x = -camera.halfWidth;
 		camera.y = -camera.halfHeight;
-		camera.zoom = 0.5;
+		// camera.zoom = 0.5;
 
 		var image = new Image("assets/lime.png");
 		image.centerOrigin();

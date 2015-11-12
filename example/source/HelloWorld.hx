@@ -1,16 +1,14 @@
-import haxepunk.Engine;
-
+import haxepunk.*;
 import haxepunk.graphics.*;
 
 class HelloWorld extends Engine
 {
-	override public function ready()
+	override public function ready(window:Window)
 	{
-		super.ready();
-		scene.camera.clearColor = new Color(0.9, 0.9, 0.9, 1.0);
+		window.backgroundColor = new Color(0.9, 0.9, 0.9, 1.0);
 		var text = new Text("Hello world", 32);
 		text.color.fromInt(0);
 		text.centerOrigin();
-		scene.addGraphic(text, scene.width / 2, scene.height / 2);
+		window.scene.addGraphic(text, 0, window.width / 2, window.height / 2);
 	}
 }

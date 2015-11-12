@@ -3,7 +3,7 @@ package haxepunk.graphics;
 import haxepunk.graphics.Image;
 import haxepunk.math.*;
 import haxepunk.scene.Camera;
-import haxepunk.utils.Time;
+import haxepunk.utils.*;
 import haxe.ds.StringMap;
 import lime.app.Event;
 
@@ -263,7 +263,7 @@ class Spritemap extends Image
 	 */
 	public function randFrame()
 	{
-		frame = Math.rand(frameCount);
+		frame = Random.int(frameCount);
 	}
 
 	/**
@@ -343,7 +343,7 @@ class Spritemap extends Image
 		}
 	}
 
-	override public function draw(offset:Vector3):Void
+	override public function draw(batch:SpriteBatch, offset:Vector3):Void
 	{
 		if (_lastFrame != _frame)
 		{
@@ -351,7 +351,7 @@ class Spritemap extends Image
 			clipRect.y = Std.int(_frame / columns) * height;
 			_lastFrame = _frame;
 		}
-		super.draw(offset);
+		super.draw(batch, offset);
 	}
 
 	private var _frame:Int = 0;

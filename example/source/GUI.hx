@@ -1,10 +1,10 @@
-import haxepunk.Engine;
-import haxepunk.mint.*;
+import haxepunk.*;
 import haxepunk.inputs.*;
 import haxepunk.graphics.*;
 import haxepunk.utils.*;
 import haxepunk.math.*;
 import haxepunk.scene.*;
+import haxepunk.mint.HaxePunkMintRender;
 
 class GUIEntity extends Entity
 {
@@ -130,8 +130,13 @@ class GUIEntity extends Entity
 
 class GUI extends Engine
 {
-	override public function ready()
+
+	override public function ready(window:Window)
 	{
-		haxepunk.HXP.window.scene.add(new GUIEntity());
+		window.scene.add(new GUIEntity());
+		if (++numWindows < 2) addWindow(320, 240);
 	}
+
+	private var numWindows:Int = 0;
+
 }

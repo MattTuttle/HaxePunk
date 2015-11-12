@@ -8,6 +8,7 @@ import haxepunk.masks.Mask;
 import haxepunk.math.*;
 import haxepunk.renderers.Renderer;
 import haxepunk.graphics.SpriteBatch;
+import haxepunk.utils.Time;
 
 using haxepunk.utils.ArrayUtils;
 
@@ -335,7 +336,6 @@ class Scene
 	 */
 	public function draw()
 	{
-		Renderer.clear(camera.clearColor);
 		spriteBatch.begin(camera.transform);
 		for (e in _layerList)
 		{
@@ -345,7 +345,7 @@ class Scene
 		if (Console.enabled) Console.instance.draw(this);
 		Renderer.present();
 
-		var t = haxe.Timer.stamp() * 1000;
+		var t = Time.now * 1000;
 		_frameListSum += _frameList[_frameList.length] = Std.int(t - _frameLast);
 		if (_frameList.length > 10) _frameListSum -= _frameList.shift();
 		HXP.frameRate = 1000 / (_frameListSum / _frameList.length);
