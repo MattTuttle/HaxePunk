@@ -2,9 +2,10 @@ package haxepunk.mint;
 
 import haxepunk.graphics.*;
 import haxepunk.math.*;
+import haxepunk.scene.*;
 import mint.core.Macros.*;
 
-class Button extends mint.render.Render
+class Button extends BaseRender
 {
 
     public var color:Color;
@@ -23,12 +24,19 @@ class Button extends mint.render.Render
 
         visual = new BoxShape(new Rectangle(0, 0, control.w, control.h));
         visual.color = opt.color == null ? new Color().fromInt(0x373737) : opt.color;
-        Engine.scene.addGraphic(visual, 0, control.x, control.y);
+        entity.addGraphic(visual);
 
         control.onmouseenter.listen(function(e,c) { visual.color = color_hover; });
         control.onmouseleave.listen(function(e,c) { visual.color = color; });
         control.onmousedown.listen(function(e,c) { visual.color = color_down; });
         control.onmouseup.listen(function(e,c) { visual.color = color_hover; });
+    }
+
+    override public function onbounds()
+    {
+        super.onbounds();
+        visual.rect.width = control.w;
+        visual.rect.height = control.h;
     }
 
     private var visual:BoxShape;

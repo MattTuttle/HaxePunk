@@ -8,6 +8,7 @@ class BoxShape extends Graphic
 
     public var rect:Rectangle;
     public var color:Color;
+    public var outline:Bool = false;
 
     public function new(?rect:Rectangle, ?color:Color)
     {
@@ -19,6 +20,7 @@ class BoxShape extends Graphic
     override public function draw(batch:SpriteBatch, offset:Vector3)
     {
         Draw.begin(batch);
-        Draw.fillRect(rect.x + offset.x, rect.y + offset.y, rect.width, rect.height, color);
+        var drawRect:Dynamic = outline ? Draw.rect : Draw.fillRect;
+        drawRect(rect.x + offset.x, rect.y + offset.y, rect.width, rect.height, color);
     }
 }

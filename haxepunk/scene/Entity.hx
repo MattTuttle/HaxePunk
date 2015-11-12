@@ -96,6 +96,7 @@ class Entity extends SceneNode
 	public function new(x:Float = 0, y:Float = 0, z:Float = 0)
 	{
 		super(x, y, z);
+		layer = z;
 		mask = new Box();
 	}
 

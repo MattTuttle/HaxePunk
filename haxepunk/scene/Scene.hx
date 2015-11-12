@@ -97,7 +97,7 @@ class Scene
 	 * @param y The y-axis position of the Entity.
 	 * @return The created and added Entity object.
 	 */
-	public function addMask(mask:Mask, layer:Int=0, x:Float=0, y:Float=0):Entity
+	public function addMask(mask:Mask, layer:Float=0, x:Float=0, y:Float=0):Entity
 	{
 		var e = new Entity(x, y, layer);
 		e.addMask(mask);
@@ -113,7 +113,7 @@ class Scene
 	 * @param y The y-axis position of the Entity.
 	 * @return The created and added Entity object.
 	 */
-	public function addGraphic(graphic:Graphic, layer:Int=0, x:Float=0, y:Float=0):Entity
+	public function addGraphic(graphic:Graphic, layer:Float=0, x:Float=0, y:Float=0):Entity
 	{
 		var e = new Entity(x, y, layer);
 		e.addGraphic(graphic);

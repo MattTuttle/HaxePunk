@@ -42,6 +42,12 @@ class GUIEntity extends Entity
             options: { label: { color:new Color().fromInt(0x9dca63) } },
             onclick: function(e,c) {trace('mint button! ${Time.now}' );}
         });
+
+		new mint.Image({
+            parent: window, name: 'icon_2',
+            x:50, y:50, w:80, h:80,
+            path: 'assets/lime.png'
+        });
 	}
 
 	override private function set_scene(value:Scene):Scene {
