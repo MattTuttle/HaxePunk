@@ -1,8 +1,7 @@
 package haxepunk.scene;
 
 import haxe.ds.StringMap;
-import haxepunk.graphics.Graphic;
-import haxepunk.graphics.Draw;
+import haxepunk.graphics.*;
 import haxepunk.masks.Mask;
 import haxepunk.math.*;
 import haxepunk.renderers.Renderer;
@@ -25,11 +24,6 @@ class Scene
 	 */
 	public var spriteBatch(default, null):SpriteBatch;
 
-	/**
-	 * An average fps of the last several frames.
-	 */
-	public var frameRate(default, null):Float = 0;
-
 	public function new(width:Int=0, height:Int=0)
 	{
 		camera = new Camera(width, height);
@@ -41,7 +35,6 @@ class Scene
 		_layerList = new Array<Entity>();
 		_groups = new StringMap<Array<Entity>>();
 		_entityNames = new StringMap<Entity>();
-		_frameList = new Array<Float>();
 	}
 
 	/**
@@ -346,12 +339,6 @@ class Scene
 			if (e.drawable) e.draw(spriteBatch);
 		}
 		spriteBatch.end();
-
-		var t = Time.now * 1000;
-		_frameListSum += _frameList[_frameList.length] = Std.int(t - _frameLast);
-		if (_frameList.length > 10) _frameListSum -= _frameList.shift();
-		frameRate = 1000 / (_frameListSum / _frameList.length);
-		_frameLast = t;
 	}
 
 	/**
@@ -436,10 +423,6 @@ class Scene
 		}
 		_removed.clear();
 	}
-
-	private var _frameLast:Float = 0;
-	private var _frameListSum:Float = 0;
-	private var _frameList:Array<Float>;
 
 	private var _added:Array<Entity>;
 	private var _removed:Array<Entity>;

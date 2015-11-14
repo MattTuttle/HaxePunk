@@ -1,5 +1,6 @@
 package haxepunk;
 
+import haxe.ds.IntMap;
 import haxepunk.graphics.Color;
 import haxepunk.utils.Time;
 import lime.app.Application;
@@ -14,9 +15,9 @@ class Engine extends Application
 	{
 		for (wnd in windows)
 		{
-			if (_windows.exists(wnd.renderer)) continue;
+			if (_windows.exists(wnd.id)) continue;
 			var window = new Window(window);
-			_windows.set(wnd.renderer, window);
+			_windows.set(wnd.id, window);
 			// check that rendering context is supported
 			switch (wnd.renderer.context)
 			{
@@ -49,14 +50,14 @@ class Engine extends Application
 		createWindow(wnd);
 		var window = new Window(wnd);
 		if (background != null) window.backgroundColor = background;
-		_windows.set(wnd.renderer, window);
+		_windows.set(wnd.id, window);
 		ready(window);
 		return window;
 	}
 
 	override public function render(renderer:Renderer):Void
 	{
-		var window = _windows.get(renderer);
+		var window = _windows.get(renderer.window.id);
 		window.render();
 	}
 
@@ -66,12 +67,12 @@ class Engine extends Application
 		Time.totalElapsed += Time.elapsed;
 		Time.frames += 1;
 
-		for (window in _windows)
+		for (id in _windows.keys())
 		{
-			window.update();
+			_windows.get(id).update();
 		}
 	}
 
-	private var _windows = new Map<Renderer, Window>();
+	private var _windows = new IntMap<Window>();
 
 }

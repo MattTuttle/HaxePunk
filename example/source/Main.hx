@@ -14,11 +14,11 @@ class MouseTrail extends haxepunk.scene.Entity
 		trail.maxPoints = 30;
 	}
 
-	override public function update()
+	override public function update(window:Window)
 	{
 		var width = 30,
 			change = width / trail.maxPoints;
-		var mouse = scene.camera.screenToCamera(Mouse.position);
+		var mouse = scene.camera.screenToCamera(window.input.mouse.position);
 		trail.addPoint(mouse, width);
 		trail.setThickness(function(i) { return i * change; });
 	}
@@ -42,7 +42,7 @@ class Main extends Engine
 
 		scene.add(new MouseTrail());
 
-		haxepunk.debug.Console.enabled = true;
+		window.console.enabled = true;
 
 		scene.addMask(new Box(30, 30, -15, -15), 0, 300, 500);
 		scene.addMask(new Box(50, 50), 0, 400, 500);

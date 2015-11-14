@@ -379,7 +379,7 @@ class SpriteBatch
 	private var _vIndex:Int = 0;
 	private var _numQuads:Int = 0;
 
-	private static inline var MAX_VERTICES = 16384;
+	private static inline var MAX_VERTICES = 32768;
 	private static inline var MAX_INDICES = 4092;
 	private static inline var MAX_QUADS = 682; // MAX_INDICES / 6
 

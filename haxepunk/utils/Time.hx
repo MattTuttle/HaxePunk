@@ -15,9 +15,9 @@ class Time
 	/** The amount of update frames since the game started */
 	public static var frames(default, null):Int = 0;
 
-	/** The current time in miliseconds. */
+	/** The current time in milliseconds. */
 	public static var now(get, null):Float;
-	private inline static function get_now():Float { return haxe.Timer.stamp(); }
+	private inline static function get_now():Float { return haxe.Timer.stamp() * 1000; }
 
 	/** The timescale applied to Time.elapsed. */
 	public static var scale:Float;

@@ -1,6 +1,6 @@
 package haxepunk;
 
-import haxepunk.debug.Console;
+import haxepunk.debug.*;
 import haxepunk.graphics.Color;
 import haxepunk.inputs.Input;
 import haxepunk.math.*;
@@ -10,6 +10,16 @@ import haxepunk.utils.Time;
 
 class Window
 {
+
+	/**
+	 * An average fps of the last several frames.
+	 */
+	public var fps(default, null):Float = 0;
+
+	/**
+	 * The window's debug console.
+	 */
+	public var console:Console;
 
 	/**
 	 * Active scene. Changing will not take place until the next update
@@ -45,14 +55,14 @@ class Window
 	private inline function get_id():Int { return _window.id; }
 
 	/**
-	 * Time taken for last render frame.
+	 * Time taken for render frames.
 	 */
-	public var renderFrameTime(default, null):Float;
+	public var renderFrameTime(default, null):Statistic;
 
 	/**
-	 * Time taken for last update frame.
+	 * Time taken for update frames.
 	 */
-	public var updateFrameTime(default, null):Float;
+	public var updateFrameTime(default, null):Statistic;
 
 	/**
 	 * The background color for the window.
@@ -66,6 +76,15 @@ class Window
 
     public function new(window:lime.ui.Window)
     {
+		console = new Console();
+		renderFrameTime = new Statistic();
+		updateFrameTime = new Statistic();
+		_frameTime = new Statistic();
+
+		console.addStat(renderFrameTime);
+		console.addStat(updateFrameTime);
+		console.addStat(_frameTime);
+
 		_scenes = new List<Scene>();
 		_scene = new Scene();
 		pushScene(_scene);
@@ -87,13 +106,18 @@ class Window
 
 	public function render()
 	{
+		// calculate time since last frame
 		var startTime = Time.now;
+		_frameTime.add(startTime - _lastFrame);
+		fps = 1000 / _frameTime.average;
+		_lastFrame = startTime;
+
 		Renderer.window = this;
 		Renderer.clear(scene.camera.clearColor == null ? backgroundColor : scene.camera.clearColor);
 		scene.draw();
-		if (Console.enabled) Console.instance.draw(this);
+		if (console.enabled) console.draw(this);
 		Renderer.present();
-		renderFrameTime = Time.since(startTime);
+		renderFrameTime.add(Time.since(startTime));
 
 		#if flash
 		// must reset program and texture at end of each frame...
@@ -112,9 +136,9 @@ class Window
 		// Update the input system
 		input.update();
 
-		if (Console.enabled) Console.instance.update(this);
+		if (console.enabled) console.update(this);
 
-		updateFrameTime = Time.since(startTime);
+		updateFrameTime.add(Time.since(startTime));
 	}
 
 	/**
@@ -159,6 +183,8 @@ class Window
 		return scene;
 	}
 
+	private var _lastFrame:Float = 0;
+	private var _frameTime:Statistic;
 	private var _window:lime.ui.Window;
 	private var _scene:Scene;
 	private var _scenes:List<Scene>;

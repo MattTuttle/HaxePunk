@@ -135,8 +135,6 @@ class GUI extends Engine
 	override public function ready(window:Window)
 	{
 		window.scene.add(new GUIEntity(new HaxePunkMintRender(window)));
-		trace(window.id);
-		if (window.id == 1) addWindow(640, 480);
 	}
 
 }
