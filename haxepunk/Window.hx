@@ -135,10 +135,10 @@ class Window
 		_scene = _scenes.first();
 		scene.update(this);
 
+		if (console.enabled) console.update(this);
+
 		// Update the input system
 		input.update();
-
-		if (console.enabled) console.update(this);
 
 		updateFrameTime.add(Time.since(startTime));
 	}

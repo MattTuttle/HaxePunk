@@ -4,6 +4,7 @@ import haxepunk.graphics.*;
 import haxepunk.math.*;
 import haxepunk.scene.*;
 import haxepunk.utils.*;
+import haxepunk.inputs.*;
 
 class Console
 {
@@ -66,6 +67,17 @@ class Console
 		_fpsText.text = "FPS: " + Std.int(window.fps);
 		var entities = scene.entityCount;
 		_entityText.text = entities + (entities == 1 ? " Entity" : " Entities");
+
+		if (window.input.pressed(Key.C) > 0)
+		{
+			trace("camera");
+			_tool = new CameraTool();
+		}
+		else if (window.input.pressed(Key.S) > 0)
+		{
+			trace("select");
+			_tool = new SelectTool();
+		}
 
 		_tool.update(window);
 	}
