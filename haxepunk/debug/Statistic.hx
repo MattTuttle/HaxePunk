@@ -1,11 +1,29 @@
 package haxepunk.debug;
 
+import haxepunk.graphics.*;
+import haxepunk.math.Rectangle;
+
 /**
  * Stores a continuous list of values in a ring buffer.
  * It keeps track of a running average as well as the ability to graph its' data.
  */
 class Statistic
 {
+
+    /**
+     * Color of the line to draw.
+     */
+    public var color:Color;
+
+    /**
+     * Minimum value.
+     */
+    public var min:Float = 0;
+
+    /**
+     * Maximum value.
+     */
+    public var max:Float = 1;
 
     public var maxSaved(default, set):Int;
     private function set_maxSaved(value:Int):Int
@@ -17,9 +35,10 @@ class Statistic
 
     public var average(default, null):Float;
 
-    public function new(maxSaved:Int=15)
+    public function new(maxSaved:Int=15, ?color:Color)
     {
         _values = new Array<Float>();
+        this.color = (color == null) ? new Color() : color;
         this.maxSaved = maxSaved;
     }
 
@@ -47,9 +66,22 @@ class Statistic
         average = _sum = _addedValues = 0;
     }
 
-    public function draw():Void
+    public function draw(rect:Rectangle):Void
     {
-        // Draw.line();
+        var x = rect.x,
+            y = rect.y + rect.height, // set y to bottom
+            stepX = rect.width / maxSaved,
+            h = rect.height,
+            total = max - min,
+            index = _addedValues % maxSaved;
+        var lastValue:Float = (_values[index] - min) / total;
+        for (i in 1...maxSaved)
+        {
+            var value = (_values[++index % maxSaved] - min) / total;
+            Draw.line(x, y - lastValue * h, x + stepX, y - value * h, color);
+            lastValue = value;
+            x += stepX;
+        }
     }
 
     private var _addedValues:Int; /** @private number of values added overall */

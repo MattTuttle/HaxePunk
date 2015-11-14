@@ -72,10 +72,10 @@ class Console
 
 	public function draw(window:Window):Void
 	{
-		var scene = window.scene;
-		Draw.begin(scene.spriteBatch);
+		// use the scene spritebatch to draw with correct camera transform
+		Draw.begin(window.scene.spriteBatch);
 		var bounds:Rectangle;
-		for (entity in scene.entities)
+		for (entity in window.scene.entities)
 		{
 			if (entity.mask != null)
 			{
@@ -87,41 +87,24 @@ class Console
 		}
 		Draw.end();
 
-		var pos = _camera.position;
+		// reset spritebatch to correct camera position
 		_spriteBatch.begin(_camera.transform);
-		Draw.begin(_spriteBatch);
 
-		for (stat in _statistics) stat.draw();
-
-		var x = _camera.width - _entityText.width;
-		_entityText.origin.x = -x;
-		Draw.fillRect(x + pos.x, pos.y, _entityText.width, _entityText.height, Console.entityColor);
-		_entityText.draw(_spriteBatch, pos);
-
-		_logText.origin.y = -(_camera.height - _logText.height);
-		_logText.draw(_spriteBatch, pos);
-
+		var pad = 4;
+		var pos = new Vector3(); // TODO: remove unnecessary creation of vector
 		_fpsText.draw(_spriteBatch, pos);
 
-		/*if (_frameInfos.length > 1)
-		{
-			var fpsColor = new Color(0.27, 0.54, 0.4);
-			var updateColor = new Color(1.0, 0.94, 0.65);
-			var renderColor = new Color(0.71, 0.29, 0.15);
-			var x, y = pos.y + 50, w = 3, h = 30;
-			var lastInfo:FrameInfo = null;
-			for (i in 1..._frameInfos.length)
-			{
-				var info = _frameInfos.get(i);
-				if (lastInfo != null)
-				{
-					x = pos.x + i * w;
-					Draw.line(x, y - lastInfo.frameRate * h, x + w, y - info.frameRate * h, fpsColor);
-					Draw.line(x, y - lastInfo.updateTime * h, x + w, y - info.updateTime * h, updateColor);
-				}
-				lastInfo = info;
-			}
-		}*/
+		pos.x = _camera.width - _entityText.width;
+		Draw.begin(_spriteBatch);
+		Draw.fillRect(pos.x - pad, 0, _entityText.width + pad, _entityText.height + pad, Console.entityColor);
+		_entityText.draw(_spriteBatch, pos);
+
+		pos.x = 0;
+		pos.y = _camera.height - _logText.height;
+		_logText.draw(_spriteBatch, pos);
+
+		Draw.begin(_spriteBatch);
+		for (stat in _statistics) stat.draw(_statRect);
 
 		_tool.draw(pos);
 		_spriteBatch.end();
@@ -129,7 +112,9 @@ class Console
 
 	private var _camera:Camera;
 	private var _spriteBatch:SpriteBatch;
+
 	private var _statistics:Array<Statistic>;
+	private var _statRect = new Rectangle(0, 0, 200, 100);
 
 	private var _tool:Tool;
 	private var _logText:Text;

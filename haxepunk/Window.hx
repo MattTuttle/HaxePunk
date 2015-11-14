@@ -77,9 +77,11 @@ class Window
     public function new(window:lime.ui.Window)
     {
 		console = new Console();
-		renderFrameTime = new Statistic();
-		updateFrameTime = new Statistic();
-		_frameTime = new Statistic();
+		renderFrameTime = new Statistic(50, new Color(0.71, 0.29, 0.15));
+		updateFrameTime = new Statistic(50, new Color(1.0, 0.94, 0.65));
+		_frameTime = new Statistic(50, new Color(0.27, 0.54, 0.4));
+		updateFrameTime.max = renderFrameTime.max = 1000 / 60;
+		_frameTime.max = 1000 / 30;
 
 		console.addStat(renderFrameTime);
 		console.addStat(updateFrameTime);
