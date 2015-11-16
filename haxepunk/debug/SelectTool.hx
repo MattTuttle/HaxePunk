@@ -66,7 +66,7 @@ class SelectTool implements Tool
 	{
 		if (_mousePressed)
 		{
-			Draw.rect(_selectRect.x + cameraPosition.x, _selectRect.y + cameraPosition.y, _selectRect.width, _selectRect.height, Console.selectColor);
+			Draw.rect(_selectRect.x, _selectRect.y, _selectRect.width, _selectRect.height, Console.selectColor);
 		}
 	}
 

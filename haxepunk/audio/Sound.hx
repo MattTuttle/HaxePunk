@@ -1,8 +1,8 @@
-package haxepunk;
+package haxepunk.audio;
 
 import lime.Assets;
-
-#if !doc-gen
+import lime.audio.*;
+import haxepunk.math.*;
 
 class Sound
 {
@@ -10,20 +10,22 @@ class Sound
 	public function new(path:String)
 	{
 		_sound = Assets.getAudioBuffer(path);
+		_source = new AudioSource(_sound);
 	}
 
 	/**
 	 * Plays the sound once.
 	 * @param	vol	   Volume factor, a value from 0 to 1.
 	 * @param	pan	   Panning factor, a value from -1 to 1.
-	 * @param   loop   If the audio should loop infinitely
+	 * @param   loop   Number of times to loop the audio
 	 */
 	public function play(volume:Float = 1, pan:Float = 0, loop:Bool = false):Void
 	{
-		_sound.volume = volume;
-		_sound.pan = pan;
-		_sound.looping = loop;
-		_sound.play();
+		_source.gain = volume;
+		// _source.pan = pan;
+		// TODO: figure out how to properly do infinite loop
+		_source.loops = loop ? Math.INT_MAX : 0;
+		_source.play();
 	}
 
 	/**
@@ -43,9 +45,9 @@ class Sound
 	 */
 	public function stop():Bool
 	{
-		if (!_sound.playing) return false;
-		_sound.stop();
-		return true;
+		var playing = isPlaying;
+		if (playing) _source.stop();
+		return playing;
 	}
 
 	/**
@@ -58,17 +60,17 @@ class Sound
 	/**
 	 * If the sound is currently playing.
 	 */
-	public var playing(get, never):Bool;
-	private inline function get_playing():Bool { return _sound.playing; }
+	public var isPlaying(get, never):Bool;
+	@:access(lime.audio.AudioSource)
+	private inline function get_isPlaying():Bool { return _source.playing; }
 
 	/**
 	 * Position of the currently playing sound, in seconds.
 	 */
 	public var position(get, never):Float;
-	private inline function get_position():Float { return _sound.position; }
+	private inline function get_position():Float { return _source.currentTime; }
 
-	private var _sound:lime.audio.AudioBuffer;
+	private var _sound:AudioBuffer;
+	private var _source:AudioSource;
 
 }
-
-#end

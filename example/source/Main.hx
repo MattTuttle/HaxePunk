@@ -1,4 +1,5 @@
 import haxepunk.*;
+import haxepunk.audio.*;
 import haxepunk.graphics.*;
 import haxepunk.math.*;
 import haxepunk.masks.*;
