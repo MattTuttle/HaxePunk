@@ -189,7 +189,7 @@ class Tilemap extends Graphic
 		}
 	}
 
-	override public function draw(offset:Vector3):Void
+	override public function draw(batch:SpriteBatch, offset:Vector3):Void
 	{
 		var scaledTileWidth = tilesheet.tileWidth * scale.x,
 			scaledTileHeight = tilesheet.tileHeight * scale.y;
@@ -202,7 +202,7 @@ class Tilemap extends Graphic
 				if (tile < 0) continue;
 				var rect = tilesheet.getTileRect(tile);
 				if (rect == null) continue;
-				SpriteBatch.draw(material, x * scaledTileWidth, y * scaledTileHeight,
+				batch.draw(material, x * scaledTileWidth, y * scaledTileHeight,
 					scaledTileWidth, scaledTileHeight,
 					rect.x, rect.y, rect.width, rect.height,
 					false, false, 0, 0, scale.x, scale.y, 0, tint);

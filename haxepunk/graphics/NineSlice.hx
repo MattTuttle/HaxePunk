@@ -11,8 +11,8 @@ class NineSlice extends Image
 	{
 		super(source);
 
+		// TODO: make this smarter to define all 9 sections of the object
 		var texture = material.firstPass.getTexture(0);
-
 		clipRect = (clipRect == null ? new Rectangle(0, 0, texture.width / 3, texture.height / 3) : clipRect);
 		this.clipRect = clipRect;
 
@@ -42,7 +42,7 @@ class NineSlice extends Image
 	 * Draws the final nine slices
 	 * @param offset the offset vector of the graphic usually passed from an Entity object
 	 */
-	override public function draw(offset:Vector3):Void
+	override public function draw(batch:SpriteBatch, offset:Vector3):Void
 	{
 		var stretchWidth = width - clipRect.width * 2;
 		var stretchHeight = height - clipRect.height * 2;
@@ -51,35 +51,35 @@ class NineSlice extends Image
 		var x2 = offset.x + width - clipRect.width;
 
 		var y = offset.y;
-		SpriteBatch.draw(material, offset.x, y, _topLeft.width, _topLeft.height,
+		batch.draw(material, offset.x, y, _topLeft.width, _topLeft.height,
 			_topLeft.x, _topLeft.y, _topLeft.width, _topLeft.height, false, false,
 			origin.x, origin.y, scale.x, scale.y);
-		SpriteBatch.draw(material, x1, y, stretchWidth, _topCenter.height,
+		batch.draw(material, x1, y, stretchWidth, _topCenter.height,
 			_topCenter.x, _topCenter.y, _topCenter.width, _topCenter.height, false, false,
 			origin.x, origin.y, scale.x, scale.y);
-		SpriteBatch.draw(material, x2, y, _topRight.width, _topRight.height,
+		batch.draw(material, x2, y, _topRight.width, _topRight.height,
 			_topRight.x, _topRight.y, _topRight.width, _topRight.height, false, false,
 			origin.x, origin.y, scale.x, scale.y);
 
 		y = offset.y + clipRect.height;
-		SpriteBatch.draw(material, offset.x, y, _centerLeft.width, stretchHeight,
+		batch.draw(material, offset.x, y, _centerLeft.width, stretchHeight,
 			_centerLeft.x, _centerLeft.y, _centerLeft.width, _centerLeft.height, false, false,
 			origin.x, origin.y, scale.x, scale.y);
-		SpriteBatch.draw(material, x1, y, stretchWidth, stretchHeight,
+		batch.draw(material, x1, y, stretchWidth, stretchHeight,
 			_centerCenter.x, _centerCenter.y, _centerCenter.width, _centerCenter.height, false, false,
 			origin.x, origin.y, scale.x, scale.y);
-		SpriteBatch.draw(material, x2, y, _centerRight.width, stretchHeight,
+		batch.draw(material, x2, y, _centerRight.width, stretchHeight,
 			_centerRight.x, _centerRight.y, _centerRight.width, _centerRight.height, false, false,
 			origin.x, origin.y, scale.x, scale.y);
 
 		y = offset.y + height - clipRect.height;
-		SpriteBatch.draw(material, offset.x, y, _bottomLeft.width, _bottomLeft.height,
+		batch.draw(material, offset.x, y, _bottomLeft.width, _bottomLeft.height,
 			_bottomLeft.x, _bottomLeft.y, _bottomLeft.width, _bottomLeft.height, false, false,
 			origin.x, origin.y, scale.x, scale.y);
-		SpriteBatch.draw(material, x1, y, stretchWidth, _bottomCenter.height,
+		batch.draw(material, x1, y, stretchWidth, _bottomCenter.height,
 			_bottomCenter.x, _bottomCenter.y, _bottomCenter.width, _bottomCenter.height, false, false,
 			origin.x, origin.y, scale.x, scale.y);
-		SpriteBatch.draw(material, x2, y, _bottomRight.width, _bottomRight.height,
+		batch.draw(material, x2, y, _bottomRight.width, _bottomRight.height,
 			_bottomRight.x, _bottomRight.y, _bottomRight.width, _bottomRight.height, false, false,
 			origin.x, origin.y, scale.x, scale.y);
 	}

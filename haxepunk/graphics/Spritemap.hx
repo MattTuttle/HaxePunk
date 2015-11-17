@@ -339,18 +339,14 @@ class Spritemap extends Image
 				} while (--_time >= 1);
 				_frame = _anim.frames[_index];
 			}
-		}
-	}
 
-	override public function draw(batch:SpriteBatch, offset:Vector3):Void
-	{
-		if (_lastFrame != _frame)
-		{
-			clipRect.x = _frame % columns * width;
-			clipRect.y = Std.int(_frame / columns) * height;
-			_lastFrame = _frame;
+			if (_lastFrame != _frame)
+			{
+				clipRect.x = _frame % columns * width;
+				clipRect.y = Std.int(_frame / columns) * height;
+				_lastFrame = _frame;
+			}
 		}
-		super.draw(batch, offset);
 	}
 
 	private var _frame:Int = 0;

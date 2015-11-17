@@ -7,19 +7,20 @@ class TilemapTest extends haxe.unit.TestCase
 	@:access(haxepunk.graphics.Texture)
 	override public function setup()
 	{
-		_material = new Material();
 		var texture = new Texture();
-		texture.width = texture.sourceWidth = 8;
-		texture.height = texture.sourceHeight = 9;
-		_material.firstPass.addTexture(texture);
-
-		_tilemap = new Tilemap(_material, 4, 6, 2, 3);
+		texture.width = 16;
+		texture.height = 24;
+		_tilesheet = new TileSheet(texture, 8, 12);
+		_tilemap = new Tilemap(_tilesheet, 18, 29);
 	}
 
 	public function testInit()
 	{
-		assertEquals(4, _tilemap._width);
-		assertEquals(6, _tilemap._height);
+		assertEquals(8, _tilesheet.tileWidth);
+		assertEquals(12, _tilesheet.tileHeight);
+
+		assertEquals(16, _tilemap._width);
+		assertEquals(24, _tilemap._height);
 
 		assertEquals(2, _tilemap._columns);
 		assertEquals(2, _tilemap._rows);
@@ -72,7 +73,7 @@ class TilemapTest extends haxe.unit.TestCase
 		assertEquals("-1:-1|-1:-1", _tilemap.toString(":", "|"));
 	}
 
-	private var _material:Material;
+	private var _tilesheet:TileSheet;
 	private var _tilemap:Tilemap;
 
 }
