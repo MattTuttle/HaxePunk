@@ -204,10 +204,8 @@ class Text extends Graphic
 		super();
 		color = new Color();
 
-		#if !flash
 		_font = Font.fromFile(defaultFont);
 		_textLayout = new TextLayout("", _font.font, size, LEFT_TO_RIGHT, LATIN, "en");
-		#end
 
 		material = new Material();
 		material.firstPass.shader = _defaultShader;

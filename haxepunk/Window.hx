@@ -71,6 +71,9 @@ class Window
 	 */
 	public var backgroundColor:Color;
 
+	@:allow(haxepunk.Engine)
+	public var ready(default, null):Bool = false;
+
 	/**
 	 * Input handler
 	 */
@@ -107,7 +110,9 @@ class Window
 			// for some reason the viewport needs to be set when the window moves
 			setViewport(width, height);
 		});
+		#if !flash
 		setViewport(width, height);
+		#end
 
 		input.register(window);
 	}
@@ -115,6 +120,7 @@ class Window
 
 	public function render()
 	{
+		if (!ready) return;
 		// calculate time since last frame
 		var startTime = Time.now;
 		_frameTime.add(startTime - _lastFrame);

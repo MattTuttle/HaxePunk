@@ -34,7 +34,14 @@ class Log
             message: message,
             level: level
         });
-        if (output) Sys.println(level.toString() + ": " + message);
+        if (output)
+        {
+#if (flash || html5)
+            trace(level.toString() + ": " + message);
+#else
+            Sys.println(level.toString() + ": " + message);
+#end
+        }
     }
 
     public static inline function info(message:String):Void { log(message, Info); }

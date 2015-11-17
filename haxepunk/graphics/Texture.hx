@@ -153,9 +153,9 @@ class Texture
 		{
 			for (i in 0...pixels)
 			{
-				var tmp = bytes[i * 4];
-				bytes[i * 4] = bytes[i * 4 + 2];
-				bytes[i * 4 + 2] = tmp;
+				var tmp = bytes.get(i * 4);
+				bytes.set(i * 4, bytes.get(i * 4 + 2));
+				bytes.set(i * 4 + 2, tmp);
 			}
 		}
 #end

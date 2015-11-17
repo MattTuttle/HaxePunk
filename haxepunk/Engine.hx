@@ -54,9 +54,13 @@ class Engine extends Application
 		{
 			#if flash
 			case FLASH(context):
-				Renderer.init(context, function() { ready(window); });
+				haxepunk.renderers.FlashRenderer.init(context, function() {
+					window.ready = true;
+					ready(window);
+				});
 			#end
 			case OPENGL(_):
+				window.ready = true;
 				ready(window);
 			default:
 				throw "Rendering context is not supported!";

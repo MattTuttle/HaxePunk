@@ -2,6 +2,7 @@ package haxepunk.renderers;
 
 #if flash
 
+import haxe.io.Bytes;
 import com.adobe.utils.AGALMiniAssembler;
 import haxepunk.graphics.Color;
 import haxepunk.math.*;
@@ -13,7 +14,6 @@ import flash.display3D.*;
 import flash.display3D.textures.Texture;
 import flash.events.Event;
 import lime.graphics.FlashRenderContext;
-import lime.graphics.Image;
 import lime.utils.Int16Array;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
@@ -21,14 +21,14 @@ import lime.utils.UInt8Array;
 class FlashRenderer
 {
 
-	public static inline var MAX_BUFFER_SIZE:Int = 65535;
+	public static var window:Window;
 
 	public static inline function init(context:FlashRenderContext, ready:Void->Void)
 	{
 		_stage3D = context.stage.stage3Ds[0];
 		_stage3D.addEventListener(Event.CONTEXT3D_CREATE, function (_) {
 			_context = _stage3D.context3D;
-			setViewport(0, 0, context.stage.stageWidth, context.stage.stageHeight);
+			setViewport(new Rectangle(0, 0, context.stage.stageWidth, context.stage.stageHeight));
 			_context.enableErrorChecking = true;
 			ready();
 		});
@@ -55,11 +55,11 @@ class FlashRenderer
 		_context.setCulling(CULL[mode]);
 	}
 
-	public static inline function setViewport(x:Int, y:Int, width:Int, height:Int):Void
+	public static inline function setViewport(viewport:Rectangle):Void
 	{
-		_stage3D.x = x;
-		_stage3D.y = y;
-		_context.configureBackBuffer(width, height, 4, true);
+		_stage3D.x = viewport.x;
+		_stage3D.y = viewport.y;
+		_context.configureBackBuffer(Std.int(viewport.width), Std.int(viewport.height), 4, true);
 	}
 
 	public static inline function present()
@@ -148,18 +148,11 @@ class FlashRenderer
 		return buffer;
 	}
 
-	public static inline function createTexture(image:Image):NativeTexture
+	public static inline function createTextureFromBytes(bytes:Bytes, width:Int, height:Int, bitsPerPixel:Int):NativeTexture
 	{
-		var format = (image.buffer != null && image.buffer.bitsPerPixel == 1) ? Context3DTextureFormat.COMPRESSED_ALPHA : Context3DTextureFormat.BGRA;
-		var texture = _context.createTexture(image.width, image.height, format, false);
-		texture.uploadFromBitmapData(image.src, 0);
-		return texture;
-	}
-
-	public static inline function createTextureFromBytes(bytes:UInt8Array, width:Int, height:Int):NativeTexture
-	{
+		if (bitsPerPixel != 32) Log.error("Flash only supports 32 bit BGRA textures");
 		var texture = _context.createTexture(width, height, Context3DTextureFormat.BGRA, false);
-		texture.uploadFromByteArray(bytes.buffer, 0);
+		texture.uploadFromByteArray(bytes.getData(), 0);
 		return texture;
 	}
 
@@ -171,6 +164,11 @@ class FlashRenderer
 	public static inline function bindTexture(texture:NativeTexture, sampler:Int):Void
 	{
 		_context.setTextureAt(sampler, texture);
+	}
+
+	public static inline function setScissor(?clip:Rectangle)
+	{
+		Log.warn("Not implemented");
 	}
 
 	public static inline function draw(buffer:IndexBuffer, numTriangles:Int, offset:Int=0):Void

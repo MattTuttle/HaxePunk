@@ -30,8 +30,15 @@ class Assets
 #if lime
     		if (Assets.exists(id))
     		{
-                var buffer = lime.Assets.getImage(id).buffer;
-    			texture.loadFromBytes(buffer.data.toBytes(), Std.int(buffer.width), buffer.bitsPerPixel);
+                var image = lime.Assets.getImage(id);
+                var buffer = image.buffer;
+#if flash
+                var bounds = new flash.geom.Rectangle(0, 0, buffer.width, buffer.height);
+                var bytes = haxe.io.Bytes.ofData(cast(image.src, flash.display.BitmapData).getPixels(bounds));
+#else
+                var bytes = buffer.data.toBytes();
+#end
+    			texture.loadFromBytes(bytes, Std.int(buffer.width), buffer.bitsPerPixel);
     		}
     		else
     		{
