@@ -1,5 +1,7 @@
 package haxepunk.inputs;
 
+import haxepunk.inputs.Key;
+
 class KeyboardTest extends haxe.unit.TestCase
 {
 
@@ -12,8 +14,15 @@ class KeyboardTest extends haxe.unit.TestCase
 
 	public function testKeyDown()
 	{
-		input.keyboard.onKeyDown(Key.LEFT, 0);
+		input.keyboard.onKeyDown(Key.LEFT, Modifier.NONE);
 		assertTrue(input.check(Key.LEFT));
+		assertEquals(1, input.pressed(Key.LEFT));
+	}
+
+	public function testKeyLast()
+	{
+		input.keyboard.onKeyDown(Key.UP, Modifier.NONE);
+		assertEquals(Key.UP, input.keyboard.last);
 	}
 
 	public function testKeyUp()

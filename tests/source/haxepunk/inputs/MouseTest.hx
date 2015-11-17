@@ -8,11 +8,6 @@ class MouseTest extends haxe.unit.TestCase
 	override public function setup()
 	{
 		input = new Input();
-		// reset mouse values
-		for (state in input.mouse._states)
-		{
-			state.on = state.pressed = state.released = 0;
-		}
 	}
 
 	public function testNameOf()
@@ -58,6 +53,20 @@ class MouseTest extends haxe.unit.TestCase
 		assertTrue(input.check("all"));
 	}
 
+	public function testMouseLast()
+	{
+		assertEquals(MouseButton.ANY, input.mouse.last);
+
+		input.mouse.onMouseDown(40, 30, MouseButton.LEFT);
+		assertEquals(MouseButton.LEFT, input.mouse.last);
+
+		input.mouse.onMouseDown(0, 0, MouseButton.RIGHT);
+		assertEquals(MouseButton.RIGHT, input.mouse.last);
+
+		input.mouse.onMouseUp(0, 0, MouseButton.LEFT);
+		assertEquals(MouseButton.LEFT, input.mouse.last);
+	}
+
 	public function testMousePressed()
 	{
 		assertEquals(0, input.pressed(MouseButton.LEFT));
@@ -81,13 +90,21 @@ class MouseTest extends haxe.unit.TestCase
 		input.mouse.onMouseDown(10, 45, MouseButton.LEFT);
 		assertEquals(10.0, input.mouse.x);
 		assertEquals(45.0, input.mouse.y);
+
+		input.mouse.onMouseMove(2.4352, 156.24356);
+		assertEquals(2.4352, input.mouse.x);
+		assertEquals(156.24356, input.mouse.y);
+
+		input.mouse.onMouseUp(8.86542, 2453.5463, MouseButton.RIGHT);
+		assertEquals(8.86542, input.mouse.x);
+		assertEquals(2453.5463, input.mouse.y);
 	}
 
 	public function testMouseWheel()
 	{
 		input.mouse.onMouseWheel(1, 2);
-		assertEquals(1.0, input.mouse.wheelDeltaX);
-		assertEquals(2.0, input.mouse.wheelDeltaY);
+		assertEquals(1.0, input.mouse.wheelDelta.x);
+		assertEquals(2.0, input.mouse.wheelDelta.y);
 	}
 
 }

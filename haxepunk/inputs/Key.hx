@@ -1,5 +1,26 @@
 package haxepunk.inputs;
 
+@:enum
+abstract Modifier(Int) to Int
+{
+	var NONE        = 0x0000;
+	var LEFT_SHIFT  = 0x0001;
+	var RIGHT_SHIFT = 0x0002;
+	var SHIFT       = 0x0003;
+	var LEFT_CTRL   = 0x0040;
+	var RIGHT_CTRL  = 0x0080;
+	var CTRL        = 0x00C0;
+	var LEFT_ALT    = 0x0100;
+	var RIGHT_ALT   = 0x0200;
+	var ALT         = 0x0300;
+	var LEFT_META   = 0x0400;
+	var RIGHT_META  = 0x0800;
+	var META        = 0x0C00;
+	var NUM_LOCK    = 0x1000;
+	var CAPS_LOCK   = 0x2000;
+	var MODE        = 0x4000;
+}
+
 /**
  * The keyboard keys.
  */
@@ -253,7 +274,6 @@ abstract Key(Int) to Int from Int
 	var BACKLIGHT_UP = 0x40000118;
 	var EJECT = 0x40000119;
 	var SLEEP = 0x4000011A;
-
 
 	public inline function toString():String
 	{

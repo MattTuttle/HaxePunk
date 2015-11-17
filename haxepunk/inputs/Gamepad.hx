@@ -2,10 +2,9 @@ package haxepunk.inputs;
 
 import haxe.ds.IntMap;
 import haxepunk.math.*;
-import haxepunk.inputs.InputState;
 
 @:allow(haxepunk.inputs)
-class Gamepad
+class Gamepad extends ButtonManager
 {
 
 	/**
@@ -39,14 +38,6 @@ class Gamepad
 	 */
 	public var isConnected(default, null):Bool = true;
 
-	public function new(name:String, id:Int, guid:String)
-	{
-		this.guid = guid;
-		this.name = name;
-		this.id = id;
-		_axis = new IntMap<Float>();
-	}
-
 	/**
 	 * Returns the name of the gamepad button.
 	 *
@@ -60,6 +51,14 @@ class Gamepad
 	public static inline function nameOf(button:GamepadButton):String
 	{
 		return button.toString();
+	}
+
+	public function new(name:String, id:Int, guid:String)
+	{
+		this.guid = guid;
+		this.name = name;
+		this.id = id;
+		_axis = new IntMap<Float>();
 	}
 
 	/**
@@ -78,7 +77,7 @@ class Gamepad
 	 */
 	private function onButtonUp(button:Int):Void
 	{
-		getInputState(button).released += 1;
+		getButtonState(button).released += 1;
 		last = button;
 	}
 
@@ -88,7 +87,7 @@ class Gamepad
 	 */
 	private function onButtonDown(button:Int):Void
 	{
-		getInputState(button).pressed += 1;
+		getButtonState(button).pressed += 1;
 		last = button;
 	}
 
@@ -116,65 +115,7 @@ class Gamepad
 		_axis.set(axis, value);
 	}
 
-	/**
-	 * Return the value for a mouse button.
-	 *
-	 * @param button The mouse button to check
-	 * @param v The value to get
-	 * @return The value of [v] for [button]
-	 */
-	private inline function value(button:Int, v:InputValue):Int
-	{
-		if (button < 0) // Any
-		{
-			var result = 0;
-			for (state in _states)
-			{
-				result += state.value(v);
-			}
-			return result;
-		}
-		else
-		{
-			return getInputState(button).value(v);
-		}
-	}
-
-	/**
-	 * Gets a mouse state object from a button number.
-	 */
-	private function getInputState(button:Int):InputState
-	{
-		var state:InputState;
-		if (_states.exists(button))
-		{
-			state = _states.get(button);
-		}
-		else
-		{
-			state = new InputState();
-			_states.set(button, state);
-		}
-		return state;
-	}
-
-	/**
-	 * Updates the mouse state.
-	 */
-	private function update():Void
-	{
-		// Was On last frame if was on the previous one and there is at least the same amount of Pressed than Released.
-		// Or wasn't On last frame and Pressed > 0
-		for (state in _states)
-		{
-			state.on = ( (state.on > 0 && state.pressed >= state.released) || (state.on == 0 && state.pressed > 0) ) ? 1 : 0;
-			state.pressed = 0;
-			state.released = 0;
-		}
-	}
-
 	/** Each axis contained in an array. */
 	private var _axis(default, null):IntMap<Float>;
-	private var _states:IntMap<InputState> = new IntMap<InputState>();
 
 }

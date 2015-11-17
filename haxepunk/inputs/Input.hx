@@ -1,34 +1,7 @@
 package haxepunk.inputs;
 
-import haxepunk.inputs.InputState;
+import haxepunk.inputs.ButtonManager;
 import haxepunk.inputs.Gamepad;
-
-/**
- * Either enum used by InputType.
- */
-private enum EitherInput
-{
-	String(s:String);
-	MouseButton(button:MouseButton);
-	GamepadButton(button:Int);
-	Key(k:Key);
-}
-
-/**
- * Represent any of the following types: String, Key, MouseButton, GamepadButton and Gesture.
- */
-private abstract InputType(EitherInput)
-{
-	public inline function new(e:EitherInput) { this = e; }
-	public var type(get, never):EitherInput;
-
-	@:to inline function get_type() { return this; }
-
-	@:from static function fromString(s:String) { return new InputType(String(s)); }
-	@:from static function fromMouseButton(button:MouseButton) { return new InputType(MouseButton(button)); }
-	@:from static function fromKey(key:Key) { return new InputType(Key(key)); }
-	@:from static function fromGamepadButton(button:GamepadButton) { return new InputType(GamepadButton(button)); }
-}
 
 /**
  * Manages the Input from Keyboard, Mouse, Touch and Gamepad.
@@ -48,49 +21,9 @@ class Input
 	 * @param input An input to check for
 	 * @return If [input] is held down
 	 */
-	public inline function check(input:InputType):Bool
+	public inline function check(input:ButtonType):Bool
 	{
-		return value(input, InputValue.On) > 0 || value(input, InputValue.Pressed) > 0;
-	}
-
-	/**
-	 * Defines a new input.
-	 *
-	 * @param name String to map the input to
-	 * @param keys The inputs to use for the Input, don't use string in the array
-	 * @param merge If the input is already defined merge the arrays instead of replacing it
-	 */
-	public function define(name:String, inputs:Array<InputType>, merge:Bool=false):Void
-	{
-		for (input in inputs)
-		{
-			switch (input.type)
-			{
-				case String(_):
-					throw "Input.define can't have strings in the [inputs] array.";
-
-				default:
-			}
-		}
-
-		if (!merge || !_defines.exists(name))
-		{
-			_defines.set(name, inputs);
-		}
-		else
-		{
-			var existing = _defines.get(name);
-
-			for (input in inputs)
-			{
-				if (existing.indexOf(input) == -1) // Not already in the array
-				{
-					existing.push(input);
-				}
-			}
-
-			_defines.set(name, existing);
-		}
+		return value(input, ButtonValue.On) > 0 || value(input, ButtonValue.Pressed) > 0;
 	}
 
 	/**
@@ -99,9 +32,9 @@ class Input
 	 * @param input An input to check for
 	 * @return The number of times [input] was pressed
 	 */
-	public inline function pressed(input:InputType):Int
+	public inline function pressed(input:ButtonType):Int
 	{
-		return value(input, InputValue.Pressed);
+		return value(input, ButtonValue.Pressed);
 	}
 
 	/**
@@ -110,12 +43,28 @@ class Input
 	 * @param input An input to check for
 	 * @return The number of times [input] was released
 	 */
-	public inline function released(input:InputType):Int
+	public inline function released(input:ButtonType):Int
 	{
-		return value(input, InputValue.Released);
+		return value(input, ButtonValue.Released);
 	}
 
+	/**
+	 * Defines a button group using a string identifier.
+	 *
+	 * @param name    Identifier for the button group.
+	 * @param inputs  The inputs to use for the group, can also reference other groups.
+	 * @param merge   If the input is already defined, merge the arrays instead of replacing it.
+	 */
+	public function define(name:String, inputs:Array<ButtonType>, merge:Bool=false):Void
+	{
+		// only merge if previously defined
+		if (merge && _defines.exists(name))
+		{
+			inputs = _defines.get(name).concat(inputs);
+		}
 
+		_defines.set(name, inputs);
+	}
 
 	/**
 	 * Init the input systems.
@@ -161,69 +110,44 @@ class Input
 	 *
 	 * If [input] is a String returns the sum of the inputs in the define.
 	 *
-	 * @param input The input to test against
-	 * @param v The value to get
+	 * @param input  The input to test against.
+	 * @param v      The button state to get.
+	 * @param depth  Used to determine if an infinite loop is detected. DO NOT PASS!
 	 * @return The value [v] for the input [input]
 	 */
-	private function value(input:InputType, v:InputValue):Int
+	private function value(input:ButtonType, v:ButtonValue, depth:Int=0):Int
 	{
+		if (depth > 10) throw "Input define loop detected in value()!";
+		var result = 0;
 		switch (input.type)
 		{
-			case String(name):
+			case Identifier(name):
 				if (_defines.exists(name))
 				{
-					var sum = 0;
-
 					for (i in _defines.get(name))
 					{
-						sum = sum + subsystemValue(i, v);
+						result += value(i, v, depth + 1);
 					}
-
-					return sum;
 				}
 				else
 				{
 					#if debug trace('[Warning] Input has no define of name "$name"'); #end
-					return 0;
 				}
 
-			default: // not a string
-				return subsystemValue(input, v);
-		}
-		return 0;
-	}
+			case Key(key):
+				result = keyboard.value(key, v);
 
-	/**
-	 * Get a value from an input, ignore string value.
-	 *
-	 * @param input The input to test against, if it's a String returns 0
-	 * @param v The value to get
-	 * @return The value [v] for the input [input]
-	 */
-	private function subsystemValue(input:InputType, v:InputValue):Int
-	{
-		return switch (input.type)
-		{
-			case String(name):
-				0; // ignore strings
-
-			case Key(k):
-				keyboard.value(k, v);
-
-			case MouseButton(mb):
-				mouse.value(mb, v);
+			case MouseButton(button):
+				result = mouse.value(button, v);
 
 			case GamepadButton(button):
-				var val:Int = 0;
+				// TODO: find a way to select a gamepad
 				for (gamepad in gamepads)
 				{
-					val += gamepad.value(button, v);
+					result += gamepad.value(button, v);
 				}
-				val;
-
-			/*case Gesture(g):
-				Touch.value(g, v);*/
 		}
+		return result;
 	}
 
 	/**
@@ -243,9 +167,9 @@ class Input
 				gamepad.update();
 			}
 		}
-		//Touch.update();
+		// touch.update();
 	}
 
 	/** Stocks the inputs the user defined using its name as key. */
-	private var _defines = new Map<String, Array<InputType>>();
+	private var _defines = new Map<String, Array<ButtonType>>();
 }

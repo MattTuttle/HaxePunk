@@ -23,6 +23,7 @@ class TestMain
 		runner.add(new haxepunk.math.Vector3Test());
 
 		// input tests
+		runner.add(new haxepunk.inputs.InputTest());
 		runner.add(new haxepunk.inputs.KeyboardTest());
 		runner.add(new haxepunk.inputs.MouseTest());
 		runner.add(new haxepunk.inputs.GamepadTest());
