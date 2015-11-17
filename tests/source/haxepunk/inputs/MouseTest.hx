@@ -1,6 +1,5 @@
 package haxepunk.inputs;
 
-@:access(haxepunk.inputs)
 class MouseTest extends haxe.unit.TestCase
 {
 

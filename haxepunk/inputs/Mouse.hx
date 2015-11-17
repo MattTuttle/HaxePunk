@@ -1,8 +1,6 @@
 package haxepunk.inputs;
 
 import haxe.ds.IntMap;
-import lime.ui.Window;
-
 import haxepunk.inputs.Input;
 import haxepunk.inputs.InputState;
 import haxepunk.math.*;
@@ -10,6 +8,7 @@ import haxepunk.math.*;
 /**
  * Get information on the mouse input.
  */
+@:allow(haxepunk.inputs)
 class Mouse
 {
 	/** Holds the last mouse button detected */
@@ -41,7 +40,7 @@ class Mouse
 	 * @param button The mouse button to name
 	 * @return The name
 	 */
-	public function nameOf(button:MouseButton):String
+	public static function nameOf(button:MouseButton):String
 	{
 		if (button > 2) // The button isn't defined in MouseButton
 		{
@@ -70,17 +69,7 @@ class Mouse
 	/**
 	 * Setup the mouse input support.
 	 */
-	@:allow(haxepunk.inputs.Input)
-	private function new(window:Window):Void
-	{
-		// Register the events from lime
-#if !unit_test
-		window.onMouseMove.add(onMouseMove);
-		window.onMouseDown.add(onMouseDown);
-		window.onMouseUp.add(onMouseUp);
-		window.onMouseWheel.add(onMouseWheel);
-#end
-	}
+	private function new() { }
 
 	/**
 	 * Return the value for a mouse button.
@@ -89,7 +78,6 @@ class Mouse
 	 * @param v The value to get
 	 * @return The value of [v] for [button]
 	 */
-	@:allow(haxepunk.inputs.Input)
 	private inline function value(button:MouseButton, v:InputValue):Int
 	{
 		if (button < 0) // Any
@@ -110,7 +98,6 @@ class Mouse
 	/**
 	 * Updates the mouse state.
 	 */
-	@:allow(haxepunk.inputs.Input)
 	private function update():Void
 	{
 		// Was On last frame if was on the previous one and there is at least the same amount of Pressed than Released.
@@ -127,7 +114,7 @@ class Mouse
 	}
 
 	/**
-	 * Lime onMouseMove event.
+	 * onMouseMove event.
 	 */
 	private inline function onMouseMove(x:Float, y:Float):Void
 	{
@@ -136,7 +123,7 @@ class Mouse
 	}
 
 	/**
-	 * Lime onMouseDown event.
+	 * onMouseDown event.
 	 */
 	private function onMouseDown(x:Float, y:Float, button:Int):Void
 	{
@@ -147,7 +134,7 @@ class Mouse
 	}
 
 	/**
-	 * Lime onMouseUp event.
+	 * onMouseUp event.
 	 */
 	private function onMouseUp(x:Float, y:Float, button:Int):Void
 	{
@@ -158,7 +145,7 @@ class Mouse
 	}
 
 	/**
-	 * Lime onMouseWheel event.
+	 * onMouseWheel event.
 	 */
 	private function onMouseWheel(deltaX:Float, deltaY:Float):Void
 	{

@@ -3,11 +3,11 @@ package haxepunk.graphics;
 import haxe.ds.StringMap;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
-import lime.utils.*;
-import lime.Assets;
+import lime.utils.UInt8Array;
 import haxepunk.renderers.Renderer;
 import haxepunk.math.Math;
 
+@:allow(haxepunk.Assets)
 class Texture
 {
 
@@ -127,7 +127,7 @@ class Texture
 		return texture;
 	}
 
-	@:allow(haxepunk.graphics, haxepunk.Assets)
+	@:allow(haxepunk.graphics)
 	private function new(?id:String)
 	{
 		_id = (id == null) ? Math.uuid() : id;
@@ -152,7 +152,8 @@ class Texture
 		_data = bytes.toBytes();
 	}
 
-	@:allow(haxepunk.graphics, haxepunk.Assets)
+#if lime
+	@:allow(haxepunk.graphics)
 	private function loadFromImage(image:lime.graphics.Image)
 	{
 		if (image == null || image.buffer == null) return;
@@ -165,6 +166,7 @@ class Texture
 		height = buffer.height;
 		_data = buffer.data.toBytes();
 	}
+#end
 
 	/**
 	 * Removes a texture from the renderer.
@@ -201,7 +203,6 @@ class Texture
 	private var _texture:Map<Int, NativeTexture>;
 	private var _id:String;
 
-	@:allow(haxepunk.Assets)
 	private static var _textures = new StringMap<Texture>();
 
 }

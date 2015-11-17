@@ -3,12 +3,11 @@ package haxepunk.inputs;
 import haxe.ds.IntMap;
 import haxepunk.inputs.Input;
 import haxepunk.inputs.InputState;
-import lime.ui.Window;
-import lime.ui.KeyCode;
 
 /**
  * Get information on the keyboard input.
  */
+@:allow(haxepunk.inputs)
 class Keyboard
 {
 
@@ -89,16 +88,7 @@ class Keyboard
 	/**
 	 * Setup the keyboard input support.
 	 */
-	@:allow(haxepunk.inputs.Input)
-	private function new(window:Window):Void
-	{
-#if !unit_test
-		// Register the events from lime
-		window.onKeyDown.add(onKeyDown);
-		window.onKeyUp.add(onKeyUp);
-		// window.onTextInput.add(onTextInput);
-#end
-	}
+	private function new() { }
 
 	/**
 	 * Return the value for a key.
@@ -107,7 +97,6 @@ class Keyboard
 	 * @param v The value to get
 	 * @return The value of [v] for [key]
 	 */
-	@:allow(haxepunk.inputs.Input)
 	private function value(key:Key, v:InputValue):Int
 	{
 		if (Std.int(key) <= -1) // Any
@@ -128,7 +117,6 @@ class Keyboard
 	/**
 	 * Updates the keyboard state.
 	 */
-	@:allow(haxepunk.inputs.Input)
 	private function update():Void
 	{
 		// Was On last frame if was on the previous one and there is at least the same amount of Pressed than Released.
@@ -142,7 +130,7 @@ class Keyboard
 	}
 
 	/**
-	 * Lime onKeyDown event.
+	 * onKeyDown event.
 	 */
 	private function onKeyDown(keycode:Int, modifiers:Int):Void
 	{
@@ -158,7 +146,7 @@ class Keyboard
 	}
 
 	/**
-	 * Lime onKeyUp event.
+	 * onKeyUp event.
 	 */
 	private function onKeyUp(keycode:Int, modifiers:Int):Void
 	{
@@ -167,7 +155,7 @@ class Keyboard
 	}
 
 	/**
-	 * Lime onTextInput event.
+	 * onTextInput event.
 	 */
 	private function onTextInput(text:String):Void
 	{

@@ -89,16 +89,6 @@ typedef Location = Int;
 
 typedef Renderer = FlashRenderer;
 
-#elseif (js && canvas)
-
-typedef ShaderProgram = Int;
-typedef VertexBuffer = Int;
-typedef IndexBuffer = Int;
-typedef NativeTexture = js.html.Image;
-typedef Location = Int;
-
-typedef Renderer = CanvasRenderer;
-
 #else
 
 typedef FloatArray = lime.utils.Float32Array;

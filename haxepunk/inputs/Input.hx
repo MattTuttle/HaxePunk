@@ -12,6 +12,7 @@ private enum EitherInput
 {
 	String(s:String);
 	MouseButton(mb:MouseButton);
+	GamepadButton(gb:GamepadButton);
 	Key(k:Key);
 }
 
@@ -27,6 +28,7 @@ private abstract InputType(EitherInput)
 
 	@:from static function fromString(s:String) { return new InputType(String(s)); }
 	@:from static function fromMouseButton(mb:MouseButton) { return new InputType(MouseButton(mb)); }
+	@:from static function fromGamepadButton(gb:GamepadButton) { return new InputType(GamepadButton(gb)); }
 	@:from static function fromKey(k:Key) { return new InputType(Key(k)); }
 }
 
@@ -39,6 +41,7 @@ class Input
 
 	public var keyboard(default, null):Keyboard;
 	public var mouse(default, null):Mouse;
+	public var gamepads(default, null):Array<Gamepad>;
 
 	/**
 	 * Check if an input is held down.
@@ -121,8 +124,33 @@ class Input
 	@:allow(haxepunk.Window)
 	private function new(?window:Window)
 	{
-		keyboard = new Keyboard(window);
-		mouse = new Mouse(window);
+		keyboard = new Keyboard();
+		mouse = new Mouse();
+		gamepads = new Array<Gamepad>();
+#if !unit_test
+		// Register keyboard events
+		window.onKeyDown.add(keyboard.onKeyDown);
+		window.onKeyUp.add(keyboard.onKeyUp);
+		// window.onTextInput.add(onTextInput);
+
+		// Register mouse events
+		window.onMouseMove.add(mouse.onMouseMove);
+		window.onMouseDown.add(mouse.onMouseDown);
+		window.onMouseUp.add(mouse.onMouseUp);
+		window.onMouseWheel.add(mouse.onMouseWheel);
+
+		lime.ui.Gamepad.onConnect.add(addGamepad);
+#end
+	}
+
+	private function addGamepad(gp:lime.ui.Gamepad):Void
+	{
+		var gamepad = new Gamepad(gp.name, gp.id, gp.guid);
+		gp.onAxisMove.add(gamepad.onAxisMove);
+		gp.onButtonDown.add(gamepad.onButtonDown);
+		gp.onButtonUp.add(gamepad.onButtonUp);
+		gp.onDisconnect.add(gamepad.onDisconnect);
+		gamepads.push(gamepad);
 	}
 
 	/**
@@ -182,10 +210,15 @@ class Input
 			case MouseButton(mb):
 				mouse.value(mb, v);
 
-			/*case GamepadButton(gb):
-				Gamepad.value(gb, v);
+			case GamepadButton(gb):
+				var val:Int = 0;
+				for (gamepad in gamepads)
+				{
+					val += gamepad.value(gb, v);
+				}
+				val;
 
-			case Gesture(g):
+			/*case Gesture(g):
 				Touch.value(g, v);*/
 		}
 	}
@@ -198,7 +231,14 @@ class Input
 	{
 		keyboard.update();
 		mouse.update();
-		//Gamepad.update();
+		for (i in 0...gamepads.length)
+		{
+			var gamepad = gamepads[i];
+			if (gamepad.connected)
+			{
+				gamepad.update();
+			}
+		}
 		//Touch.update();
 	}
 
