@@ -1,36 +1,29 @@
 package haxepunk.scene;
 
-import haxepunk.Engine;
+import haxepunk.Window;
 
 class SceneTest extends haxe.unit.TestCase
 {
 
-	public function testInitialScene()
-	{
-		var scene = new Scene();
-		var e = new Engine(scene);
-		assertEquals(scene, Engine.scene);
-	}
-
 	public function testScene()
 	{
-		var e = new Engine();
-		var initialScene = Engine.scene;
+		var w = new Window();
+		var initialScene = w.scene;
 		var scene = new Scene();
 
-		Engine.pushScene(scene);
-		assertEquals(initialScene, Engine.scene);
-		e.update(0); // change takes place after update
-		assertEquals(scene, Engine.scene);
+		w.pushScene(scene);
+		assertEquals(initialScene, w.scene);
+		w.update(); // change takes place after update
+		assertEquals(scene, w.scene);
 
-		Engine.popScene();
-		assertEquals(scene, Engine.scene);
-		e.update(0); // change takes place after update
-		assertEquals(initialScene, Engine.scene);
+		w.popScene();
+		assertEquals(scene, w.scene);
+		w.update(); // change takes place after update
+		assertEquals(initialScene, w.scene);
 
-		Engine.popScene();
-		e.update(0);
-		assertEquals(initialScene, Engine.scene);
+		w.popScene();
+		w.update();
+		assertEquals(initialScene, w.scene);
 	}
 
 }

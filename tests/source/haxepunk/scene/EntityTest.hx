@@ -16,7 +16,7 @@ class EntityTest extends haxe.unit.TestCase
 		var scene = new Scene();
 		var e = new Entity();
 		scene.add(e);
-		scene.updateEntities();
+		scene.updateEntities(null);
 		assertEquals(scene, e.scene);
 	}
 

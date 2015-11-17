@@ -74,10 +74,12 @@ class Mouse
 	private function new(window:Window):Void
 	{
 		// Register the events from lime
+#if !unit_test
 		window.onMouseMove.add(onMouseMove);
 		window.onMouseDown.add(onMouseDown);
 		window.onMouseUp.add(onMouseUp);
 		window.onMouseWheel.add(onMouseWheel);
+#end
 	}
 
 	/**

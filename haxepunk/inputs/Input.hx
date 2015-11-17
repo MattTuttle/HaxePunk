@@ -119,7 +119,7 @@ class Input
 	 * Init the input systems.
 	 */
 	@:allow(haxepunk.Window)
-	private function new(window:Window)
+	private function new(?window:Window)
 	{
 		keyboard = new Keyboard(window);
 		mouse = new Mouse(window);

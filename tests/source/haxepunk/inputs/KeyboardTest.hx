@@ -1,13 +1,20 @@
 package haxepunk.inputs;
 
-@:access(haxepunk.inputs.Keyboard)
+@:access(haxepunk.inputs)
 class KeyboardTest extends haxe.unit.TestCase
 {
 
+	public var input:Input;
+
+	override public function setup()
+	{
+		input = new Input();
+	}
+
 	public function testKeyDown()
 	{
-		Keyboard.onKeyDown(Key.LEFT, 0);
-		assertTrue(Input.check(Key.LEFT));
+		input.keyboard.onKeyDown(Key.LEFT, 0);
+		assertTrue(input.check(Key.LEFT));
 	}
 
 	public function testKeyUp()
@@ -15,16 +22,16 @@ class KeyboardTest extends haxe.unit.TestCase
 		for (key in Key.A...Key.Z)
 		{
 			var k:Key = cast key;
-			Keyboard.onKeyUp(k, 0);
-			assertEquals(1, Input.released(k));
+			input.keyboard.onKeyUp(k, 0);
+			assertEquals(1, input.released(k));
 		}
 	}
 
 	public function testDefine()
 	{
-		Input.define("jump", [Key.SPACE, Key.UP]);
-		Keyboard.onKeyDown(Key.SPACE, 0);
-		assertTrue(Input.check("jump"));
+		input.define("jump", [Key.SPACE, Key.UP]);
+		input.keyboard.onKeyDown(Key.SPACE, 0);
+		assertTrue(input.check("jump"));
 	}
 
 }

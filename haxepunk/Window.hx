@@ -74,7 +74,7 @@ class Window
 	 */
 	public var input:Input;
 
-    public function new(window:lime.ui.Window)
+    public function new(?window:lime.ui.Window)
     {
 		console = new Console();
 		renderFrameTime = new Statistic(50, new Color(0.71, 0.29, 0.15));
@@ -91,6 +91,7 @@ class Window
 		_scene = new Scene();
 		pushScene(_scene);
 
+#if !unit_test
 		_window = window;
 		backgroundColor = new Color().fromInt(window.config.background);
 
@@ -101,7 +102,7 @@ class Window
 			setViewport(width, height);
 		});
 		setViewport(width, height);
-
+#end
 		// Init the input system
 		input = new Input(window);
     }

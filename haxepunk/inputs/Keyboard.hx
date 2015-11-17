@@ -92,10 +92,12 @@ class Keyboard
 	@:allow(haxepunk.inputs.Input)
 	private function new(window:Window):Void
 	{
+#if !unit_test
 		// Register the events from lime
 		window.onKeyDown.add(onKeyDown);
 		window.onKeyUp.add(onKeyUp);
 		// window.onTextInput.add(onTextInput);
+#end
 	}
 
 	/**

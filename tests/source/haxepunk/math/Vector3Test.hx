@@ -24,15 +24,12 @@ class Vector3Test extends haxe.unit.TestCase
 		var a = new Vector3(1, 2, 3),
 			b = new Vector3(4, 5, 6);
 
-		assertVector(a % b, -3, 6, -3);
 		assertVector(a.cross(b), -3, 6, -3);
-
-		assertVector(b % a, 3, -6, 3);
 		assertVector(b.cross(a), 3, -6, 3);
 
+		// make sure we didn't modify the original vectors
 		assertVector(a, 1, 2, 3);
-		a %= b;
-		assertVector(a, -3, 6, -3);
+		assertVector(b, 4, 5, 6);
 	}
 
 	public function testAdd()

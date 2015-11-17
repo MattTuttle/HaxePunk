@@ -1,14 +1,16 @@
 package haxepunk.inputs;
 
-@:access(haxepunk.inputs.Input)
-@:access(haxepunk.inputs.Mouse)
+@:access(haxepunk.inputs)
 class MouseTest extends haxe.unit.TestCase
 {
 
+	public var input:Input;
+
 	override public function setup()
 	{
+		input = new Input();
 		// reset mouse values
-		for (state in Mouse._states)
+		for (state in input.mouse._states)
 		{
 			state.on = state.pressed = state.released = 0;
 		}
@@ -16,68 +18,68 @@ class MouseTest extends haxe.unit.TestCase
 
 	public function testCheck()
 	{
-		Input.define("left", [MouseButton.LEFT]);
-		Input.define("right", [MouseButton.RIGHT]);
-		Input.define("all", [MouseButton.ANY]);
-		Input.define("both", [MouseButton.LEFT, MouseButton.RIGHT]);
+		input.define("left", [MouseButton.LEFT]);
+		input.define("right", [MouseButton.RIGHT]);
+		input.define("all", [MouseButton.ANY]);
+		input.define("both", [MouseButton.LEFT, MouseButton.RIGHT]);
 
-		assertFalse(Input.check("left"));
-		assertFalse(Input.check("right"));
+		assertFalse(input.check("left"));
+		assertFalse(input.check("right"));
 
 		// undefined but should return false instead of throwing an error
-		assertFalse(Input.check("foo"));
+		assertFalse(input.check("foo"));
 
-		Mouse.onMouseDown(0, 0, MouseButton.LEFT);
-		assertTrue(Input.check("left"));
-		assertTrue(Input.check("all"));
+		input.mouse.onMouseDown(0, 0, MouseButton.LEFT);
+		assertTrue(input.check("left"));
+		assertTrue(input.check("all"));
 
-		Mouse.onMouseDown(0, 0, MouseButton.RIGHT);
-		assertTrue(Input.check("right"));
-		assertTrue(Input.check("all"));
-		assertTrue(Input.check("both"));
+		input.mouse.onMouseDown(0, 0, MouseButton.RIGHT);
+		assertTrue(input.check("right"));
+		assertTrue(input.check("all"));
+		assertTrue(input.check("both"));
 
-		Input.update();
+		input.update();
 
-		Mouse.onMouseUp(0, 0, MouseButton.LEFT);
+		input.mouse.onMouseUp(0, 0, MouseButton.LEFT);
 
-		assertTrue(Input.check("left")); // left is still "on" but not "pressed"
+		assertTrue(input.check("left")); // left is still "on" but not "pressed"
 
-		Input.update();
+		input.update();
 
-		assertFalse(Input.check("left"));
-		assertTrue(Input.check("all"));
+		assertFalse(input.check("left"));
+		assertTrue(input.check("all"));
 	}
 
 	public function testMousePressed()
 	{
-		assertEquals(0, Input.pressed(MouseButton.LEFT));
+		assertEquals(0, input.pressed(MouseButton.LEFT));
 
-		Mouse.onMouseDown(0, 0, MouseButton.LEFT);
-		assertEquals(1, Input.pressed(MouseButton.LEFT));
+		input.mouse.onMouseDown(0, 0, MouseButton.LEFT);
+		assertEquals(1, input.pressed(MouseButton.LEFT));
 
-		Mouse.onMouseDown(0, 0, MouseButton.LEFT);
-		assertEquals(0, Input.released(MouseButton.LEFT));
-		assertEquals(2, Input.pressed(MouseButton.LEFT));
+		input.mouse.onMouseDown(0, 0, MouseButton.LEFT);
+		assertEquals(0, input.released(MouseButton.LEFT));
+		assertEquals(2, input.pressed(MouseButton.LEFT));
 
-		Mouse.onMouseUp(0, 0, MouseButton.LEFT);
-		assertEquals(1, Input.released(MouseButton.LEFT));
+		input.mouse.onMouseUp(0, 0, MouseButton.LEFT);
+		assertEquals(1, input.released(MouseButton.LEFT));
 
-		Input.update();
-		assertEquals(0, Input.pressed(MouseButton.LEFT));
+		input.update();
+		assertEquals(0, input.pressed(MouseButton.LEFT));
 	}
 
 	public function testMousePosition()
 	{
-		Mouse.onMouseDown(10, 45, MouseButton.LEFT);
-		assertEquals(10.0, Mouse.x);
-		assertEquals(45.0, Mouse.y);
+		input.mouse.onMouseDown(10, 45, MouseButton.LEFT);
+		assertEquals(10.0, input.mouse.x);
+		assertEquals(45.0, input.mouse.y);
 	}
 
 	public function testMouseWheel()
 	{
-		Mouse.onMouseWheel(1, 2);
-		assertEquals(1.0, Mouse.wheelDeltaX);
-		assertEquals(2.0, Mouse.wheelDeltaY);
+		input.mouse.onMouseWheel(1, 2);
+		assertEquals(1.0, input.mouse.wheelDeltaX);
+		assertEquals(2.0, input.mouse.wheelDeltaY);
 	}
 
 }
