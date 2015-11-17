@@ -1,5 +1,6 @@
 package haxepunk.inputs;
 
+import haxe.ds.IntMap;
 import haxepunk.inputs.ButtonManager;
 import haxepunk.inputs.Gamepad;
 
@@ -13,6 +14,7 @@ class Input
 
 	public var keyboard(default, null):Keyboard;
 	public var mouse(default, null):Mouse;
+	public var touches(default, null):IntMap<Touch>;
 	public var gamepads(default, null):Array<Gamepad>;
 
 	/**
@@ -73,10 +75,31 @@ class Input
 	{
 		keyboard = new Keyboard();
 		mouse = new Mouse();
+		touches = new IntMap<Touch>();
 		gamepads = new Array<Gamepad>();
 	}
 
 #if lime
+	private function onTouch(t:lime.ui.Touch)
+	{
+		var touch;
+		if (touches.exists(t.id))
+		{
+			touch = touches.get(t.id);
+		}
+		else
+		{
+			touch = new Touch(t.id);
+			touches.set(t.id, touch);
+		}
+		touch.x = t.x;
+		touch.y = t.y;
+		touch.dx = t.dx;
+		touch.dy = t.dy;
+		touch.device = t.device;
+		touch.pressure = t.pressure;
+	}
+
 	@:allow(haxepunk.Window)
 	private function register(?window:lime.ui.Window)
 	{
@@ -90,6 +113,10 @@ class Input
 		window.onMouseDown.add(mouse.onMouseDown);
 		window.onMouseUp.add(mouse.onMouseUp);
 		window.onMouseWheel.add(mouse.onMouseWheel);
+
+		lime.ui.Touch.onStart.add(onTouch);
+		lime.ui.Touch.onMove.add(onTouch);
+		lime.ui.Touch.onEnd.add(function(t) { touches.remove(t.id); });
 
 		lime.ui.Gamepad.onConnect.add(addGamepad);
 	}
@@ -167,7 +194,6 @@ class Input
 				gamepad.update();
 			}
 		}
-		// touch.update();
 	}
 
 	/** Stocks the inputs the user defined using its name as key. */
