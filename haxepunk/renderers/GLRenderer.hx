@@ -2,6 +2,7 @@ package haxepunk.renderers;
 
 #if !flash
 
+import haxe.io.Bytes;
 import haxepunk.graphics.Color;
 import haxepunk.math.*;
 import haxepunk.renderers.Renderer;
@@ -100,7 +101,7 @@ class GLRenderer
 		return new Image(new ImageBuffer(pixels, width, height), 0, 0, width, height);
 	}
 
-	public static inline function createTextureFromBytes(bytes:UInt8Array, width:Int, height:Int, bitsPerPixel:Int=32):NativeTexture
+	public static inline function createTextureFromBytes(bytes:Bytes, width:Int, height:Int, bitsPerPixel:Int=32):NativeTexture
 	{
 		var format = switch (bitsPerPixel) {
 			case 8: GL.ALPHA;
@@ -112,7 +113,7 @@ class GLRenderer
 		GL.bindTexture(GL.TEXTURE_2D, texture);
 		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
 		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST);
-		GL.texImage2D(GL.TEXTURE_2D, 0, format, width, height, 0, format, GL.UNSIGNED_BYTE, bytes);
+		GL.texImage2D(GL.TEXTURE_2D, 0, format, width, height, 0, format, GL.UNSIGNED_BYTE, UInt8Array.fromBytes(bytes));
 		return texture;
 	}
 

@@ -3,9 +3,12 @@ package haxepunk.renderers;
 import haxe.ds.IntMap;
 import haxepunk.graphics.Color;
 import haxepunk.math.Matrix4;
+
+#if lime
 import lime.utils.Float32Array;
 import lime.utils.Int16Array;
 import lime.graphics.Image;
+#end
 
 enum BufferUsage {
 	STATIC_DRAW;
@@ -65,52 +68,62 @@ class ActiveState
 	}
 }
 
+// ----------------------------------------------
+// Type defines for rendering
+// ----------------------------------------------
 #if flash
 
-typedef FloatArray = Array<Float>;
-typedef IntArray = Array<UInt>;
+	typedef FloatArray = Array<Float>;
+	typedef IntArray = Array<UInt>;
 
-class VertexBuffer
-{
-	public var stride:Int;
-	public var buffer:flash.display3D.VertexBuffer3D;
-
-	public function new(buffer:flash.display3D.VertexBuffer3D, stride:Int)
+	class VertexBuffer
 	{
-		this.buffer = buffer;
-		this.stride = stride;
+		public var stride:Int;
+		public var buffer:flash.display3D.VertexBuffer3D;
+
+		public function new(buffer:flash.display3D.VertexBuffer3D, stride:Int)
+		{
+			this.buffer = buffer;
+			this.stride = stride;
+		}
 	}
-}
 
-typedef ShaderProgram = flash.display3D.Program3D;
-typedef IndexBuffer = flash.display3D.IndexBuffer3D;
-typedef NativeTexture = flash.display3D.textures.Texture;
-typedef Location = Int;
+	typedef ShaderProgram = flash.display3D.Program3D;
+	typedef IndexBuffer = flash.display3D.IndexBuffer3D;
+	typedef NativeTexture = flash.display3D.textures.Texture;
+	typedef Location = Int;
 
-typedef Renderer = FlashRenderer;
+	typedef Renderer = FlashRenderer;
+
+#elseif lime
+
+	typedef FloatArray = lime.utils.Float32Array;
+	typedef IntArray = lime.utils.Int16Array;
+
+	typedef ShaderProgram = lime.graphics.opengl.GLProgram;
+	typedef Location = lime.graphics.opengl.GLUniformLocation;
+
+	class VertexBuffer
+	{
+		public var stride:Int;
+		public var buffer:lime.graphics.opengl.GLBuffer;
+
+		public function new(buffer:lime.graphics.opengl.GLBuffer, stride:Int)
+		{
+			this.buffer = buffer;
+			this.stride = stride;
+		}
+	}
+
+	typedef IndexBuffer = lime.graphics.opengl.GLBuffer;
+	typedef NativeTexture = lime.graphics.opengl.GLTexture;
+	typedef Renderer = GLRenderer;
 
 #else
 
-typedef FloatArray = lime.utils.Float32Array;
-typedef IntArray = lime.utils.Int16Array;
+	typedef FloatArray = Array<Float>;
+	typedef IntArray = Array<UInt>;
 
-typedef ShaderProgram = lime.graphics.opengl.GLProgram;
-typedef Location = lime.graphics.opengl.GLUniformLocation;
-
-class VertexBuffer
-{
-	public var stride:Int;
-	public var buffer:lime.graphics.opengl.GLBuffer;
-
-	public function new(buffer:lime.graphics.opengl.GLBuffer, stride:Int)
-	{
-		this.buffer = buffer;
-		this.stride = stride;
-	}
-}
-
-typedef IndexBuffer = lime.graphics.opengl.GLBuffer;
-typedef NativeTexture = lime.graphics.opengl.GLTexture;
-typedef Renderer = GLRenderer;
+	typedef Renderer = NullRenderer;
 
 #end

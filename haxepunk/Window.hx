@@ -28,6 +28,7 @@ class Window
 	private inline function get_scene():Scene { return _scene; }
 	private inline function set_scene(scene:Scene):Scene { return replaceScene(scene); }
 
+#if lime
 	/**
 	 * The width of the window
 	 */
@@ -53,6 +54,7 @@ class Window
 	 */
 	public var id(get, never):Int;
 	private inline function get_id():Int { return _window.id; }
+#end
 
 	/**
 	 * Time taken for render frames.
@@ -74,8 +76,9 @@ class Window
 	 */
 	public var input:Input;
 
-    public function new(?window:lime.ui.Window)
+    public function new()
     {
+		input = new Input();
 		console = new Console();
 		renderFrameTime = new Statistic(50, new Color(0.71, 0.29, 0.15));
 		updateFrameTime = new Statistic(50, new Color(1.0, 0.94, 0.65));
@@ -90,8 +93,11 @@ class Window
 		_scenes = new List<Scene>();
 		_scene = new Scene();
 		pushScene(_scene);
+    }
 
-#if !unit_test
+#if lime
+	public function register(?window:lime.ui.Window)
+	{
 		_window = window;
 		backgroundColor = new Color().fromInt(window.config.background);
 
@@ -102,10 +108,10 @@ class Window
 			setViewport(width, height);
 		});
 		setViewport(width, height);
+
+		input.register(window);
+	}
 #end
-		// Init the input system
-		input = new Input(window);
-    }
 
 	public function render()
 	{
@@ -188,8 +194,10 @@ class Window
 
 	private var _lastFrame:Float = 0;
 	private var _frameTime:Statistic;
-	private var _window:lime.ui.Window;
 	private var _scene:Scene;
 	private var _scenes:List<Scene>;
+#if lime
+	private var _window:lime.ui.Window;
+#end
 
 }

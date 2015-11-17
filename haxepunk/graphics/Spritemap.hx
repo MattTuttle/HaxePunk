@@ -5,7 +5,6 @@ import haxepunk.math.*;
 import haxepunk.scene.Camera;
 import haxepunk.utils.*;
 import haxe.ds.StringMap;
-import lime.app.Event;
 
 /**
  * Template used by Spritemap to define animations. Don't create

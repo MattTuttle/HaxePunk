@@ -3,11 +3,6 @@ package haxepunk.renderers;
 import haxepunk.graphics.Color;
 import haxepunk.math.*;
 import haxepunk.renderers.Renderer;
-import lime.graphics.*;
-import lime.graphics.opengl.*;
-import lime.utils.Float32Array;
-import lime.utils.Int16Array;
-import lime.utils.UInt8Array;
 
 class NullRenderer
 {
@@ -21,7 +16,7 @@ class NullRenderer
 	public static inline function setCullMode(mode:CullMode):Void { }
 	public static inline function capture(x:Int, y:Int, width:Int, height:Int):Image { return null; }
 	public static inline function createTexture(image:ImageBuffer):NativeTexture { return null; }
-	public static inline function createTextureFromBytes(bytes:UInt8Array, width:Int, height:Int, format:Int=GL.RGBA):NativeTexture { return null; }
+	public static inline function createTextureFromBytes(bytes:Bytes, width:Int, height:Int, bitsPerPixel:Int):NativeTexture { return null; }
 	public static inline function deleteTexture(texture:NativeTexture):Void { }
 	public static inline function bindTexture(texture:NativeTexture, sampler:Int):Void { }
 	public static inline function compileShaderProgram(vertex:String, fragment:String):ShaderProgram { return null; }

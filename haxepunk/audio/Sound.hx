@@ -1,15 +1,16 @@
 package haxepunk.audio;
 
-import lime.Assets;
-import lime.audio.*;
 import haxepunk.math.*;
+
+#if lime
+import lime.audio.*;
 
 class Sound
 {
 
 	public function new(path:String)
 	{
-		_sound = Assets.getAudioBuffer(path);
+		_sound = lime.Assets.getAudioBuffer(path);
 		_source = new AudioSource(_sound);
 	}
 
@@ -74,3 +75,5 @@ class Sound
 	private var _source:AudioSource;
 
 }
+
+#end

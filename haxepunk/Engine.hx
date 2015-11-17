@@ -3,6 +3,9 @@ package haxepunk;
 import haxe.ds.IntMap;
 import haxepunk.graphics.Color;
 import haxepunk.utils.Time;
+
+#if lime
+
 import lime.app.Application;
 import lime.app.Config;
 import lime.graphics.RenderContext;
@@ -16,20 +19,7 @@ class Engine extends Application
 		for (wnd in windows)
 		{
 			if (_windows.exists(wnd.id)) continue;
-			var window = new Window(window);
-			_windows.set(wnd.id, window);
-			// check that rendering context is supported
-			switch (wnd.renderer.context)
-			{
-				#if flash
-				case FLASH(context):
-					Renderer.init(context, function() { ready(window); });
-				#end
-				case OPENGL(_):
-					ready(window);
-				default:
-					throw "Rendering context is not supported!";
-			}
+			registerWindow(wnd);
 		}
 		return super.exec();
 	}
@@ -48,10 +38,29 @@ class Engine extends Application
 			title: title
 		});
 		createWindow(wnd);
-		var window = new Window(wnd);
+		var window = registerWindow(wnd);
 		if (background != null) window.backgroundColor = background;
+		return window;
+	}
+
+	private function registerWindow(wnd:lime.ui.Window):Window
+	{
+		var window = new Window();
+		window.register(wnd);
 		_windows.set(wnd.id, window);
-		ready(window);
+
+		// check that rendering context is supported
+		switch (wnd.renderer.context)
+		{
+			#if flash
+			case FLASH(context):
+				Renderer.init(context, function() { ready(window); });
+			#end
+			case OPENGL(_):
+				ready(window);
+			default:
+				throw "Rendering context is not supported!";
+		}
 		return window;
 	}
 
@@ -76,3 +85,5 @@ class Engine extends Application
 	private var _windows = new IntMap<Window>();
 
 }
+
+#end

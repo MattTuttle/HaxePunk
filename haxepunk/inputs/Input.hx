@@ -36,6 +36,7 @@ private abstract InputType(EitherInput)
  * Manages the Input from Keyboard, Mouse, Touch and Gamepad.
  * Allow to check the state of Key, MouseButton, GamepadButton and Gesture.
  */
+@:allow(haxepunk.inputs)
 class Input
 {
 
@@ -121,13 +122,17 @@ class Input
 	/**
 	 * Init the input systems.
 	 */
-	@:allow(haxepunk.Window)
-	private function new(?window:Window)
+	public function new()
 	{
 		keyboard = new Keyboard();
 		mouse = new Mouse();
 		gamepads = new Array<Gamepad>();
-#if !unit_test
+	}
+
+#if lime
+	@:allow(haxepunk.Window)
+	private function register(?window:Window)
+	{
 		// Register keyboard events
 		window.onKeyDown.add(keyboard.onKeyDown);
 		window.onKeyUp.add(keyboard.onKeyUp);
@@ -140,8 +145,8 @@ class Input
 		window.onMouseWheel.add(mouse.onMouseWheel);
 
 		lime.ui.Gamepad.onConnect.add(addGamepad);
-#end
 	}
+#end
 
 	private function addGamepad(gp:lime.ui.Gamepad):Void
 	{

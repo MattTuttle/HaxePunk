@@ -5,6 +5,9 @@ import haxepunk.scene.Camera;
 import haxepunk.math.Vector3;
 import haxepunk.math.Matrix4;
 import haxepunk.renderers.Renderer;
+
+#if lime
+
 import lime.text.TextLayout;
 
 using StringTools;
@@ -81,7 +84,8 @@ class Font
 		if (it.hasNext())
 		{
 			var texture = new Texture();
-			texture.loadFromImage(it.next());
+			var buffer = it.next().buffer;
+			texture.loadFromBytes(buffer.data.toBytes(), Std.int(buffer.width), buffer.bitsPerPixel);
 			_textures.set(size, texture);
 		}
 		_sizes.set(size, images);
@@ -322,3 +326,5 @@ class Text extends Graphic
 	private var _images:GlyphImages;
 
 }
+
+#end // lime

@@ -6,12 +6,16 @@ class Assets
 {
     public static function getText(id:String):String
     {
+#if lime
         return lime.Assets.getText(id);
+#end
     }
 
     public static function exists(id:String):Bool
     {
+#if lime
         return lime.Assets.exists(id);
+#end
     }
 
     /**
@@ -20,22 +24,21 @@ class Assets
      */
     public static function getTexture(id:String):Texture
     {
-		if (Texture._textures.exists(id))
-		{
-			return Texture._textures.get(id);
-		}
-		else
-		{
-			var texture = new Texture(id);
-			if (Assets.exists(id))
-			{
-				texture.loadFromImage(lime.Assets.getImage(id));
-			}
-			else
-			{
-				trace('No texture named $id');
-			}
-			return texture;
-		}
+		var texture = Texture.get(id);
+        if (texture.width == 0 && texture.height == 0)
+        {
+#if lime
+    		if (Assets.exists(id))
+    		{
+                var buffer = lime.Assets.getImage(id).buffer;
+    			texture.loadFromBytes(buffer.data.toBytes(), Std.int(buffer.width), buffer.bitsPerPixel);
+    		}
+    		else
+    		{
+    			trace('No texture named $id');
+    		}
+#end
+        }
+		return texture;
     }
 }

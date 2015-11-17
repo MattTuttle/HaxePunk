@@ -1,9 +1,4 @@
 -x TestMain
 -cp source
--lib lime
 -lib format
 -lib HaxePunk
--D no-compilation
--D desktop
--D lime_native
--D unit_test

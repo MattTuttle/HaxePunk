@@ -1,8 +1,5 @@
 package haxepunk.inputs;
 
-import lime.ui.Mouse;
-import lime.ui.MouseCursor;
-
 class Cursor
 {
 
@@ -12,30 +9,34 @@ class Cursor
     public static var visible(default, set):Bool = true;
     private static function set_visible(value:Bool):Bool
     {
+#if lime
         if (value)
         {
-            Mouse.show();
+            lime.ui.Mouse.show();
         }
         else
         {
-            Mouse.hide();
+            lime.ui.Mouse.hide();
         }
+#end
         return visible = value;
     }
 
+#if lime
     /**
      * The look of the mouse cursor.
      */
-    public static var cursor(get, set):MouseCursor;
-    private static inline function get_cursor():MouseCursor { return Mouse.cursor; }
-    private static inline function set_cursor(value:MouseCursor):MouseCursor { return Mouse.cursor = value; }
+    public static var cursor(get, set):lime.ui.MouseCursor;
+    private static inline function get_cursor():lime.ui.MouseCursor { return lime.ui.Mouse.cursor; }
+    private static inline function set_cursor(value:lime.ui.MouseCursor):lime.ui.MouseCursor { return lime.ui.Mouse.cursor = value; }
 
     /**
      * Whether or not the mouse cursor is locked to the window.
      */
     public static var isLocked(get, set):Bool;
-    private static inline function get_isLocked():Bool { return Mouse.lock; }
-    private static inline function set_isLocked(value:Bool):Bool { return Mouse.lock = value; }
+    private static inline function get_isLocked():Bool { return lime.ui.Mouse.lock; }
+    private static inline function set_isLocked(value:Bool):Bool { return lime.ui.Mouse.lock = value; }
+#end
 
     /**
      * Shows the mouse cursor.

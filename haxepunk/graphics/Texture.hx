@@ -3,11 +3,9 @@ package haxepunk.graphics;
 import haxe.ds.StringMap;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
-import lime.utils.UInt8Array;
 import haxepunk.renderers.Renderer;
 import haxepunk.math.Math;
 
-@:allow(haxepunk.Assets)
 class Texture
 {
 
@@ -20,15 +18,6 @@ class Texture
 	 * The height of the texture in memory
 	 */
 	public var height(default, null):Int = 0;
-
-	/**
-	 * The width of the original texture
-	 */
-	public var sourceWidth(default, null):Int = 0;
-	/**
-	 * The height of the original texture
-	 */
-	public var sourceHeight(default, null):Int = 0;
 
 	/**
 	 * Number of color bits per pixel
@@ -46,7 +35,9 @@ class Texture
 	public static function fromRGBA(data:Array<Int>, stride:Int):Texture
 	{
 		var texture = new Texture();
-		texture.loadFromBytes(new UInt8Array(data), stride);
+		var bytes = Bytes.alloc(data.length);
+		for (i in 0...data.length) bytes.set(i, data[i]);
+		texture.loadFromBytes(bytes, stride);
 		return texture;
 	}
 
@@ -65,7 +56,7 @@ class Texture
 		var numColors = Std.parseInt(format[2]);
 		var charPerPixel = Std.parseInt(format[3]);
 
-		var bytes = new UInt8Array(width * height * 4);
+		var bytes = Bytes.alloc(width * height * 4);
 		var colors = new StringMap<Int>();
 
 		for (i in 0...numColors)
@@ -110,10 +101,10 @@ class Texture
 				{
 					var color = colors.get(colorId);
 					var byteOffset = (y * width + x) * 4;
-					bytes[byteOffset] = color >> 16 & 0xFF;
-					bytes[byteOffset+1] = color >> 8 & 0xFF;
-					bytes[byteOffset+2] = color & 0xFF;
-					bytes[byteOffset+3] = 0xFF;
+					bytes.set(byteOffset, color >> 16 & 0xFF);
+					bytes.set(byteOffset+1, color >> 8 & 0xFF);
+					bytes.set(byteOffset+2, color & 0xFF);
+					bytes.set(byteOffset+3, 0xFF);
 				}
 				else
 				{
@@ -136,37 +127,40 @@ class Texture
 		_texture = new Map<Int, NativeTexture>();
 	}
 
-	private function loadFromBytes(bytes:UInt8Array, stride:Int)
+	/**
+	 * Get a texture from the pool or create a new one
+	 */
+	public static function get(id:String):Texture
 	{
-		width = sourceWidth = stride;
-		height = sourceHeight = Std.int(bytes.byteLength / stride / 4);
-		#if flash
-		for (i in 0...Std.int(bytes.length / 4))
+		return Texture._textures.exists(id) ? Texture._textures.get(id) : new Texture(id);
+	}
+
+	/**
+	 * Load from RGBA bytes
+	 * @param bytes   The bytes to load into Texture.
+	 * @param stride  The width in bytes
+	 */
+	public function loadFromBytes(bytes:Bytes, stride:Int, bitsPerPixel:Int=32)
+	{
+		var bytesPerPixel = bitsPerPixel / 8,
+			pixels = Std.int(bytes.length / bytesPerPixel);
+		this.width = stride;
+		this.height = Std.int(pixels / stride);
+		this.bitsPerPixel = bitsPerPixel;
+#if flash
+		// flash requires BGRA instead of RGBA
+		if (bitsPerPixel == 32)
 		{
-			var tmp = bytes[i * 4];
-			bytes[i * 4] = bytes[i * 4 + 2];
-			bytes[i * 4 + 2] = tmp;
+			for (i in 0...pixels)
+			{
+				var tmp = bytes[i * 4];
+				bytes[i * 4] = bytes[i * 4 + 2];
+				bytes[i * 4 + 2] = tmp;
+			}
 		}
-		#end
-		bitsPerPixel = 32;
-		_data = bytes.toBytes();
-	}
-
-#if lime
-	@:allow(haxepunk.graphics)
-	private function loadFromImage(image:lime.graphics.Image)
-	{
-		if (image == null || image.buffer == null) return;
-		var buffer = image.buffer;
-		sourceWidth = buffer.width;
-		sourceHeight = buffer.height;
-
-		bitsPerPixel = buffer.bitsPerPixel;
-		width = buffer.width;
-		height = buffer.height;
-		_data = buffer.data.toBytes();
-	}
 #end
+		_data = bytes;
+	}
 
 	/**
 	 * Removes a texture from the renderer.
@@ -193,7 +187,7 @@ class Texture
 		}
 		else
 		{
-			var texture = Renderer.createTextureFromBytes(UInt8Array.fromBytes(_data), width, height, bitsPerPixel);
+			var texture = Renderer.createTextureFromBytes(_data, width, height, bitsPerPixel);
 			// Renderer.bindTexture(texture, sampler);
 			_texture.set(id, texture);
 		}
