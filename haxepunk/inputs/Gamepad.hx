@@ -1,74 +1,119 @@
 package haxepunk.inputs;
 
 import haxe.ds.IntMap;
-import haxepunk.math.Vector3;
+import haxepunk.math.*;
 import haxepunk.inputs.InputState;
 
 @:allow(haxepunk.inputs)
 class Gamepad
 {
-	/** Number of connected gamepads. */
-	public static var numberConnected(default, null):Int;
 
-	/** Holds the last button detected. */
-	public static var last(default, null):GamepadButton = NONE;
+	/**
+	 * Holds the last button detected.
+	 */
+	public var last(default, null):Int = -1;
 
 	/**
 	 * Globally unique identifier for device.
 	 */
 	public var guid(default, null):String;
+
 	/**
 	 * Human-friendly name for controller.
 	 */
 	public var name(default, null):String;
+
 	/**
 	 * Connected id of the controller.
 	 */
 	public var id(default, null):Int;
 
-	/** Determines the joystick's deadZone. Anything under this value will be considered 0 to prevent jitter. */
-	public var deadZone:Float = 0.1;
+	/**
+	 * Determines the joystick's deadZone.
+	 * Anything under this value will be considered 0 to prevent jitter.
+	 */
+	public var deadZone:Float = 0.15;
 
-	/** Each axis contained in an array. */
-	public var axis(default, null):IntMap<Float>;
-
-	/** If the gamepad is connected. */
-	public var connected(default, null):Bool = true;
+	/**
+	 * If the gamepad is connected.
+	 */
+	public var isConnected(default, null):Bool = true;
 
 	public function new(name:String, id:Int, guid:String)
 	{
 		this.guid = guid;
 		this.name = name;
 		this.id = id;
-		trace(guid, name, id);
-		axis = new IntMap<Float>();
-		numberConnected += 1;
+		_axis = new IntMap<Float>();
 	}
 
+	/**
+	 * Returns the name of the gamepad button.
+	 *
+	 * Examples:
+	 * Gamepad.nameOf(GamepadButton.LEFT);
+	 * Gamepad.nameOf(GamepadButton.last);
+	 *
+	 * @param button The gamepad button to name
+	 * @return The name
+	 */
+	public static inline function nameOf(button:GamepadButton):String
+	{
+		return button.toString();
+	}
+
+	/**
+	 * Get the value of an axis.
+	 * @param  The axis to poll.
+	 * @return The value of the axis or 0 if not set.
+	 */
+	public function getAxis(axis:Int):Float
+	{
+		return _axis.exists(axis) ? _axis.get(axis) : 0;
+	}
+
+	/**
+	 * Trigger when a button is released on the gamepad.
+	 * @param button  The button that was released.
+	 */
 	private function onButtonUp(button:Int):Void
 	{
 		getInputState(button).released += 1;
-		last = cast button;
+		last = button;
 	}
 
+	/**
+	 * Trigger when a button is pressed on the gamepad.
+	 * @param button  The button that was pressed.
+	 */
 	private function onButtonDown(button:Int):Void
 	{
 		getInputState(button).pressed += 1;
-		last = cast button;
+		last = button;
 	}
 
+	/**
+	 * Trigger when the gamepad is disconnected.
+	 */
 	private function onDisconnect():Void
 	{
-		numberConnected -= 1;
-		connected = false;
+		isConnected = false;
 	}
 
+	/**
+	 * Trigger when an axis on the gamepad is moved.
+	 * @param axis   The axis that was moved.
+	 * @param value  The value of the axis -1 to 1
+	 */
 	private function onAxisMove(axis:Int, value:Float):Void
 	{
-		if (Math.abs(value) > deadZone)
-		{
-			this.axis.set(axis, value);
-		}
+		var abs = Math.abs(value);
+
+		// clamp (deadZone < axis < 1)
+		if (abs < deadZone) value = 0;
+		else if (abs > 1) value = Math.sign(value);
+
+		_axis.set(axis, value);
 	}
 
 	/**
@@ -78,7 +123,7 @@ class Gamepad
 	 * @param v The value to get
 	 * @return The value of [v] for [button]
 	 */
-	private inline function value(button:GamepadButton, v:InputValue):Int
+	private inline function value(button:Int, v:InputValue):Int
 	{
 		if (button < 0) // Any
 		{
@@ -91,7 +136,7 @@ class Gamepad
 		}
 		else
 		{
-			return getInputState(cast button).value(v);
+			return getInputState(button).value(v);
 		}
 	}
 
@@ -128,29 +173,8 @@ class Gamepad
 		}
 	}
 
-	/**
-	 * Returns the name of the gamepad button.
-	 *
-	 * Examples:
-	 * Gamepad.nameOf(GamepadButton.LEFT);
-	 * Gamepad.nameOf(GamepadButton.last);
-	 *
-	 * @param button The gamepad button to name
-	 * @return The name
-	 */
-	public static function nameOf(button:GamepadButton):String
-	{
-		if (button < 0) // ANY || NONE
-		{
-			return "";
-		}
-		else
-		{
-			var v:Int = cast button;
-			return "BUTTON " + v;
-		}
-	}
-
+	/** Each axis contained in an array. */
+	private var _axis(default, null):IntMap<Float>;
 	private var _states:IntMap<InputState> = new IntMap<InputState>();
 
 }

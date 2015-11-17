@@ -23,67 +23,10 @@ class Keyboard
 	 * @param key The key to name
 	 * @return The name of [key]
 	 */
-	public function nameOf(key:Key):String
+	public static inline function nameOf(key:Key):String
 	{
-		var char:Int = cast key;
-		//~ trace(char, Key.NUMPAD_0, Key.NUMPAD_9);
-
-		if (char == -1)
-		{
-			return "";
-		}
-		if (char >= Std.int(Key.A) && char <= Std.int(Key.Z))
-		{
-			return String.fromCharCode(char - Std.int(Key.A) + 65);
-		}
-		if (char >= Std.int(Key.F1) && char <= Std.int(Key.F12))
-		{
-			return "F" + Std.string(char - Std.int(Key.F1) + 1);
-		}
-		if (char >= Std.int(Key.NUMPAD_1) && char <= Std.int(Key.NUMPAD_0))
-		{
-			return "NUMPAD " + Std.string((char - Std.int(Key.NUMPAD_1) + 1)%10);
-		}
-		if (char >= Std.int(Key.DIGIT_0) && char <= Std.int(Key.DIGIT_9))
-		{
-			return Std.string(char - Std.int(Key.DIGIT_0));
-		}
-
-		return switch (key)
-		{
-			case LEFT: "LEFT";
-			case UP: "UP";
-			case RIGHT: "RIGHT";
-			case DOWN: "DOWN";
-
-			case LEFT_SQUARE_BRACKET: "[";
-			case RIGHT_SQUARE_BRACKET: "]";
-			//~ case TILDE: "~";
-
-			case ENTER: "ENTER";
-			case SPACE: "SPACE";
-			case BACKSPACE: "BACKSPACE";
-			case DELETE: "DELETE";
-			case END: "END";
-			case ESCAPE: "ESCAPE";
-			case HOME: "HOME";
-			case INSERT: "INSERT";
-			case TAB: "TAB";
-			case PAGE_DOWN: "PAGE DOWN";
-			case PAGE_UP: "PAGE UP";
-
-			case NUMPAD_ADD: "NUMPAD ADD";
-			case NUMPAD_DECIMAL: "NUMPAD DECIMAL";
-			case NUMPAD_DIVIDE: "NUMPAD DIVIDE";
-			case NUMPAD_ENTER: "NUMPAD ENTER";
-			case NUMPAD_MULTIPLY: "NUMPAD MULTIPLY";
-			case NUMPAD_SUBTRACT: "NUMPAD SUBTRACT";
-
-			default: "KEY " + char; // maybe something better?
-		}
+		return key.toString();
 	}
-
-
 
 	/**
 	 * Setup the keyboard input support.

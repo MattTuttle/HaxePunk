@@ -1,27 +1,45 @@
 package haxepunk.inputs;
 
-/**
- * The gamepad buttons.
- * To be used with Input.define, Input.check, Input.pressed, Input.released and Gamepad.nameOf.
- *
- * Warning: ANY also encompass buttons that aren't listed here, for gamepad with more than 10 buttons.
- */
-@:enum abstract GamepadButton(Int) to Int
+@:enum abstract GamepadButton(Int) to Int from Int
 {
-	var NONE = -2;
 	var ANY = -1;
 
-	var BUTTON0 = 0;
-	var BUTTON1 = 1;
-	var BUTTON2 = 2;
-	var BUTTON3 = 3;
-	var BUTTON4 = 4;
-	var BUTTON5 = 5;
-	var BUTTON6 = 6;
-	var BUTTON7 = 7;
-	var BUTTON8 = 8;
-	var BUTTON9 = 9;
+	// Generic button names
+	var A = 0;
+	var B = 1;
+	var X = 2;
+	var Y = 3;
+	var BACK = 4;
+	var HOME = 5;
+	var START = 6;
+	var STICK_LEFT = 7;
+	var STICK_RIGHT = 8;
+	var SHOULDER_LEFT = 9;
+	var SHOULDER_RIGHT = 10;
+	var DPAD_UP = 11;
+	var DPAD_DOWN = 12;
+	var DPAD_LEFT = 13;
+	var DPAD_RIGHT = 14;
 
-	@:op(A<B) private inline function less (rhs:Int):Bool { return this < rhs; }
-	@:op(A>B) private inline function more (rhs:Int):Bool { return this > rhs; }
+	public inline function toString():String {
+		return switch (this) {
+			case ANY: "";
+			case A: "A";
+			case B: "B";
+			case X: "X";
+			case Y: "Y";
+			case BACK: "BACK";
+			case HOME: "HOME";
+			case START: "START";
+			case STICK_LEFT: "STICK_LEFT";
+			case STICK_RIGHT: "STICK_RIGHT";
+			case SHOULDER_LEFT: "SHOULDER_LEFT";
+			case SHOULDER_RIGHT: "SHOULDER_RIGHT";
+			case DPAD_UP: "DPAD_UP";
+			case DPAD_DOWN: "DPAD_DOWN";
+			case DPAD_LEFT: "DPAD_LEFT";
+			case DPAD_RIGHT: "DPAD_RIGHT";
+			default: "GAMEPAD (" + this + ")";
+		}
+	}
 }

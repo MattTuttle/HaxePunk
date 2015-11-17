@@ -15,6 +15,15 @@ class MouseTest extends haxe.unit.TestCase
 		}
 	}
 
+	public function testNameOf()
+	{
+		assertEquals("", Mouse.nameOf(MouseButton.ANY));
+		assertEquals("LEFT", Mouse.nameOf(MouseButton.LEFT));
+		assertEquals("MIDDLE", Mouse.nameOf(MouseButton.MIDDLE));
+		assertEquals("RIGHT", Mouse.nameOf(MouseButton.RIGHT));
+		assertEquals("MOUSE (4)", Mouse.nameOf(4));
+	}
+
 	public function testCheck()
 	{
 		input.define("left", [MouseButton.LEFT]);

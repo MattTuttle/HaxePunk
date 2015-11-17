@@ -1,9 +1,7 @@
 package haxepunk.inputs;
 
 import haxepunk.inputs.InputState;
-import haxepunk.inputs.Keyboard;
-import haxepunk.inputs.Mouse;
-import lime.ui.Window;
+import haxepunk.inputs.Gamepad;
 
 /**
  * Either enum used by InputType.
@@ -11,8 +9,8 @@ import lime.ui.Window;
 private enum EitherInput
 {
 	String(s:String);
-	MouseButton(mb:MouseButton);
-	GamepadButton(gb:GamepadButton);
+	MouseButton(button:MouseButton);
+	GamepadButton(button:Int);
 	Key(k:Key);
 }
 
@@ -27,9 +25,9 @@ private abstract InputType(EitherInput)
 	@:to inline function get_type() { return this; }
 
 	@:from static function fromString(s:String) { return new InputType(String(s)); }
-	@:from static function fromMouseButton(mb:MouseButton) { return new InputType(MouseButton(mb)); }
-	@:from static function fromGamepadButton(gb:GamepadButton) { return new InputType(GamepadButton(gb)); }
-	@:from static function fromKey(k:Key) { return new InputType(Key(k)); }
+	@:from static function fromMouseButton(button:MouseButton) { return new InputType(MouseButton(button)); }
+	@:from static function fromKey(key:Key) { return new InputType(Key(key)); }
+	@:from static function fromGamepadButton(button:GamepadButton) { return new InputType(GamepadButton(button)); }
 }
 
 /**
@@ -131,7 +129,7 @@ class Input
 
 #if lime
 	@:allow(haxepunk.Window)
-	private function register(?window:Window)
+	private function register(?window:lime.ui.Window)
 	{
 		// Register keyboard events
 		window.onKeyDown.add(keyboard.onKeyDown);
@@ -215,11 +213,11 @@ class Input
 			case MouseButton(mb):
 				mouse.value(mb, v);
 
-			case GamepadButton(gb):
+			case GamepadButton(button):
 				var val:Int = 0;
 				for (gamepad in gamepads)
 				{
-					val += gamepad.value(gb, v);
+					val += gamepad.value(button, v);
 				}
 				val;
 
@@ -236,10 +234,11 @@ class Input
 	{
 		keyboard.update();
 		mouse.update();
+		// TODO: remove disconnected gamepads?
 		for (i in 0...gamepads.length)
 		{
 			var gamepad = gamepads[i];
-			if (gamepad.connected)
+			if (gamepad.isConnected)
 			{
 				gamepad.update();
 			}

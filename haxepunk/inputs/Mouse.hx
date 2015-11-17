@@ -40,31 +40,10 @@ class Mouse
 	 * @param button The mouse button to name
 	 * @return The name
 	 */
-	public static function nameOf(button:MouseButton):String
+	public static inline function nameOf(button:MouseButton):String
 	{
-		if (button > 2) // The button isn't defined in MouseButton
-		{
-			var v:Int = cast button;
-			return "BUTTON " + v;
-		}
-
-		return switch(button)
-		{
-			case ANY:
-				"";
-
-			case LEFT:
-				"LEFT";
-
-			case MIDDLE:
-				"MIDDLE";
-
-			case RIGHT:
-				"RIGHT";
-		}
+		return button.toString();
 	}
-
-
 
 	/**
 	 * Setup the mouse input support.
@@ -80,6 +59,7 @@ class Mouse
 	 */
 	private inline function value(button:MouseButton, v:InputValue):Int
 	{
+		var button:Int = cast button;
 		if (button < 0) // Any
 		{
 			var result = 0;
@@ -91,7 +71,7 @@ class Mouse
 		}
 		else
 		{
-			return getInputState(cast button).value(v);
+			return getInputState(button).value(v);
 		}
 	}
 

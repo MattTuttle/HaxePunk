@@ -25,6 +25,7 @@ class TestMain
 		// input tests
 		runner.add(new haxepunk.inputs.KeyboardTest());
 		runner.add(new haxepunk.inputs.MouseTest());
+		runner.add(new haxepunk.inputs.GamepadTest());
 
 		// mask tests
 		runner.add(new haxepunk.masks.BoxTest());

@@ -13,13 +13,13 @@ package haxepunk.inputs;
 /**
  * Store the values on, pressed and released for a mouse button.
  */
+@:allow(haxepunk.inputs)
 class InputState
 {
 	public var on:Int = 0;
 	public var pressed:Int = 0;
 	public var released:Int = 0;
 
-	@:allow(haxepunk.inputs)
 	private function new() { }
 
 	public function value(v:InputValue):Int
