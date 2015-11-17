@@ -70,12 +70,10 @@ class Console
 
 		if (window.input.pressed(Key.C) > 0)
 		{
-			trace("camera");
 			_tool = new CameraTool();
 		}
 		else if (window.input.pressed(Key.S) > 0)
 		{
-			trace("select");
 			_tool = new SelectTool();
 		}
 

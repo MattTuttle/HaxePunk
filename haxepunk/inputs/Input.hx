@@ -158,7 +158,7 @@ class Input
 				}
 				else
 				{
-					#if debug trace('[Warning] Input has no define of name "$name"'); #end
+					Log.warn('Input has no define of name "$name"');
 				}
 
 			case Key(key):

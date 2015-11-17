@@ -35,7 +35,7 @@ class Assets
     		}
     		else
     		{
-    			trace('No texture named $id');
+    			Log.log('No texture named $id');
     		}
 #end
         }

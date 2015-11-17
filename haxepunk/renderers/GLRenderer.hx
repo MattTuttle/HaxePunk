@@ -141,9 +141,9 @@ class GLRenderer
 
 		if (GL.getProgramParameter(program, GL.LINK_STATUS) == 0)
 		{
-			trace(GL.getProgramInfoLog(program));
-			trace("VALIDATE_STATUS: " + GL.getProgramParameter(program, GL.VALIDATE_STATUS));
-			trace("ERROR: " + GL.getError());
+			Log.warn(GL.getProgramInfoLog(program));
+			Log.warn("VALIDATE_STATUS: " + GL.getProgramParameter(program, GL.VALIDATE_STATUS));
+			Log.error(Std.string(GL.getError()));
 			return null;
 		}
 
@@ -232,7 +232,7 @@ class GLRenderer
 
 		if (GL.getShaderParameter(shader, GL.COMPILE_STATUS) == 0)
 		{
-			trace(GL.getShaderInfoLog(shader));
+			Log.info(GL.getShaderInfoLog(shader));
 			shader = null;
 		}
 

@@ -4,6 +4,7 @@ class TestMain
 	public static function main()
 	{
 		var runner = new haxe.unit.TestRunner();
+		haxepunk.Log.output = false;
 
 		// graphic tests
 		runner.add(new haxepunk.graphics.ColorTest());

@@ -236,12 +236,10 @@ class Scene
 	@:allow(haxepunk.scene.Entity)
 	private inline function registerName(e:Entity):Void
 	{
-		#if debug
 		if (exists(e.name))
 		{
-			trace("WARN: Entity named '" + e.name + "' already exists!");
+			Log.warn("Entity named '" + e.name + "' already exists!");
 		}
-		#end
 		_entityNames.set(e.name, e);
 	}
 
@@ -357,7 +355,7 @@ class Scene
 			file.writeBytes(bytes, 0, bytes.length);
 			file.close();
 		} catch (e:Dynamic) {
-			trace("Failed to capture screen: " + e);
+			Log.error("Failed to capture screen: " + e);
 		}
 #end
 	}

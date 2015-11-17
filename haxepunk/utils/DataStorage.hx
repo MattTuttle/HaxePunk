@@ -30,7 +30,7 @@ class DataStorage
         }
         catch (e:Dynamic)
         {
-            trace("Failed to load data from " + path);
+            Log.error("Failed to load data from " + path);
         }
     }
 
@@ -50,7 +50,7 @@ class DataStorage
         }
         catch (e:Dynamic)
         {
-            trace("Failed to save data to " + path);
+            Log.error("Failed to save data to " + path);
         }
     }
 

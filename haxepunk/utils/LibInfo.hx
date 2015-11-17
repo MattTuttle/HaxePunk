@@ -101,7 +101,9 @@ class LibInfoBuilder
 		// Read haxelib.json
 		var doc:LibInfoType = try {
 			Json.parse(sys.io.File.read(path + "haxelib.json").readAll().toString());
-		} catch (e:Dynamic) { trace(e); null;}
+		} catch (e:Dynamic) {
+			Log.error(e); null;
+		}
 
 		// Construct fields
 		var fields:Array<Field> = Context.getBuildFields();

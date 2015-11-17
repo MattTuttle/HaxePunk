@@ -32,7 +32,7 @@ class SelectTool implements Tool
 			{
 				if (entity.collidePoint(point))
 				{
-					trace(entity);
+					// TODO: handle selection of entity
 				}
 			}
 		}
