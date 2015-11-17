@@ -33,6 +33,7 @@ class TestMain
 
 		// utils tests
 		runner.add(new haxepunk.utils.RandomTest());
+		runner.add(new haxepunk.utils.DataStorageTest());
 		runner.add(new haxepunk.utils.ArrayUtilsTest());
 
 		runner.run();
