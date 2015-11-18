@@ -52,29 +52,28 @@ class Pass
 		return _textures.get(index);
 	}
 
-	public function use(lighting:Bool=false)
+	public function use(renderer:Renderer, lighting:Bool=false)
 	{
-		shader.use();
+		shader.use(renderer);
 
 		// TODO: figure out better place for lighting
 		if (lighting)
 		{
-			var program = shader.program;
-			Renderer.setColor(program.uniform("uAmbientColor"), ambient);
-			Renderer.setColor(program.uniform("uDiffuseColor"), diffuse);
-			Renderer.setColor(program.uniform("uSpecularColor"), specular);
-			Renderer.setColor(program.uniform("uEmissiveColor"), emissive);
-			Renderer.setFloat(program.uniform("uShininess"), shininess);
+			renderer.setColor("uAmbientColor", ambient);
+			renderer.setColor("uDiffuseColor", diffuse);
+			renderer.setColor("uSpecularColor", specular);
+			renderer.setColor("uEmissiveColor", emissive);
+			renderer.setFloat("uShininess", shininess);
 		}
 
 		// TODO: don't always use blending and depth testing!!
-		Renderer.setDepthTest(depthCheck, LESS_EQUAL);
-		Renderer.setBlendMode(SOURCE_ALPHA, ONE_MINUS_SOURCE_ALPHA);
+		renderer.setDepthTest(depthCheck, LESS_EQUAL);
+		renderer.setBlendMode(SOURCE_ALPHA, ONE_MINUS_SOURCE_ALPHA);
 
 		// assign any textures
 		for (i in _textures.keys())
 		{
-			_textures.get(i).bind(i);
+			_textures.get(i).bind(renderer, i);
 		}
 	}
 

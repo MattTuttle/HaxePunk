@@ -22,6 +22,11 @@ class Window
 	public var console:Console;
 
 	/**
+	 * The active renderer for this window.
+	 */
+	public var renderer(default, null):Renderer;
+
+	/**
 	 * Active scene. Changing will not take place until the next update
 	 */
 	public var scene(get, set):Scene;
@@ -71,9 +76,6 @@ class Window
 	 */
 	public var backgroundColor:Color;
 
-	@:allow(haxepunk.Engine)
-	public var ready(default, null):Bool = false;
-
 	/**
 	 * Input handler
 	 */
@@ -98,8 +100,29 @@ class Window
 		pushScene(_scene);
     }
 
+	/**
+	 * Captures the scene to an image file
+	 * @param filename the name of the screenshot file to generate
+	 */
+	public function capture(filename:String):Void
+	{
+#if !(html5 || flash)
+		try {
+			var viewport = scene.camera.viewport;
+			var file = sys.io.File.write(filename);
+			var format = filename.substr(filename.lastIndexOf(".") + 1);
+			var image = renderer.capture(viewport);
+			var bytes = image.encode(format);
+			file.writeBytes(bytes, 0, bytes.length);
+			file.close();
+		} catch (e:Dynamic) {
+			Log.error("Failed to capture screen: " + e);
+		}
+#end
+	}
+
 #if lime
-	public function register(?window:lime.ui.Window)
+	public function register(?window:lime.ui.Window, ready:Window->Void)
 	{
 		_window = window;
 		backgroundColor = new Color().fromInt(window.config.background);
@@ -110,35 +133,43 @@ class Window
 			// for some reason the viewport needs to be set when the window moves
 			setViewport(width, height);
 		});
-		#if !flash
-		setViewport(width, height);
-		#end
 
 		input.register(window);
+
+		// check that rendering context is supported
+		switch (window.renderer.context)
+		{
+			case FLASH(context):
+				renderer = new haxepunk.renderers.FlashRenderer(this, context, function() {
+					setViewport(width, height);
+					ready(this);
+				});
+			case OPENGL(context):
+				renderer = new haxepunk.renderers.GLRenderer(this, context);
+				setViewport(width, height);
+				ready(this);
+			default:
+				throw "Rendering context is not supported!";
+		}
 	}
 #end
 
 	public function render()
 	{
-		if (!ready) return;
+		// check if renderer is ready
+		if (renderer == null) return;
+
 		// calculate time since last frame
 		var startTime = Time.now;
 		_frameTime.add(startTime - _lastFrame);
 		fps = 1000 / _frameTime.average;
 		_lastFrame = startTime;
 
-		Renderer.window = this;
-		Renderer.clear(scene.camera.clearColor == null ? backgroundColor : scene.camera.clearColor);
-		scene.draw();
+		renderer.clear(scene.camera.clearColor == null ? backgroundColor : scene.camera.clearColor);
+		scene.draw(renderer);
 		if (console.enabled) console.draw(this);
-		Renderer.present();
+		renderer.present();
 		renderFrameTime.add(Time.since(startTime));
-
-		#if flash
-		// must reset program and texture at end of each frame...
-		Renderer.bindProgram();
-		Renderer.bindTexture(null, 0);
-		#end
 	}
 
 	public function update()
@@ -164,7 +195,7 @@ class Window
 		// get camera viewport
 		var vp = scene.camera.setViewport(windowWidth, windowHeight);
 		// set the window viewport
-		Renderer.setViewport(new Rectangle(vp.x * pixelScale, vp.y * pixelScale,
+		renderer.setViewport(new Rectangle(vp.x * pixelScale, vp.y * pixelScale,
 			vp.width * pixelScale, vp.height * pixelScale));
 	}
 

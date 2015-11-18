@@ -2,8 +2,9 @@ package haxepunk.renderers;
 
 #if !flash
 
+import haxe.ds.StringMap;
 import haxe.io.Bytes;
-import haxepunk.graphics.Color;
+import haxepunk.graphics.*;
 import haxepunk.math.*;
 import haxepunk.renderers.Renderer;
 import lime.graphics.*;
@@ -12,79 +13,74 @@ import lime.utils.Float32Array;
 import lime.utils.Int16Array;
 import lime.utils.UInt8Array;
 
-class GLRenderer
+class GLRenderer extends Renderer
 {
 
-	public static var window:Window;
+	public var gl:GLRenderContext;
 
-	public static function clear(color:Color):Void
+	public function new(window:Window, context:GLRenderContext)
 	{
-		GL.clearColor(color.r, color.g, color.b, color.a);
-		GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
+		super(window);
+		gl = context;
 	}
 
-	public static inline function setViewport(viewport:Rectangle):Void
+	override public function clear(color:Color):Void
 	{
-		GL.viewport(Std.int(viewport.x), Std.int(viewport.y), Std.int(viewport.width), Std.int(viewport.height));
+		gl.clearColor(color.r, color.g, color.b, color.a);
+		gl.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
 	}
 
-	public static inline function attribute(program:ShaderProgram, a:String):Int
+	override public function setViewport(viewport:Rectangle):Void
 	{
-		return GL.getAttribLocation(program, a);
+		gl.viewport(Std.int(viewport.x), Std.int(viewport.y), Std.int(viewport.width), Std.int(viewport.height));
 	}
 
-	public static inline function uniform(program:ShaderProgram, u:String):Location
+	override public function present():Void
 	{
-		return GL.getUniformLocation(program, u);
-	}
-
-	public static inline function present():Void
-	{
-		_totalRenderCalls += _renderCalls;
-		_renderCalls = 0;
+		super.present();
 		#if js
-		GL.finish();
+		gl.finish();
 		#end
 	}
 
-	public static inline function setBlendMode(source:BlendFactor, destination:BlendFactor):Void
+	override public function setBlendMode(source:BlendFactor, destination:BlendFactor):Void
 	{
-		if (_activeState.blendSource == source && _activeState.blendDestination == destination) return;
+		if (_blendSource == source && _blendDestination == destination) return;
 
 		if (source == ONE && destination == ZERO)
 		{
-			GL.disable(GL.BLEND);
+			gl.disable(GL.BLEND);
 		}
 		else
 		{
-			GL.blendFunc(BLEND[source], BLEND[destination]);
-			GL.enable(GL.BLEND);
+			gl.blendFunc(BLEND[source], BLEND[destination]);
+			gl.enable(GL.BLEND);
 		}
 
-		_activeState.blendSource = source;
-		_activeState.blendDestination = destination;
+		_blendSource = source;
+		_blendDestination = destination;
 	}
 
-	public static inline function setCullMode(mode:CullMode):Void
+	override public function setCullMode(mode:CullMode):Void
 	{
 		if (mode == NONE)
 		{
-			GL.disable(GL.CULL_FACE);
+			gl.disable(GL.CULL_FACE);
 		}
 		else
 		{
-			GL.enable(GL.CULL_FACE);
-			GL.cullFace(CULL[mode]);
+			gl.enable(GL.CULL_FACE);
+			gl.cullFace(CULL[mode]);
 		}
 	}
 
-	public static function capture(rect:Rectangle):Image
+	override public function capture(rect:Rectangle):Null<Image>
 	{
 		var width = Std.int(rect.width),
 			height = Std.int(rect.height);
 		var bytesPerRow = width * 4;
 		var pixels = new UInt8Array(height * bytesPerRow);
-		GL.readPixels(Std.int(rect.x), Std.int(rect.y), width, height, GL.RGBA, GL.UNSIGNED_BYTE, pixels);
+		gl.readPixels(Std.int(rect.x), Std.int(rect.y), width, height, GL.RGBA, GL.UNSIGNED_BYTE, pixels);
 		// flip result vertically
 		var tmp, row = 0, flippedRow = height * bytesPerRow;
 		for (y in 0...Std.int(rect.height / 2))
@@ -101,196 +97,177 @@ class GLRenderer
 		return new Image(new ImageBuffer(pixels, width, height), 0, 0, width, height);
 	}
 
-	public static inline function createTextureFromBytes(bytes:Bytes, width:Int, height:Int, bitsPerPixel:Int=32):NativeTexture
+	override public function createTextureFromBytes(bytes:Bytes, width:Int, height:Int, bitsPerPixel:Int=32):NativeTexture
 	{
 		var format = switch (bitsPerPixel) {
-			case 8: GL.ALPHA;
-			case 24: GL.RGB;
-			case 32: GL.RGBA;
+			case 8: gl.ALPHA;
+			case 24: gl.RGB;
+			case 32: gl.RGBA;
 			default: throw "Unsupported bits per pixel: " + bitsPerPixel;
 		};
-		var texture = GL.createTexture();
-		GL.bindTexture(GL.TEXTURE_2D, texture);
-		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
-		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST);
-		GL.texImage2D(GL.TEXTURE_2D, 0, format, width, height, 0, format, GL.UNSIGNED_BYTE, UInt8Array.fromBytes(bytes));
+		var texture = gl.createTexture();
+		gl.bindTexture(GL.TEXTURE_2D, texture);
+		gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
+		gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST);
+		gl.texImage2D(GL.TEXTURE_2D, 0, format, width, height, 0, format, GL.UNSIGNED_BYTE, UInt8Array.fromBytes(bytes));
 		return texture;
 	}
 
-	public static inline function deleteTexture(texture:NativeTexture):Void
+	override public function deleteTexture(texture:Texture):Void
 	{
-		GL.deleteTexture(texture);
-	}
-
-	public static inline function bindTexture(texture:NativeTexture, sampler:Int):Void
-	{
-		if (_activeState.texture == texture) return;
-
-		GL.activeTexture(GL.TEXTURE0 + sampler);
-		GL.bindTexture(GL.TEXTURE_2D, texture);
-		_activeState.texture = texture;
-	}
-
-	public static function compileShaderProgram(vertex:String, fragment:String):ShaderProgram
-	{
-		var program:ShaderProgram = GL.createProgram();
-
-		if (compileShader(program, vertex, GL.VERTEX_SHADER) == null) return null;
-		if (compileShader(program, fragment, GL.FRAGMENT_SHADER) == null) return null;
-		GL.linkProgram(program);
-
-		if (GL.getProgramParameter(program, GL.LINK_STATUS) == 0)
+		if (_textures.exists(texture.id))
 		{
-			Log.warn(GL.getProgramInfoLog(program));
-			Log.warn("VALIDATE_STATUS: " + GL.getProgramParameter(program, GL.VALIDATE_STATUS));
-			Log.error(Std.string(GL.getError()));
-			return null;
-		}
-
-		return program;
-	}
-
-	public static inline function bindProgram(?program:ShaderProgram):Void
-	{
-		if (_activeState.program != program)
-		{
-			GL.useProgram(program);
-			_activeState.program = program;
+			gl.deleteTexture(_textures.get(texture.id));
+			_textures.remove(texture.id);
 		}
 	}
 
-	public static inline function setMatrix(loc:Location, matrix:Matrix4):Void
+	override public function bindTexture(texture:Texture, sampler:Int):Void
 	{
-		GL.uniformMatrix4fv(loc, false, matrix.native);
+		if (_lastTexture == texture.id) return;
+		if (_textures.exists(texture.id))
+		{
+			_texture = _textures.get(texture.id);
+		}
+		else
+		{
+			_texture = createTextureFromBytes(texture.data, texture.width, texture.height, texture.bitsPerPixel);
+			_textures.set(texture.id, _texture);
+		}
+
+		gl.activeTexture(GL.TEXTURE0 + sampler);
+		gl.bindTexture(GL.TEXTURE_2D, _texture);
 	}
 
-	public static inline function setVector3(loc:Location, vec:Vector3):Void
+	override public function bindShader(?shader:Shader):Void
 	{
-		GL.uniform3f(loc, vec.x, vec.y, vec.z);
+		// only switch if the shader changed
+		if (_shader == shader) return;
+
+		if (shader == null)
+		{
+			gl.useProgram(null);
+		}
+		else
+		{
+			if (!_programs.exists(shader))
+			{
+				_programs.set(shader, new Program(shader));
+			}
+			_program = _programs.get(shader);
+			_program.bind(gl);
+		}
+		_shader = shader;
 	}
 
-	public static inline function setColor(loc:Location, color:Color):Void
+	override public function setMatrix(uniform:String, matrix:Matrix4):Void
 	{
-		GL.uniform4f(loc, color.r, color.g, color.b, color.a);
+		gl.uniformMatrix4fv(_program.uniform(uniform), false, matrix.native);
 	}
 
-	public static inline function setFloat(loc:Location, value:Float):Void
+	override public function setVector3(uniform:String, vec:Vector3):Void
 	{
-		GL.uniform1f(loc, value);
+		gl.uniform3f(_program.uniform(uniform), vec.x, vec.y, vec.z);
 	}
 
-	public static inline function setAttribute(a:Int, offset:Int, num:Int):Void
+	override public function setColor(uniform:String, color:Color):Void
 	{
-		GL.vertexAttribPointer(a, num, GL.FLOAT, false, _activeState.buffer.stride, offset << 2);
-		GL.enableVertexAttribArray(a);
+		gl.uniform4f(_program.uniform(uniform), color.r, color.g, color.b, color.a);
 	}
 
-	public static inline function bindBuffer(v:VertexBuffer):Void
+	override public function setFloat(uniform:String, value:Float):Void
 	{
-		if (_activeState.buffer == v) return;
-
-		GL.bindBuffer(GL.ARRAY_BUFFER, v.buffer);
-		_activeState.buffer = v;
+		gl.uniform1f(_program.uniform(uniform), value);
 	}
 
-	public static inline function createBuffer(stride:Int):VertexBuffer
+	override public function setAttribute(attribute:String, offset:Int, num:Int):Void
 	{
-		return new VertexBuffer(GL.createBuffer(), stride << 2);
+		var attrib = _program.attribute(attribute);
+		gl.vertexAttribPointer(attrib, num, GL.FLOAT, false, _buffer.stride, offset << 2);
+		gl.enableVertexAttribArray(attrib);
 	}
 
-	public static inline function updateBuffer(data:FloatArray, ?usage:BufferUsage):Void
+	override public function bindBuffer(v:VertexBuffer):Void
 	{
-		GL.bufferData(GL.ARRAY_BUFFER, data, usage == DYNAMIC_DRAW ? GL.DYNAMIC_DRAW : GL.STATIC_DRAW);
+		if (_buffer == v) return;
+
+		gl.bindBuffer(GL.ARRAY_BUFFER, v.buffer);
+		_buffer = v;
 	}
 
-	public static inline function updateIndexBuffer(data:IntArray, ?usage:BufferUsage, ?buffer:IndexBuffer):IndexBuffer
+	override public function createBuffer(stride:Int):VertexBuffer
 	{
-		if (buffer == null) buffer = GL.createBuffer();
-		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, buffer);
-		GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, data, usage == DYNAMIC_DRAW ? GL.DYNAMIC_DRAW : GL.STATIC_DRAW);
-		_activeState.indexBuffer = buffer;
+		return new VertexBuffer(gl.createBuffer(), stride << 2);
+	}
+
+	override public function updateBuffer(data:FloatArray, ?usage:BufferUsage):Void
+	{
+		gl.bufferData(GL.ARRAY_BUFFER, data, usage == DYNAMIC_DRAW ? GL.DYNAMIC_DRAW : GL.STATIC_DRAW);
+	}
+
+	override public function updateIndexBuffer(data:IntArray, ?usage:BufferUsage, ?buffer:IndexBuffer):IndexBuffer
+	{
+		if (buffer == null) buffer = gl.createBuffer();
+		gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, buffer);
+		gl.bufferData(GL.ELEMENT_ARRAY_BUFFER, data, usage == DYNAMIC_DRAW ? GL.DYNAMIC_DRAW : GL.STATIC_DRAW);
+		_indexBuffer = buffer;
 		return buffer;
 	}
 
-	public static inline function draw(buffer:IndexBuffer, numTriangles:Int, offset:Int=0):Void
+	override public function draw(buffer:IndexBuffer, numTriangles:Int, offset:Int=0):Void
 	{
-		_renderCalls++;
-		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, buffer);
-		GL.drawElements(GL.TRIANGLES, numTriangles * 3, GL.UNSIGNED_SHORT, offset << 2);
+		super.draw(buffer, numTriangles, offset);
+		gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, buffer);
+		gl.drawElements(GL.TRIANGLES, numTriangles * 3, GL.UNSIGNED_SHORT, offset << 2);
 	}
 
-	/**
-	 * Compiles the shader source into a GlShader object and prints any errors
-	 * @param source  The shader source code
-	 * @param type    The type of shader to compile (fragment, vertex)
-	 */
-	private static inline function compileShader(program:ShaderProgram, source:String, type:Int):GLShader
-	{
-		var shader = GL.createShader(type);
-		GL.shaderSource(shader, source);
-		GL.compileShader(shader);
-
-		if (GL.getShaderParameter(shader, GL.COMPILE_STATUS) == 0)
-		{
-			Log.info(GL.getShaderInfoLog(shader));
-			shader = null;
-		}
-
-		if (shader != null)
-		{
-			GL.attachShader(program, shader);
-			GL.deleteShader(shader);
-		}
-
-		return shader;
-	}
-
-	public static inline function setScissor(?clip:Rectangle)
+	override public function setScissor(?clip:Rectangle)
 	{
 		if (clip == null)
 		{
-			GL.disable(GL.SCISSOR_TEST);
+			gl.disable(GL.SCISSOR_TEST);
 		}
 		else
 		{
 			var scale = window.pixelScale; // retina window scale
-			GL.enable(GL.SCISSOR_TEST);
+			gl.enable(GL.SCISSOR_TEST);
 			// flip from top left to bottom left
-			GL.scissor(Std.int(clip.x * scale), Std.int((window.height - (clip.y + clip.height)) * scale),
+			gl.scissor(Std.int(clip.x * scale), Std.int((window.height - (clip.y + clip.height)) * scale),
 				Std.int(clip.width * scale), Std.int(clip.height * scale));
 		}
 	}
 
-	public static inline function setDepthTest(depthMask:Bool, ?test:DepthTestCompare):Void
+	override public function setDepthTest(depthMask:Bool, ?test:DepthTestCompare):Void
 	{
-		if (_activeState.depthTest == test) return;
+		if (_depthTest == test) return;
 
 		if (depthMask)
 		{
-			GL.enable(GL.DEPTH_TEST);
-			switch (test)
-			{
-				case NEVER: GL.depthFunc(GL.NEVER);
-				case ALWAYS: GL.depthFunc(GL.ALWAYS);
-				case GREATER: GL.depthFunc(GL.GREATER);
-				case GREATER_EQUAL: GL.depthFunc(GL.GEQUAL);
-				case LESS: GL.depthFunc(GL.LESS);
-				case LESS_EQUAL: GL.depthFunc(GL.LEQUAL);
-				case EQUAL: GL.depthFunc(GL.EQUAL);
-				case NOT_EQUAL: GL.depthFunc(GL.NOTEQUAL);
-			}
+			gl.enable(GL.DEPTH_TEST);
+			gl.depthFunc(switch (test) {
+				case NEVER: GL.NEVER;
+				case ALWAYS: GL.ALWAYS;
+				case GREATER: GL.GREATER;
+				case GREATER_EQUAL: GL.GEQUAL;
+				case LESS: GL.LESS;
+				case LESS_EQUAL: GL.LEQUAL;
+				case EQUAL: GL.EQUAL;
+				case NOT_EQUAL: GL.NOTEQUAL;
+			});
 		}
 		else
 		{
-			GL.disable(GL.DEPTH_TEST);
+			gl.disable(GL.DEPTH_TEST);
 		}
-		_activeState.depthTest = test;
+		_depthTest = test;
 	}
 
+	private var _textures = new StringMap<GLTexture>();
+	private var _texture:GLTexture;
+	private var _lastTexture:String;
 
-	private static var _renderCalls:Float = 0;
-	private static var _totalRenderCalls:Float = 0;
-	private static var _activeState:ActiveState = new ActiveState();
+	private var _programs = new Map<Shader, Program>();
+	private var _program:Program;
 
 	private static var FORMAT = [
 		GL.ALPHA,
@@ -330,6 +307,83 @@ class GLRenderer
 		GL.FRONT_AND_BACK
 	];
 
+}
+
+// GL program
+class Program
+{
+	public function new(shader:Shader)
+	{
+		_program = GL.createProgram();
+
+		if (compileShader(_program, shader.vertex, GL.VERTEX_SHADER) != null)
+		{
+			if (compileShader(_program, shader.fragment, GL.FRAGMENT_SHADER) != null)
+			{
+				GL.linkProgram(_program);
+
+				if (GL.getProgramParameter(_program, GL.LINK_STATUS) == 0)
+				{
+					Log.warn(GL.getProgramInfoLog(_program));
+					Log.warn("VALIDATE_STATUS: " + GL.getProgramParameter(_program, GL.VALIDATE_STATUS));
+					Log.error(Std.string(GL.getError()));
+				}
+			}
+		}
+	}
+
+	/**
+	 * Compiles the shader source into a GlShader object and prints any errors
+	 * @param source  The shader source code
+	 * @param type    The type of shader to compile (fragment, vertex)
+	 */
+	private function compileShader(program:GLProgram, source:String, type:Int):GLShader
+	{
+		var shader = GL.createShader(type);
+		GL.shaderSource(shader, source);
+		GL.compileShader(shader);
+
+		if (GL.getShaderParameter(shader, GL.COMPILE_STATUS) == 0)
+		{
+			Log.info(GL.getShaderInfoLog(shader));
+			shader = null;
+		}
+
+		if (shader != null)
+		{
+			GL.attachShader(program, shader);
+			GL.deleteShader(shader);
+		}
+
+		return shader;
+	}
+
+	public inline function bind(gl:GLRenderContext):Void
+	{
+		gl.useProgram(_program);
+	}
+
+	public function attribute(a:String):Int
+	{
+		if (!_attributes.exists(a))
+		{
+			_attributes.set(a, GL.getAttribLocation(_program, a));
+		}
+		return _attributes.get(a);
+	}
+
+	public function uniform(u:String):GLUniformLocation
+	{
+		if (!_uniforms.exists(u))
+		{
+			_uniforms.set(u, GL.getUniformLocation(_program, u));
+		}
+		return _uniforms.get(u);
+	}
+
+	private var _program:GLProgram;
+	private var _attributes = new StringMap<Int>();
+	private var _uniforms = new StringMap<GLUniformLocation>();
 }
 
 #end

@@ -1,30 +1,30 @@
 package haxepunk.renderers;
 
-#if flash
-
 import haxe.io.Bytes;
-import com.adobe.utils.AGALMiniAssembler;
 import haxepunk.graphics.Color;
 import haxepunk.math.*;
 import haxepunk.renderers.Renderer;
+#if flash
+import com.adobe.utils.AGALMiniAssembler;
 import flash.Lib;
 import flash.display.BitmapData;
 import flash.display.Stage3D;
 import flash.display3D.*;
 import flash.display3D.textures.Texture;
 import flash.events.Event;
+#end
 import lime.graphics.FlashRenderContext;
 import lime.utils.Int16Array;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
 
-class FlashRenderer
+class FlashRenderer extends Renderer
 {
 
-	public static var window:Window;
-
-	public static inline function init(context:FlashRenderContext, ready:Void->Void)
+	override public function new(window:Window, context:FlashRenderContext, ready:Void->Void)
 	{
+		super(window);
+#if flash
 		_stage3D = context.stage.stage3Ds[0];
 		_stage3D.addEventListener(Event.CONTEXT3D_CREATE, function (_) {
 			_context = _stage3D.context3D;
@@ -33,41 +33,47 @@ class FlashRenderer
 			ready();
 		});
 		_stage3D.requestContext3D();
+#end
 	}
 
-	public static inline function clear(color:Color):Void
+#if flash
+
+	override public function clear(color:Color):Void
 	{
 		_context.clear(color.r, color.g, color.b, color.a);
 	}
 
-	public static inline function attribute(program:ShaderProgram, a:String):Int
+	override public function attribute(program:ShaderProgram, a:String):Int
 	{
 		return _attributeId++; // TODO: come up with better solution...
 	}
 
-	public static inline function uniform(program:ShaderProgram, u:String):Location
+	override public function uniform(program:ShaderProgram, u:String):Location
 	{
 		return _uniformId++; // TODO: come up with better solution...
 	}
 
-	public static inline function setCullMode(mode:CullMode):Void
+	override public function setCullMode(mode:CullMode):Void
 	{
 		_context.setCulling(CULL[mode]);
 	}
 
-	public static inline function setViewport(viewport:Rectangle):Void
+	override public function setViewport(viewport:Rectangle):Void
 	{
 		_stage3D.x = viewport.x;
 		_stage3D.y = viewport.y;
 		_context.configureBackBuffer(Std.int(viewport.width), Std.int(viewport.height), 4, true);
 	}
 
-	public static inline function present()
+	override public function present()
 	{
 		_context.present();
+		// must reset program and texture at end of each frame...
+		bindProgram();
+		bindTexture(null, 0);
 	}
 
-	public static inline function compileShaderProgram(vertex:String, fragment:String):ShaderProgram
+	override public function compileShaderProgram(vertex:String, fragment:String):ShaderProgram
 	{
 		var assembler = new AGALMiniAssembler();
 		var vertexShader = assembler.assemble(Context3DProgramType.VERTEX, vertex);
@@ -79,18 +85,18 @@ class FlashRenderer
 		return program;
 	}
 
-	public static inline function bindProgram(?program:ShaderProgram):Void
+	override public function bindProgram(?program:ShaderProgram):Void
 	{
 		_context.setProgram(program);
 	}
 
-	public static inline function setMatrix(loc:Location, matrix:Matrix4):Void
+	override public function setMatrix(loc:Location, matrix:Matrix4):Void
 	{
 		matrix.transpose(); // Flash requires a transposed matrix
 		_context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, loc, matrix.native, false);
 	}
 
-	public static inline function setVector3(loc:Location, vec:Vector3):Void
+	override public function setVector3(loc:Location, vec:Vector3):Void
 	{
 		var uvec = new flash.Vector();
 		uvec.push(vec.x);
@@ -99,7 +105,7 @@ class FlashRenderer
 		_context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, loc, uvec);
 	}
 
-	public static inline function setColor(loc:Location, color:Color):Void
+	override public function setColor(loc:Location, color:Color):Void
 	{
 		var vec = new flash.Vector();
 		vec.push(color.r);
@@ -109,29 +115,29 @@ class FlashRenderer
 		_context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, loc, vec);
 	}
 
-	public static inline function setFloat(loc:Location, value:Float):Void
+	override public function setFloat(loc:Location, value:Float):Void
 	{
 		var vec = new flash.Vector();
 		vec.push(value);
 		_context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, loc, vec);
 	}
 
-	public static inline function setAttribute(a:Int, offset:Int, num:Int):Void
+	override public function setAttribute(a:Int, offset:Int, num:Int):Void
 	{
 		_context.setVertexBufferAt(a, _activeState.buffer.buffer, offset, FORMAT[num]);
 	}
 
-	public static inline function bindBuffer(buffer:VertexBuffer):Void
+	override public function bindBuffer(buffer:VertexBuffer):Void
 	{
 		_activeState.buffer = buffer;
 	}
 
-	public static inline function createBuffer(stride:Int):VertexBuffer
+	override public function createBuffer(stride:Int):VertexBuffer
 	{
 		return new VertexBuffer(null, stride);
 	}
 
-	public static inline function updateBuffer(data:FloatArray, ?usage:BufferUsage):Void
+	override public function updateBuffer(data:FloatArray, ?usage:BufferUsage):Void
 	{
 		var vb:VertexBuffer = _activeState.buffer;
 		var len:Int = Std.int(data.length / vb.stride);
@@ -140,7 +146,7 @@ class FlashRenderer
 		vb.buffer.uploadFromVector(flash.Vector.ofArray(data), 0, len);
 	}
 
-	public static inline function updateIndexBuffer(data:IntArray, ?usage:BufferUsage, ?buffer:IndexBuffer):IndexBuffer
+	override public function updateIndexBuffer(data:IntArray, ?usage:BufferUsage, ?buffer:IndexBuffer):IndexBuffer
 	{
 		if (buffer != null) buffer.dispose();
 		buffer = _context.createIndexBuffer(data.length);
@@ -148,7 +154,7 @@ class FlashRenderer
 		return buffer;
 	}
 
-	public static inline function createTextureFromBytes(bytes:Bytes, width:Int, height:Int, bitsPerPixel:Int):NativeTexture
+	override public function createTextureFromBytes(bytes:Bytes, width:Int, height:Int, bitsPerPixel:Int):NativeTexture
 	{
 		if (bitsPerPixel != 32) Log.error("Flash only supports 32 bit BGRA textures");
 		var texture = _context.createTexture(width, height, Context3DTextureFormat.BGRA, false);
@@ -156,32 +162,32 @@ class FlashRenderer
 		return texture;
 	}
 
-	public static inline function deleteTexture(texture:NativeTexture):Void
+	override public function deleteTexture(texture:NativeTexture):Void
 	{
 		texture.dispose();
 	}
 
-	public static inline function bindTexture(texture:NativeTexture, sampler:Int):Void
+	override public function bindTexture(texture:NativeTexture, sampler:Int):Void
 	{
 		_context.setTextureAt(sampler, texture);
 	}
 
-	public static inline function setScissor(?clip:Rectangle)
+	override public function setScissor(?clip:Rectangle)
 	{
 		Log.warn("Not implemented");
 	}
 
-	public static inline function draw(buffer:IndexBuffer, numTriangles:Int, offset:Int=0):Void
+	override public function draw(buffer:IndexBuffer, numTriangles:Int, offset:Int=0):Void
 	{
 		_context.drawTriangles(buffer, offset, numTriangles);
 	}
 
-	public static inline function setBlendMode(source:BlendFactor, destination:BlendFactor):Void
+	override public function setBlendMode(source:BlendFactor, destination:BlendFactor):Void
 	{
 		_context.setBlendFactors(BLEND[source], BLEND[destination]);
 	}
 
-	public static inline function setDepthTest(depthMask:Bool, ?test:DepthTestCompare):Void
+	override public function setDepthTest(depthMask:Bool, ?test:DepthTestCompare):Void
 	{
 		if (depthMask)
 		{
@@ -193,11 +199,11 @@ class FlashRenderer
 		}
 	}
 
-	private static var _attributeId:Int = 0;
-	private static var _uniformId:Int = 0;
-	private static var _context:Context3D;
-	private static var _activeState:ActiveState = new ActiveState();
-	private static var _stage3D:Stage3D;
+	private var _attributeId:Int = 0;
+	private var _uniformId:Int = 0;
+	private var _context:Context3D;
+	private var _activeState:ActiveState = new ActiveState();
+	private var _stage3D:Stage3D;
 
 	private static var BLEND = [
 		Context3DBlendFactor.ZERO,
@@ -238,6 +244,6 @@ class FlashRenderer
 		Context3DTriangleFace.FRONT_AND_BACK,
 	];
 
-}
-
 #end
+
+}

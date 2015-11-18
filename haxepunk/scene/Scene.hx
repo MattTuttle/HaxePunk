@@ -329,35 +329,14 @@ class Scene
 	/**
 	 * Draws the scene
 	 */
-	public function draw()
+	public function draw(renderer:Renderer)
 	{
-		spriteBatch.begin(camera.transform);
+		spriteBatch.begin(renderer, camera.transform);
 		for (e in _layerList)
 		{
 			if (e.drawable) e.draw(spriteBatch);
 		}
 		spriteBatch.end();
-	}
-
-	/**
-	 * Captures the scene to an image file
-	 * @param filename the name of the screenshot file to generate
-	 */
-	public function capture(filename:String):Void
-	{
-#if !(html5 || flash)
-		try {
-			var viewport = camera.viewport;
-			var file = sys.io.File.write(filename);
-			var format = filename.substr(filename.lastIndexOf(".") + 1);
-			var image = Renderer.capture(viewport);
-			var bytes = image.encode(format);
-			file.writeBytes(bytes, 0, bytes.length);
-			file.close();
-		} catch (e:Dynamic) {
-			Log.error("Failed to capture screen: " + e);
-		}
-#end
 	}
 
 	/**

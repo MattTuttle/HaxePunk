@@ -155,11 +155,10 @@ class Entity extends SceneNode
 			var br = scene.camera.cameraToScreen(vec); // bottom right
 			var rect = new Rectangle(tl.x, tl.y, br.x - tl.x, br.y - tl.y);
 			// draw with scissor test
-			Renderer.setScissor(rect);
-			batch.begin();
+			batch.renderer.setScissor(rect);
 			graphic.draw(batch, position);
 			batch.end();
-			Renderer.setScissor();
+			batch.renderer.setScissor();
 		}
 		else
 		{

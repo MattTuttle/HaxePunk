@@ -17,6 +17,8 @@ class SpriteBatch
 	 */
 	public var transform:Matrix4;
 
+	public var renderer(default, null):Renderer;
+
 	public var inverseTexWidth(default, null):Float = 0;
 	public var inverseTexHeight(default, null):Float = 0;
 
@@ -290,8 +292,9 @@ class SpriteBatch
 		_quadVertices[_vIndex++] = a;
 	}
 
-	inline public function begin(?transform:Matrix4)
+	inline public function begin(renderer:Renderer, ?transform:Matrix4)
 	{
+		this.renderer = renderer;
 		if (transform != null)
 		{
 			this.transform = transform;
@@ -315,18 +318,18 @@ class SpriteBatch
 		{
 			if (_triVertexBuffer == null)
 			{
-				_triVertexBuffer = Renderer.createBuffer(8);
+				_triVertexBuffer = renderer.createBuffer(8);
 			}
-			Renderer.bindBuffer(_triVertexBuffer);
-			Renderer.updateBuffer(_triVertices, STATIC_DRAW);
-			_triIndexBuffer = Renderer.updateIndexBuffer(_triIndices, STATIC_DRAW, _triIndexBuffer);
+			renderer.bindBuffer(_triVertexBuffer);
+			renderer.updateBuffer(_triVertices, STATIC_DRAW);
+			_triIndexBuffer = renderer.updateIndexBuffer(_triIndices, STATIC_DRAW, _triIndexBuffer);
 		}
 
 		if (drawQuads)
 		{
 			if (_quadVertexBuffer == null)
 			{
-				_quadVertexBuffer = Renderer.createBuffer(8);
+				_quadVertexBuffer = renderer.createBuffer(8);
 				// create quad index buffer
 				var indices = new IntArray(#if !flash MAX_INDICES #end);
 				var i = 0, j = 0;
@@ -341,33 +344,32 @@ class SpriteBatch
 					indices[i++] = j+3;
 					j += 4;
 				}
-				_quadIndexBuffer = Renderer.updateIndexBuffer(indices, STATIC_DRAW, _quadIndexBuffer);
+				_quadIndexBuffer = renderer.updateIndexBuffer(indices, STATIC_DRAW, _quadIndexBuffer);
 			}
 
-			Renderer.bindBuffer(_quadVertexBuffer);
-			Renderer.updateBuffer(_quadVertices, STATIC_DRAW);
+			renderer.bindBuffer(_quadVertexBuffer);
+			renderer.updateBuffer(_quadVertices, STATIC_DRAW);
 		}
 
 		// loop material passes
 		for (pass in material.passes)
 		{
-			pass.use();
-			var program = pass.shader.program;
-			Renderer.setMatrix(program.uniform("uMatrix"), transform);
-			Renderer.setAttribute(program.attribute("aVertexPosition"), 0, 2);
-			Renderer.setAttribute(program.attribute("aTexCoord"), 2, 2);
-			Renderer.setAttribute(program.attribute("aColor"), 4, 4);
+			pass.use(renderer);
+			renderer.setMatrix("uMatrix", transform);
+			renderer.setAttribute("aVertexPosition", 0, 2);
+			renderer.setAttribute("aTexCoord", 2, 2);
+			renderer.setAttribute("aColor", 4, 4);
 
 			if (drawTris)
 			{
-				Renderer.bindBuffer(_triVertexBuffer);
-				Renderer.draw(_triIndexBuffer, Std.int(_iIndex / 3));
-				Renderer.bindBuffer(_quadVertexBuffer);
+				renderer.bindBuffer(_triVertexBuffer);
+				renderer.draw(_triIndexBuffer, Std.int(_iIndex / 3));
+				renderer.bindBuffer(_quadVertexBuffer);
 			}
 
 			if (drawQuads)
 			{
-				Renderer.draw(_quadIndexBuffer, _numQuads * 2);
+				renderer.draw(_quadIndexBuffer, _numQuads * 2);
 			}
 		}
 

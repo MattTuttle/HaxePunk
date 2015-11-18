@@ -30,7 +30,6 @@ class Console
 		_entityText = new Text("0 Entities");
 
 		// set up a separate batch for the console
-		_spriteBatch = new SpriteBatch();
 		_camera = new Camera(0, 0);
 	}
 
@@ -82,6 +81,10 @@ class Console
 
 	public function draw(window:Window):Void
 	{
+		if (_spriteBatch == null)
+		{
+			_spriteBatch = new SpriteBatch();
+		}
 		// use the scene spritebatch to draw with correct camera transform
 		Draw.begin(window.scene.spriteBatch);
 		var bounds:Rectangle;
@@ -98,7 +101,7 @@ class Console
 		Draw.end();
 
 		// reset spritebatch to correct camera position
-		_spriteBatch.begin(_camera.transform);
+		_spriteBatch.begin(window.renderer, _camera.transform);
 
 		var pad = 4;
 		var pos = new Vector3(); // TODO: remove unnecessary creation of vector

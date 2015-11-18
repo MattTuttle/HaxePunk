@@ -46,32 +46,14 @@ class Engine extends Application
 	private function registerWindow(wnd:lime.ui.Window):Window
 	{
 		var window = new Window();
-		window.register(wnd);
+		window.register(wnd, this.ready);
 		_windows.set(wnd.id, window);
-
-		// check that rendering context is supported
-		switch (wnd.renderer.context)
-		{
-			#if flash
-			case FLASH(context):
-				haxepunk.renderers.FlashRenderer.init(context, function() {
-					window.ready = true;
-					ready(window);
-				});
-			#end
-			case OPENGL(_):
-				window.ready = true;
-				ready(window);
-			default:
-				throw "Rendering context is not supported!";
-		}
 		return window;
 	}
 
 	override public function render(renderer:Renderer):Void
 	{
-		var window = _windows.get(renderer.window.id);
-		window.render();
+		_windows.get(renderer.window.id).render();
 	}
 
 	override public function update(deltaTime:Int):Void
@@ -80,9 +62,9 @@ class Engine extends Application
 		Time.totalElapsed += Time.elapsed;
 		Time.frames += 1;
 
-		for (id in _windows.keys())
+		for (window in _windows)
 		{
-			_windows.get(id).update();
+			window.update();
 		}
 	}
 

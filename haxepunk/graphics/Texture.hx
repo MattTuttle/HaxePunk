@@ -27,6 +27,10 @@ class Texture
 	 */
 	public var bitsPerPixel(default, null):Int = 0;
 
+	public var data(default, null):Bytes;
+
+	public var id(default, null):String;
+
 	/**
 	 * Create a texture from RGBA data.
 	 * @param data the RGBA texture data. Must be 4 Int values per pixel.
@@ -121,10 +125,9 @@ class Texture
 	@:allow(haxepunk.graphics)
 	private function new(?id:String)
 	{
-		_id = (id == null) ? Math.uuid() : id;
+		this.id = (id == null) ? Math.uuid() : id;
 		// TODO: throw warning if duplicate id found?
-		_textures.set(_id, this);
-		_texture = new Map<Int, NativeTexture>();
+		_textures.set(this.id, this);
 	}
 
 	/**
@@ -147,6 +150,7 @@ class Texture
 		this.width = stride;
 		this.height = Std.int(pixels / stride);
 		this.bitsPerPixel = bitsPerPixel;
+		this.data = bytes;
 #if flash
 		// flash requires BGRA instead of RGBA
 		if (bitsPerPixel == 32)
@@ -159,43 +163,16 @@ class Texture
 			}
 		}
 #end
-		_data = bytes;
-	}
-
-	/**
-	 * Removes a texture from the renderer.
-	 */
-	public function destroy()
-	{
-		for (texture in _texture)
-		{
-			Renderer.deleteTexture(texture);
-		}
-		_textures.remove(_id);
 	}
 
 	/**
 	 * Binds the texture for drawing
 	 * @param sampler the id of the sampler to use
 	 */
-	public function bind(sampler:Int=0):Void
+	public inline function bind(renderer:Renderer, sampler:Int=0):Void
 	{
-		var id = Renderer.window.id;
-		if (_texture.exists(id))
-		{
-			Renderer.bindTexture(_texture.get(id), sampler);
-		}
-		else
-		{
-			var texture = Renderer.createTextureFromBytes(_data, width, height, bitsPerPixel);
-			// Renderer.bindTexture(texture, sampler);
-			_texture.set(id, texture);
-		}
+		renderer.bindTexture(this, sampler);
 	}
-
-	private var _data:Bytes;
-	private var _texture:Map<Int, NativeTexture>;
-	private var _id:String;
 
 	private static var _textures = new StringMap<Texture>();
 

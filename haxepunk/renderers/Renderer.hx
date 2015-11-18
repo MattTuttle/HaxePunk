@@ -1,8 +1,9 @@
 package haxepunk.renderers;
 
 import haxe.ds.IntMap;
-import haxepunk.graphics.Color;
-import haxepunk.math.Matrix4;
+import haxe.io.Bytes;
+import haxepunk.graphics.*;
+import haxepunk.math.*;
 
 #if lime
 import lime.utils.Float32Array;
@@ -53,21 +54,6 @@ enum BufferUsage {
 	var LESS_EQUAL = 7;
 }
 
-class ActiveState
-{
-	public var blendSource:BlendFactor;
-	public var blendDestination:BlendFactor;
-	public var program:ShaderProgram;
-	public var texture:NativeTexture;
-	public var buffer:VertexBuffer;
-	public var indexBuffer:IndexBuffer;
-	public var depthTest:DepthTestCompare;
-
-	public function new()
-	{
-	}
-}
-
 // ----------------------------------------------
 // Type defines for rendering
 // ----------------------------------------------
@@ -88,20 +74,13 @@ class ActiveState
 		}
 	}
 
-	typedef ShaderProgram = flash.display3D.Program3D;
 	typedef IndexBuffer = flash.display3D.IndexBuffer3D;
 	typedef NativeTexture = flash.display3D.textures.Texture;
-	typedef Location = Int;
-
-	typedef Renderer = FlashRenderer;
 
 #elseif lime
 
 	typedef FloatArray = lime.utils.Float32Array;
 	typedef IntArray = lime.utils.Int16Array;
-
-	typedef ShaderProgram = lime.graphics.opengl.GLProgram;
-	typedef Location = lime.graphics.opengl.GLUniformLocation;
 
 	class VertexBuffer
 	{
@@ -117,13 +96,57 @@ class ActiveState
 
 	typedef IndexBuffer = lime.graphics.opengl.GLBuffer;
 	typedef NativeTexture = lime.graphics.opengl.GLTexture;
-	typedef Renderer = GLRenderer;
 
 #else
 
 	typedef FloatArray = Array<Float>;
 	typedef IntArray = Array<UInt>;
 
-	typedef Renderer = NullRenderer;
-
 #end
+
+class Renderer
+{
+
+	public var window(default, null):Window;
+
+	public function new(window:Window) { this.window = window; }
+
+	public function clear(color:Color):Void { }
+	public function setViewport(viewport:Rectangle):Void { }
+	public function present():Void {
+		_totalRenderCalls += _renderCalls;
+		_renderCalls = 0;
+	}
+	public function setBlendMode(source:BlendFactor, destination:BlendFactor):Void { }
+	public function setCullMode(mode:CullMode):Void { }
+	public function capture(viewport:Rectangle):Null<Image> { return null; }
+	public function createTextureFromBytes(bytes:Bytes, width:Int, height:Int, bitsPerPixel:Int=32):NativeTexture { return null; }
+	public function deleteTexture(texture:Texture):Void { }
+	public function bindTexture(texture:Texture, sampler:Int):Void { }
+	public function bindShader(?shader:Shader):Void { }
+	public function setMatrix(uniform:String, matrix:Matrix4):Void { }
+	public function setVector3(uniform:String, vec:Vector3):Void { }
+	public function setColor(uniform:String, color:Color):Void { }
+	public function setFloat(uniform:String, value:Float):Void { }
+	public function setAttribute(attribute:String, offset:Int, num:Int):Void { }
+	public function bindBuffer(v:VertexBuffer):Void { }
+	public function createBuffer(stride:Int):Null<VertexBuffer> { return null; }
+	public function updateBuffer(data:FloatArray, ?usage:BufferUsage):Void { }
+	public function updateIndexBuffer(data:IntArray, ?usage:BufferUsage, ?buffer:IndexBuffer):IndexBuffer { return null; }
+	public function setScissor(?clip:Rectangle):Void { }
+	public function draw(buffer:IndexBuffer, numTriangles:Int, offset:Int=0):Void {
+		_renderCalls++;
+	}
+	public function setDepthTest(depthMask:Bool, ?test:DepthTestCompare):Void { }
+
+	private var _renderCalls:Float = 0;
+	private var _totalRenderCalls:Float = 0;
+
+	private var _blendSource:BlendFactor;
+	private var _blendDestination:BlendFactor;
+	private var _shader:Shader;
+	private var _buffer:VertexBuffer;
+	private var _indexBuffer:IndexBuffer;
+	private var _depthTest:DepthTestCompare;
+
+}
