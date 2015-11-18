@@ -139,15 +139,18 @@ class Window
 		// check that rendering context is supported
 		switch (window.renderer.context)
 		{
+#if flash
 			case FLASH(context):
 				renderer = new haxepunk.renderers.FlashRenderer(this, context, function() {
 					setViewport(width, height);
 					ready(this);
 				});
+#else
 			case OPENGL(context):
 				renderer = new haxepunk.renderers.GLRenderer(this, context);
 				setViewport(width, height);
 				ready(this);
+#end
 			default:
 				throw "Rendering context is not supported!";
 		}

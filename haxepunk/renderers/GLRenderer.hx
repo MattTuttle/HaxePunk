@@ -97,7 +97,7 @@ class GLRenderer extends Renderer
 		return new Image(new ImageBuffer(pixels, width, height), 0, 0, width, height);
 	}
 
-	override public function createTextureFromBytes(bytes:Bytes, width:Int, height:Int, bitsPerPixel:Int=32):NativeTexture
+	private function createTextureFromBytes(bytes:Bytes, width:Int, height:Int, bitsPerPixel:Int=32):GLTexture
 	{
 		var format = switch (bitsPerPixel) {
 			case 8: gl.ALPHA;

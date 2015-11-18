@@ -75,7 +75,6 @@ enum BufferUsage {
 	}
 
 	typedef IndexBuffer = flash.display3D.IndexBuffer3D;
-	typedef NativeTexture = flash.display3D.textures.Texture;
 
 #elseif lime
 
@@ -95,7 +94,6 @@ enum BufferUsage {
 	}
 
 	typedef IndexBuffer = lime.graphics.opengl.GLBuffer;
-	typedef NativeTexture = lime.graphics.opengl.GLTexture;
 
 #else
 
@@ -120,7 +118,6 @@ class Renderer
 	public function setBlendMode(source:BlendFactor, destination:BlendFactor):Void { }
 	public function setCullMode(mode:CullMode):Void { }
 	public function capture(viewport:Rectangle):Null<Image> { return null; }
-	public function createTextureFromBytes(bytes:Bytes, width:Int, height:Int, bitsPerPixel:Int=32):NativeTexture { return null; }
 	public function deleteTexture(texture:Texture):Void { }
 	public function bindTexture(texture:Texture, sampler:Int):Void { }
 	public function bindShader(?shader:Shader):Void { }
