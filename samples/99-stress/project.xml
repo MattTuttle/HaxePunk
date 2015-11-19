@@ -7,11 +7,11 @@
 	<window width="800" height="600" fps="60" background="0x111111" />
 	<window hardware="true" vsync="true" allow-shaders="true" require-shaders="true" depth-buffer="true" stencil-buffer="false" />
 
-	<source path="source" />
+	<source path="." />
 
 	<haxelib name="HaxePunk" />
 
-	<assets path="assets" exclude="*.svg" />
-	<icon path="assets/lime.svg" />
+	<assets path="../assets" rename="assets" exclude="*.svg" />
+	<icon path="../assets/HaxePunk.svg" />
 
 </project>

@@ -1,18 +1,22 @@
-import haxepunk.HXP;
-import haxepunk.graphics.Draw;
-import haxepunk.graphics.Color;
+import haxepunk.*;
+import haxepunk.graphics.*;
+import haxepunk.math.*;
 
-class DrawEntity extends haxepunk.scene.Entity
+class DrawGraphic extends Graphic
 {
 
-	public function new() { super(); }
-
-	override public function draw()
+	public function new()
 	{
-		var color = new Color();
+		super();
+		color = new Color();
+	}
+
+	override public function draw(batch:SpriteBatch, offset:Vector3)
+	{
 		color.fromInt(0xFF00FF);
 		var x = 0;
-		while (x < scene.camera.width)
+		Draw.begin(batch);
+		while (x < batch.renderer.window.width)
 		{
 			var nx = x + 25;
 			Draw.line(x, 0, nx, 50, color);
@@ -29,14 +33,17 @@ class DrawEntity extends haxepunk.scene.Entity
 		Draw.fillRect(15, 150, 150, 50, color);
 		color.fromInt(0x0055FF);
 		Draw.rect(15, 150, 150, 50, color, 3);
+		Draw.end();
 	}
+
+	private var color:Color;
 
 }
 
-class Main extends haxepunk.Engine
+class Main extends Engine
 {
 	override public function ready(window:Window)
 	{
-		window.scene.add(new DrawEntity());
+		window.scene.addGraphic(new DrawGraphic());
 	}
 }

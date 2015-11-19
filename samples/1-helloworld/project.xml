@@ -4,11 +4,13 @@
 	<meta title="Hello World" package="com.haxepunk.helloworld" version="1.0.0" company="" />
 	<app main="HelloWorld" path="export" file="HelloWorld" />
 
-	<window width="512" height="288" fps="60" />
-	<window hardware="true" allow-shaders="true" require-shaders="true" depth-buffer="true" stencil-buffer="false" />
+	<window width="512" height="288" fps="60" background="0xEEEEEE" />
+	<window hardware="true" vsync="true" allow-shaders="true" require-shaders="true" depth-buffer="true" stencil-buffer="false" />
 
+	<source path="." />
 	<haxelib name="HaxePunk" />
 
+	<assets path="../assets" exclude="*.svg" />
 	<icon path="../assets/HaxePunk.svg" />
 
 </project>

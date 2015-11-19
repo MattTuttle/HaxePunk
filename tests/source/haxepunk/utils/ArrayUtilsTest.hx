@@ -40,4 +40,28 @@ class ArrayUtilsTest extends haxe.unit.TestCase
         assertTrue([2, 4, 6].contains(4));
     }
 
+    public function testInsertSorted()
+    {
+        var array = [];
+        var sort = function(a:Int, b:Int) { return a - b; }
+        array.insertSortedKey(343, sort);
+        assertEquals(1, array.length);
+
+        array.insertSortedKey(6, sort);
+        assertEquals(2, array.length);
+        assertEquals(6, array[0]);
+        assertEquals(343, array[1]);
+
+        array.insertSortedKey(25, sort);
+        array.insertSortedKey(734, sort);
+        array.insertSortedKey(1, sort);
+        array.insertSortedKey(867, sort);
+
+        var result = [1,6,25,343,734,867];
+        for (i in 0...result.length)
+        {
+            assertEquals(result[i], array[i]);
+        }
+    }
+
 }

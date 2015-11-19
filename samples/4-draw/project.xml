@@ -7,6 +7,7 @@
 	<window width="512" height="288" fps="60" />
 	<window hardware="true" allow-shaders="true" require-shaders="true" depth-buffer="true" stencil-buffer="false" />
 
+	<source path="." />
 	<haxelib name="HaxePunk" />
 
 	<icon path="../assets/HaxePunk.svg" />

@@ -1,11 +1,12 @@
+import haxepunk.*;
 import haxepunk.graphics.*;
 import haxepunk.scene.Scene;
 
-class Effects extends haxepunk.Engine
+class EffectsScene extends Scene
 {
-	override public function ready(window:Window)
+	public function new(window:Window)
 	{
-		scene = window.scene;
+		super();
 		emitter = new ParticleEmitter("assets/particle.png");
 		emitter.acceleration.y = 0.05;
 		emitter.randomVelocity.x = 1;
@@ -14,20 +15,27 @@ class Effects extends haxepunk.Engine
 		emitter.randomAngularVelocity = 0.1;
 		emitter.growth.x = emitter.growth.y = 0.05;
 		emitter.centerOrigin();
-		scene.addGraphic(emitter, 0, window.width / 2, 25);
+		addGraphic(emitter, 0, window.width / 2, 25);
 
-		particleCount = new haxepunk.graphics.Text("");
-		scene.addGraphic(particleCount, 0, 0, 15);
+		particleCount = new Text("");
+		addGraphic(particleCount, 0, 0, 15);
 	}
 
-	override public function update(deltaTime:Int)
+	override public function update(window:Window)
 	{
 		emitter.emit(5);
-		particleCount.text = "Particles " + emitter.count + "\nFPS " + Std.int(scene.frameRate);
-		super.update(deltaTime);
+		particleCount.text = "Particles " + emitter.count + "\nFPS " + Std.int(window.fps);
+		super.update(window);
 	}
 
 	private var particleCount:Text;
 	private var emitter:ParticleEmitter;
-	private var scene:Scene;
+}
+
+class Effects extends Engine
+{
+	override public function ready(window:Window)
+	{
+		window.scene = new EffectsScene(window);
+	}
 }

@@ -4,11 +4,13 @@
 	<meta title="Gui" package="com.haxepunk.gui" version="1.0.0" company="" />
 	<app main="Gui" path="export" file="gui" />
 
-	<window width="512" height="288" fps="60" />
+	<window width="640" height="480" fps="60" background="0x111111" />
 	<window hardware="true" allow-shaders="true" require-shaders="true" depth-buffer="true" stencil-buffer="false" />
 
+	<source path="." />
 	<haxelib name="HaxePunk" />
 
+	<assets path="../assets" rename="assets" exclude="*.svg" />
 	<icon path="../assets/HaxePunk.svg" />
 
 </project>

@@ -6,7 +6,7 @@ import haxepunk.math.*;
 import haxepunk.scene.*;
 import haxepunk.mint.HaxePunkMintRender;
 
-class GUIEntity extends Entity
+class GuiEntity extends Entity
 {
 	public function new(rendering:HaxePunkMintRender)
 	{
@@ -129,12 +129,12 @@ class GUIEntity extends Entity
 
 }
 
-class GUI extends Engine
+class Gui extends Engine
 {
 
 	override public function ready(window:Window)
 	{
-		window.scene.add(new GUIEntity(new HaxePunkMintRender(window)));
+		window.scene.add(new GuiEntity(new HaxePunkMintRender(window)));
 	}
 
 }

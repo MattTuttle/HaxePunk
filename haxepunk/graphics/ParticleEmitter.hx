@@ -112,13 +112,13 @@ class ParticleEmitter extends Graphic
 		}
 	}
 
-	override public function draw(offset:Vector3):Void
+	override public function draw(batch:SpriteBatch, offset:Vector3):Void
 	{
 		for (p in _particles)
 		{
 			if (p.alive)
 			{
-				SpriteBatch.draw(material, offset.x + p.position.x, offset.y + p.position.y, width, height,
+				batch.draw(material, offset.x + p.position.x, offset.y + p.position.y, width, height,
 					0, 0, width, height, false, false,
 					origin.x, origin.y, scale.x * p.scale.x, scale.y * p.scale.y, angle + p.angle);
 			}
