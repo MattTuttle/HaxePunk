@@ -80,8 +80,6 @@ class Camera extends SceneNode
 
 	public function setViewport(windowWidth:Int, windowHeight:Int):Rectangle
 	{
-		if (width == 0) width = windowWidth;
-		if (height == 0) height = windowHeight;
 		ortho(); // TODO: There MUST be a better way to do this!
 		switch (scaleMode)
 		{
@@ -182,8 +180,15 @@ class Camera extends SceneNode
 	/**
 	 * Updates the camera's transform matrix.
 	 */
-	public function update():Void
+	public function update(window:Window):Void
 	{
+		if (width == 0 || height == 0)
+		{
+			width = window.width;
+			height = window.height;
+			setViewport(window.width, window.height);
+		}
+
 		// reset transform
 		transform.identity();
 		transform.rotateZ(angle);

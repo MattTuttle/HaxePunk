@@ -118,6 +118,7 @@ class Renderer
 	public function setBlendMode(source:BlendFactor, destination:BlendFactor):Void { }
 	public function setCullMode(mode:CullMode):Void { }
 	public function capture(viewport:Rectangle):Null<Image> { return null; }
+	public function setRenderTarget(?target:Texture):Void { }
 	public function deleteTexture(texture:Texture):Void { }
 	public function bindTexture(texture:Texture, sampler:Int):Void { }
 	public function bindShader(?shader:Shader):Void { }

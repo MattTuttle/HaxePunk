@@ -31,6 +31,16 @@ class Texture
 
 	public var id(default, null):String;
 
+
+	public static function fromSize(width:Int, height:Int, bitsPerPixel:Int=32):Texture
+	{
+		var texture = new Texture();
+		texture.width = width;
+		texture.height = height;
+		texture.bitsPerPixel = bitsPerPixel;
+		return texture;
+	}
+
 	/**
 	 * Create a texture from RGBA data.
 	 * @param data the RGBA texture data. Must be 4 Int values per pixel.

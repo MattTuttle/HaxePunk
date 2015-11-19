@@ -60,7 +60,7 @@ class Console
 			_camera.height = window.height;
 #end
 			_camera.ortho();
-			_camera.update();
+			_camera.update(window);
 		}
 		_logText.text = _lines.join("\n") + "\n> " + _input;
 		_fpsText.text = "FPS: " + Std.int(window.fps);

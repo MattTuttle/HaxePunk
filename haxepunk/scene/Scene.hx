@@ -331,6 +331,7 @@ class Scene
 	 */
 	public function draw(renderer:Renderer)
 	{
+		renderer.clear(camera.clearColor == null ? renderer.window.backgroundColor : camera.clearColor);
 		spriteBatch.begin(renderer, camera.transform);
 		for (e in _layerList)
 		{
@@ -346,7 +347,7 @@ class Scene
 	public function update(window:Window):Void
 	{
 		updateEntities(window);
-		camera.update();
+		camera.update(window);
 	}
 
 	/** @private Adds, updates, and removes entities from the scene */

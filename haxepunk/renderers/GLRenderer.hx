@@ -109,8 +109,46 @@ class GLRenderer extends Renderer
 		gl.bindTexture(GL.TEXTURE_2D, texture);
 		gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
 		gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST);
-		gl.texImage2D(GL.TEXTURE_2D, 0, format, width, height, 0, format, GL.UNSIGNED_BYTE, UInt8Array.fromBytes(bytes));
+		gl.texImage2D(GL.TEXTURE_2D, 0, format, width, height, 0, format, GL.UNSIGNED_BYTE, bytes == null ? null : UInt8Array.fromBytes(bytes));
 		return texture;
+	}
+
+	private inline function getTexture(texture:Texture):GLTexture
+	{
+		if (!_textures.exists(texture.id))
+		{
+			_textures.set(texture.id, createTextureFromBytes(texture.data, texture.width, texture.height, texture.bitsPerPixel));
+		}
+		return _textures.get(texture.id);
+	}
+
+	override public function setRenderTarget(?target:Texture):Void
+	{
+		if (target == null)
+		{
+			gl.bindFramebuffer(GL.FRAMEBUFFER, null);
+		}
+		else if (_framebuffers.exists(target.id))
+		{
+			gl.bindFramebuffer(GL.FRAMEBUFFER, _framebuffers.get(target.id));
+		}
+		else
+		{
+			var texture = getTexture(target);
+			var framebuffer = gl.createFramebuffer();
+			gl.bindFramebuffer(GL.FRAMEBUFFER, framebuffer);
+			gl.framebufferTexture2D(GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, texture, 0);
+			// TODO: do we always need the depth buffer?
+			var depth = gl.createRenderbuffer();
+			gl.bindRenderbuffer(GL.RENDERBUFFER, depth);
+			gl.renderbufferStorage(GL.RENDERBUFFER, GL.DEPTH_COMPONENT, target.width, target.height);
+			gl.framebufferRenderbuffer(GL.FRAMEBUFFER, GL.DEPTH_ATTACHMENT, GL.RENDERBUFFER, depth);
+			if (gl.checkFramebufferStatus(GL.FRAMEBUFFER) != GL.FRAMEBUFFER_COMPLETE)
+			{
+				trace("Failed to create a framebuffer");
+			}
+			_framebuffers.set(target.id, framebuffer);
+		}
 	}
 
 	override public function deleteTexture(texture:Texture):Void
@@ -125,17 +163,10 @@ class GLRenderer extends Renderer
 	override public function bindTexture(texture:Texture, sampler:Int):Void
 	{
 		if (_lastTexture == texture.id) return;
-		if (_textures.exists(texture.id))
-		{
-			_texture = _textures.get(texture.id);
-		}
-		else
-		{
-			_texture = createTextureFromBytes(texture.data, texture.width, texture.height, texture.bitsPerPixel);
-			_textures.set(texture.id, _texture);
-		}
+		_texture = getTexture(texture);
 
 		gl.activeTexture(GL.TEXTURE0 + sampler);
+		gl.uniform1i(_program.uniform("uImage"+sampler), sampler);
 		gl.bindTexture(GL.TEXTURE_2D, _texture);
 	}
 
@@ -262,6 +293,7 @@ class GLRenderer extends Renderer
 		_depthTest = test;
 	}
 
+	private var _framebuffers = new StringMap<GLFramebuffer>();
 	private var _textures = new StringMap<GLTexture>();
 	private var _texture:GLTexture;
 	private var _lastTexture:String;

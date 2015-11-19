@@ -37,7 +37,7 @@ class CameraTool implements Tool
 			camera.zoom -= 0.01;
 		}
 
-		camera.update();
+		camera.update(window);
 
 		lastPos = window.input.check(MouseButton.LEFT) ? camera.screenToCamera(window.input.mouse.position) : null;
 	}

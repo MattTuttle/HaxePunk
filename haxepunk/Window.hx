@@ -5,7 +5,7 @@ import haxepunk.graphics.Color;
 import haxepunk.inputs.Input;
 import haxepunk.math.*;
 import haxepunk.renderers.Renderer;
-import haxepunk.scene.Scene;
+import haxepunk.scene.*;
 import haxepunk.utils.Time;
 
 class Window
@@ -31,7 +31,10 @@ class Window
 	 */
 	public var scene(get, set):Scene;
 	private inline function get_scene():Scene { return _scene; }
-	private inline function set_scene(scene:Scene):Scene { return replaceScene(scene); }
+	private inline function set_scene(scene:Scene):Scene { replaceScene(scene); return scene; }
+
+	public var nextScene(get, never):Scene;
+	private inline function get_nextScene():Scene { return _scenes.first(); }
 
 #if lime
 	/**
@@ -168,8 +171,14 @@ class Window
 		fps = 1000 / _frameTime.average;
 		_lastFrame = startTime;
 
-		renderer.clear(scene.camera.clearColor == null ? backgroundColor : scene.camera.clearColor);
-		scene.draw(renderer);
+		if (_transition == null)
+		{
+			_scene.draw(renderer);
+		}
+		else
+		{
+			_transition.draw(renderer);
+		}
 		if (console.enabled) console.draw(this);
 		renderer.present();
 		renderFrameTime.add(Time.since(startTime));
@@ -178,9 +187,15 @@ class Window
 	public function update()
 	{
 		var startTime = Time.now;
-		// only change active scene during update
-		_scene = _scenes.first();
-		scene.update(this);
+
+		// only change active scene after update
+		_scene = nextScene;
+		_scene.update(this);
+
+		if (_transition != null)
+		{
+			_transition.update(this);
+		}
 
 		if (console.enabled) console.update(this);
 
@@ -202,38 +217,56 @@ class Window
 			vp.width * pixelScale, vp.height * pixelScale));
 	}
 
+	private function setTransition(?transition:Transition):Transition
+	{
+		if (transition != null)
+		{
+			transition.oldScene = this.scene;
+			transition.newScene = this.nextScene;
+			transition.finishTransition.connect(function() { _transition = null; });
+		}
+		return _transition = transition;
+	}
+
 	/**
-	 * Replaces the current scene
-	 * @param scene The replacement scene
+	 * Replaces the current scene.
+	 * @param scene       The scene to replace the current one.
+	 * @param transition  A transition to be used between scenes.
+	 * @return The scene transition
 	 */
-	public function replaceScene(scene:Scene):Scene
+	public function replaceScene(scene:Scene, ?transition:Transition):Null<Transition>
 	{
 		_scenes.pop();
-		_scenes.push(scene);
-		return scene;
+		return pushScene(scene, transition);
 	}
 
 	/**
-	 * Pops a scene from the stack
+	 * Pops a scene from the stack.
+	 * @param transition  A transition to be used between scenes.
+	 * @return The scene transition
 	 */
-	public function popScene():Scene
+	public function popScene(?transition:Transition):Null<Transition>
 	{
 		// should always have at least one scene
-		return (_scenes.length > 1 ? _scenes.pop() : _scenes.first());
+		if (_scenes.length > 1) _scenes.pop();
+		return setTransition(transition);
 	}
 
 	/**
-	 * Pushes a scene (keeping the old one to use later)
-	 * @param scene The scene to push
+	 * Pushes a scene (keeping the old one to use later). Useful for pause menus.
+	 * @param scene       Pushes a new scene onto the scene stack.
+	 * @param transition  A transition to be used between scenes.
+	 * @return The scene transition
 	 */
-	public function pushScene(scene:Scene):Scene
+	public function pushScene(scene:Scene, ?transition:Transition):Null<Transition>
 	{
 		_scenes.push(scene);
-		return scene;
+		return setTransition(transition);
 	}
 
 	private var _lastFrame:Float = 0;
 	private var _frameTime:Statistic;
+	private var _transition:Transition;
 	private var _scene:Scene;
 	private var _scenes:List<Scene>;
 #if lime

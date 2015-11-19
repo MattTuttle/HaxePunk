@@ -8,6 +8,7 @@
 	<window width="{{WIDTH}}" height="{{HEIGHT}}" resizable="true" unless="mobile" />
 	<window fullscreen="true" if="mobile" />
 	<window orientation="landscape" vsync="true" antialiasing="0" if="cpp" />
+	<window hardware="true" allow-shaders="true" require-shaders="true" depth-buffer="true" stencil-buffer="false" />
 
 	<source path="source" />
 
@@ -18,5 +19,5 @@
 	<assets path="assets/audio" rename="audio" include="*.wav|*.ogg" unless="flash" />
 	<assets path="assets/font" rename="font" include="*.ttf" />
 
-	<icon path="assets/HaxePunk.svg" />
+	<icon path="assets/icon.svg" />
 </project>
