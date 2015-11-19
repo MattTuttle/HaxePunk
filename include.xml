@@ -13,6 +13,7 @@
 	<haxelib name="lime" />
 	<haxelib name="mint" />
 	<haxelib name="format" />
+	<haxelib name="hxsignal" />
 
 	<icon path="assets/HaxePunk.svg" />
 

@@ -8,6 +8,8 @@
 	"releasenote": "See CHANGELOG",
 	"contributors": ["heardtheword", "_ibilon"],
 	"dependencies": {
-		"lime": ""
+		"lime": "",
+		"format": "",
+		"hxsignal": ""
 	}
 }

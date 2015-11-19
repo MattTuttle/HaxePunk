@@ -3,11 +3,11 @@ import haxepunk.graphics.*;
 import haxepunk.scene.*;
 import haxepunk.math.Vector3;
 
-class StressTest extends Engine
+class StressTestScene extends Scene
 {
-	override public function ready(window:Window)
+	public function new(window:Window)
 	{
-		_window = window;
+		super();
 		var material = new Material();
 		material.firstPass.insertTexture(Assets.getTexture("assets/lime.png"));
 		var num = Std.int(Math.random() * 50 + 150);
@@ -16,7 +16,6 @@ class StressTest extends Engine
 		var material = new Material();
 		material.firstPass.insertTexture(Assets.getTexture("assets/character.png"));
 
-		var scene = window.scene;
 		for (i in 0...num)
 		{
 			var sprite = new Spritemap(material, 32, 32);
@@ -24,23 +23,31 @@ class StressTest extends Engine
 			sprite.play("walk");
 			sprite.centerOrigin();
 
-			scene.addGraphic(sprite,
+			addGraphic(sprite,
 				Std.int(Math.random() * -50),
 				Math.random() * window.width,
 				Math.random() * window.height);
 		}
 
 		fps = new Text("", 32);
-		scene.addGraphic(fps);
+		addGraphic(fps, 10);
 	}
 
-	override public function update(deltaTime:Int)
+	override public function update(window:Window)
 	{
-		super.update(deltaTime);
-		fps.text = "" + Std.int(_window.fps);
+		super.update(window);
+		fps.text = "" + Std.int(window.fps);
 	}
 
 	private var fps:Text;
-	private var _window:Window;
+
+}
+
+class StressTest extends Engine
+{
+	override public function ready(window:Window)
+	{
+		window.scene = new StressTestScene(window);
+	}
 
 }

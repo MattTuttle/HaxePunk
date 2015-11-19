@@ -5,6 +5,7 @@ import haxepunk.math.*;
 import haxepunk.scene.Camera;
 import haxepunk.utils.*;
 import haxe.ds.StringMap;
+import hxsignal.Signal;
 
 /**
  * Template used by Spritemap to define animations. Don't create
@@ -91,7 +92,7 @@ class Spritemap extends Image
 	/**
 	 * Optional update function for animation end.
 	 */
-	public var onAnimEnd:Event<Void->Void>;
+	public var onAnimEnd:Signal<Void->Void>;
 
 	/**
 	 * The currently playing animation name.
@@ -103,7 +104,7 @@ class Spritemap extends Image
 	public function new(source:ImageSource, width:Int, height:Int)
 	{
 		_anims = new StringMap<Animation>();
-		onAnimEnd = new Event<Void->Void>();
+		onAnimEnd = new Signal<Void->Void>();
 
 		super(source);
 
@@ -326,13 +327,13 @@ class Spritemap extends Image
 						if (_anim.loop)
 						{
 							_index = reverse ? _anim.frameCount - 1 : 0;
-							onAnimEnd.dispatch();
+							onAnimEnd.emit();
 						}
 						else
 						{
 							_index = reverse ? 0 : _anim.frameCount - 1;
 							complete = true;
-							onAnimEnd.dispatch();
+							onAnimEnd.emit();
 							break;
 						}
 					}
