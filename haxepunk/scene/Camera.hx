@@ -19,25 +19,25 @@ class Camera extends SceneNode
 	 * The camera's viewport width.
 	 * If you change this the projection must be updated to take effect!
 	 */
-	public var width:Float;
+	public var width:Float = 0;
 
 	/**
 	 * The camera's viewport height.
 	 * If you change this the projection must be updated to take effect!
 	 */
-	public var height:Float;
+	public var height:Float = 0;
 
 	/**
 	 * Half the camera's width. Useful for centering.
 	 */
 	public var halfWidth(get, never):Float;
-	private inline function get_halfWidth():Float { return width / 2; }
+	private inline function get_halfWidth():Float { return width * 0.5; }
 
 	/**
 	 * Half the camera's height. Useful for centering.
 	 */
 	public var halfHeight(get, never):Float;
-	private inline function get_halfHeight():Float { return height / 2; }
+	private inline function get_halfHeight():Float { return height * 0.5; }
 
 	/** The angle of the camera, in radians. */
 	public var angle:Float = 0;
@@ -65,20 +65,16 @@ class Camera extends SceneNode
 	 */
 	public var viewport(default, null):Rectangle;
 
-	public function new(width:Float, height:Float)
+	public function new(width:Float=0, height:Float=0)
 	{
 		super();
 		transform = new Matrix4();
-
-		this.viewport = new Rectangle();
-
-		// default projection
+		viewport = new Rectangle();
 		this.width = width;
 		this.height = height;
-		ortho();
 	}
 
-	public function setViewport(windowWidth:Int, windowHeight:Int):Rectangle
+	public function setViewport(windowWidth:Float, windowHeight:Float):Rectangle
 	{
 		ortho(); // TODO: There MUST be a better way to do this!
 		switch (scaleMode)
@@ -186,7 +182,7 @@ class Camera extends SceneNode
 		{
 			width = window.width;
 			height = window.height;
-			setViewport(window.width, window.height);
+			setViewport(width, height);
 		}
 
 		// reset transform

@@ -15,5 +15,5 @@ void main(void)
 {
     vec4 scene1 = texture2D(uImage0, vTexCoord);
     vec4 scene2 = texture2D(uImage1, vTexCoord);
-	gl_FragColor = scene2;
+	gl_FragColor = mix(scene1, scene2, uProgress);
 }

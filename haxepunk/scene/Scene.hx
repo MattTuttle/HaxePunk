@@ -24,9 +24,9 @@ class Scene
 	 */
 	public var spriteBatch(default, null):SpriteBatch;
 
-	public function new(width:Int=0, height:Int=0)
+	public function new()
 	{
-		camera = new Camera(width, height);
+		camera = new Camera();
 		spriteBatch = new SpriteBatch();
 
 		_added = new Array<Entity>();

@@ -32,7 +32,9 @@ class GLRenderer extends Renderer
 
 	override public function setViewport(viewport:Rectangle):Void
 	{
-		gl.viewport(Std.int(viewport.x), Std.int(viewport.y), Std.int(viewport.width), Std.int(viewport.height));
+		var scale = window.pixelScale; // retina window scale
+		gl.viewport(Std.int(viewport.x * scale), Std.int(viewport.y * scale),
+			Std.int(viewport.width * scale), Std.int(viewport.height * scale));
 	}
 
 	override public function present():Void
@@ -97,27 +99,26 @@ class GLRenderer extends Renderer
 		return new Image(new ImageBuffer(pixels, width, height), 0, 0, width, height);
 	}
 
-	private function createTextureFromBytes(bytes:Bytes, width:Int, height:Int, bitsPerPixel:Int=32):GLTexture
-	{
-		var format = switch (bitsPerPixel) {
-			case 8: gl.ALPHA;
-			case 24: gl.RGB;
-			case 32: gl.RGBA;
-			default: throw "Unsupported bits per pixel: " + bitsPerPixel;
-		};
-		var texture = gl.createTexture();
-		gl.bindTexture(GL.TEXTURE_2D, texture);
-		gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
-		gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST);
-		gl.texImage2D(GL.TEXTURE_2D, 0, format, width, height, 0, format, GL.UNSIGNED_BYTE, bytes == null ? null : UInt8Array.fromBytes(bytes));
-		return texture;
-	}
-
-	private inline function getTexture(texture:Texture):GLTexture
+	private inline function getNativeTexture(texture:Texture):GLTexture
 	{
 		if (!_textures.exists(texture.id))
 		{
-			_textures.set(texture.id, createTextureFromBytes(texture.data, texture.width, texture.height, texture.bitsPerPixel));
+			var format = switch (texture.bitsPerPixel) {
+				case 8: gl.ALPHA;
+				case 24: gl.RGB;
+				case 32: gl.RGBA;
+				default: throw "Unsupported bits per pixel: " + texture.bitsPerPixel;
+			};
+			var filter = texture.smooth ? GL.LINEAR : GL.NEAREST;
+			Log.log('Creating texture: ${texture.width}x${texture.height} ${texture.bitsPerPixel}bpp');
+			var native = gl.createTexture();
+			gl.bindTexture(GL.TEXTURE_2D, native);
+			gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, filter);
+			gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, filter);
+			gl.texImage2D(GL.TEXTURE_2D, 0, format, texture.width, texture.height,
+				0, format, GL.UNSIGNED_BYTE,
+				texture.data == null ? null : UInt8Array.fromBytes(texture.data));
+			_textures.set(texture.id, native);
 		}
 		return _textures.get(texture.id);
 	}
@@ -134,7 +135,7 @@ class GLRenderer extends Renderer
 		}
 		else
 		{
-			var texture = getTexture(target);
+			var texture = getNativeTexture(target);
 			var framebuffer = gl.createFramebuffer();
 			gl.bindFramebuffer(GL.FRAMEBUFFER, framebuffer);
 			gl.framebufferTexture2D(GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, texture, 0);
@@ -145,7 +146,7 @@ class GLRenderer extends Renderer
 			gl.framebufferRenderbuffer(GL.FRAMEBUFFER, GL.DEPTH_ATTACHMENT, GL.RENDERBUFFER, depth);
 			if (gl.checkFramebufferStatus(GL.FRAMEBUFFER) != GL.FRAMEBUFFER_COMPLETE)
 			{
-				trace("Failed to create a framebuffer");
+				Log.error("Failed to create a framebuffer");
 			}
 			_framebuffers.set(target.id, framebuffer);
 		}
@@ -163,11 +164,11 @@ class GLRenderer extends Renderer
 	override public function bindTexture(texture:Texture, sampler:Int):Void
 	{
 		if (_lastTexture == texture.id) return;
-		_texture = getTexture(texture);
+		_texture = getNativeTexture(texture);
 
 		gl.activeTexture(GL.TEXTURE0 + sampler);
-		gl.uniform1i(_program.uniform("uImage"+sampler), sampler);
 		gl.bindTexture(GL.TEXTURE_2D, _texture);
+		gl.uniform1i(_program.uniform("uImage"+sampler), sampler);
 	}
 
 	override public function bindShader(?shader:Shader):Void

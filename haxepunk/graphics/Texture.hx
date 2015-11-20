@@ -20,6 +20,11 @@ class Texture
 	public var height(default, null):Int = 0;
 
 	/**
+	 * Set to true if texture should be filtered smooth
+	 */
+	public var smooth:Bool = false;
+
+	/**
 	 * Number of color bits per pixel
 	 * RGBA = 32 bits (8 red, 8 green, 8 blue, 8 alpha)
 	 * RGB = 24 bits (8 red, 8 green, 8 alpha)

@@ -188,11 +188,13 @@ class Window
 	{
 		var startTime = Time.now;
 
-		// only change active scene after update
-		_scene = nextScene;
-		_scene.update(this);
-
-		if (_transition != null)
+		if (_transition == null)
+		{
+			// only change active scene after update
+			_scene = nextScene;
+			_scene.update(this);
+		}
+		else
 		{
 			_transition.update(this);
 		}
@@ -208,13 +210,10 @@ class Window
 	/**
 	 * Update the viewport
 	 */
-	private function setViewport(windowWidth:Int, windowHeight:Int):Void
+	private inline function setViewport(windowWidth:Int, windowHeight:Int):Void
 	{
-		// get camera viewport
-		var vp = scene.camera.setViewport(windowWidth, windowHeight);
 		// set the window viewport
-		renderer.setViewport(new Rectangle(vp.x * pixelScale, vp.y * pixelScale,
-			vp.width * pixelScale, vp.height * pixelScale));
+		renderer.setViewport(scene.camera.setViewport(windowWidth, windowHeight));
 	}
 
 	private function setTransition(?transition:Transition):Transition

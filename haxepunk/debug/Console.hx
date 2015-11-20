@@ -30,7 +30,7 @@ class Console
 		_entityText = new Text("0 Entities");
 
 		// set up a separate batch for the console
-		_camera = new Camera(0, 0);
+		_camera = new Camera();
 	}
 
 	public function log(line:String)
