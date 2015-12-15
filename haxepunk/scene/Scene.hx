@@ -396,6 +396,7 @@ class Scene
 			e = _removed[i];
 			e.scene = null;
 			_entities.remove(e);
+			_layerList.remove(e);
 			if (e.group != "") removeGroup(e);
 			if (e.name != "") unregisterName(e);
 		}
