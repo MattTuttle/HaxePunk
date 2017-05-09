@@ -102,14 +102,8 @@ class Draw
 			blue = color.blue;
 
 		var ht = thickness / 2;
-		var vec = [];
 		var last = Std.int(points.length / 2);
-		var aa = new Point(), bb = new Point(); // saves first vertex for last draw
-		var a = new Point(),
-			b = new Point(),
-			c = new Point(), // current
-			u = new Point(),
-			v = new Point();
+		
 		begin();
 		for (i in 0...last)
 		{
@@ -126,11 +120,11 @@ class Draw
 			v.x = c.x - wrap(points, index + 2);
 			v.y = c.y - wrap(points, index + 3);
 
-			var delta = u.add(v);
+			delta.setTo(u.x + v.x, u.y + v.y);
 			delta.normalize(ht);
 
-			u = c.add(delta);
-			v = c.subtract(delta);
+			u.setTo(c.x + delta.x, c.y + delta.y);
+			v.setTo(c.x - delta.x, c.y - delta.y);
 
 			if ((u.x * v.x) + (u.y * v.y) < 0)
 			{
@@ -268,7 +262,7 @@ class Draw
 	 * @param	y3			Y finish.
 	 * @param	segments	Increasing will smooth the curve but takes longer to render. Must be a value greater than zero.
 	 */
-	public static function curve(x1:Int, y1:Int, x2:Int, y2:Int, x3:Int, y3:Int, segments:Int = 25)
+	public static function curve(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, segments:Int = 25)
 	{
 		var points:Array<Float> = [];
 		points.push(x1);
@@ -299,15 +293,6 @@ class Draw
 	{
 		if (points.length < 4 || (points.length % 2) == 1)
 			throw "Invalid number of points. Expected an even number greater than 4.";
-		
-		var a = new Point(),
-			b = new Point(),
-			c = new Point(), // current
-			u = new Point(),
-			v = new Point();
-			prev = new Point();
-			next = new Point();
-			delta = new Point();
 		
 		var red = color.red,
 			green = color.green,
@@ -385,4 +370,16 @@ class Draw
 
 	// Drawing information.
 	static var command:DrawCommand;
+	
+	// Helper points for polygon and polyline calculations
+	static var aa:Point = new Point();
+	static var bb:Point = new Point(); // saves first vertex for last draw
+	static var a:Point = new Point();
+	static var b:Point = new Point();
+	static var c:Point = new Point(); // current
+	static var u:Point = new Point();
+	static var v = new Point();
+	static var prev:Point = new Point();
+	static var next:Point = new Point();
+	static var delta:Point = new Point();
 }
