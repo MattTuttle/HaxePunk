@@ -6,6 +6,8 @@ import haxepunk.masks.*;
 
 class HitboxTest extends TestSuite
 {
+	var box:Hitbox;
+
 	@Before
 	public function setup()
 	{
@@ -16,7 +18,7 @@ class HitboxTest extends TestSuite
 	public function testHitbox()
 	{
 		var hitbox = new Hitbox(50, 50);
-		Assert.isTrue(collideHitbox(hitbox, 0, 0));
+		Assert.isTrue(hitbox.collide(box));
 	}
 
 	@Test
@@ -31,14 +33,6 @@ class HitboxTest extends TestSuite
 		Assert.isFalse(collideCircle(circle, 0, 20));
 	}
 
-	@:access(haxepunk.masks.Hitbox)
-	function collideHitbox(hitbox:Hitbox, x:Int, y:Int):Bool
-	{
-		box._x = x;
-		box._y = y;
-		return hitbox.collideHitbox(box);
-	}
-
 	@:access(haxepunk.masks.Circle)
 	function collideCircle(circle:Circle, x:Int, y:Int):Bool
 	{
@@ -46,6 +40,4 @@ class HitboxTest extends TestSuite
 		circle._y = y;
 		return circle.collideHitbox(box);
 	}
-
-	var box:Hitbox;
 }

@@ -26,15 +26,15 @@ class Mask
 	/**
 	 * The parent Entity of this mask.
 	 */
-	public var parent(get, set):Entity;
-	inline function get_parent():Entity
+	public var parent(get, set):Null<Entity>;
+	inline function get_parent():Null<Entity>
 	{
 		return _parent != Entity._EMPTY ? _parent : null;
 	}
-	function set_parent(value:Entity):Entity
+	function set_parent(value:Entity):Null<Entity>
 	{
-		if (value == null) _parent = Entity._EMPTY;
-		else _parent = value; update();
+		_parent = (value == null ? Entity._EMPTY : value);
+		update();
 		return value;
 	}
 
@@ -52,7 +52,6 @@ class Mask
 		_parent = Entity._EMPTY;
 		_class = Type.getClassName(Type.getClass(this));
 		_check = new Map<String, Dynamic -> Bool>();
-		_check.set(Type.getClassName(Mask), collideMask);
 		_check.set(Type.getClassName(Masklist), collideMasklist);
 	}
 
@@ -69,7 +68,7 @@ class Mask
 		cbFunc = mask._check.get(_class);
 		if (cbFunc != null) return cbFunc(this);
 
-		return false;
+		return collideMask(mask);
 	}
 
 	/** @private Collide against an Entity. */
@@ -99,33 +98,24 @@ class Mask
 	@:dox(hide)
 	public function project(axis:Vector2, projection:Projection):Void
 	{
-		var cur:Float,
-			max:Float = Math.NEGATIVE_INFINITY,
+		var max:Float = Math.NEGATIVE_INFINITY,
 			min:Float = Math.POSITIVE_INFINITY;
 
-		cur = -_parent.originX * axis.x - _parent.originY * axis.y;
-		if (cur < min)
-			min = cur;
-		if (cur > max)
-			max = cur;
+		var left = -_parent.originX * axis.x;
+		var right = left + _parent.width * axis.x;
+		var top = -_parent.originY * axis.y;
+		var bottom = top + _parent.height * axis.y;
 
-		cur = (-_parent.originX + _parent.width) * axis.x - _parent.originY * axis.y;
-		if (cur < min)
-			min = cur;
-		if (cur > max)
-			max = cur;
+		inline function checkAxis(cur)
+		{
+			if (cur < min) min = cur;
+			if (cur > max) max = cur;
+		}
 
-		cur = -_parent.originX * axis.x + (-_parent.originY + _parent.height) * axis.y;
-		if (cur < min)
-			min = cur;
-		if (cur > max)
-			max = cur;
-
-		cur = (-_parent.originX + _parent.width) * axis.x + (-_parent.originY + _parent.height) * axis.y;
-		if (cur < min)
-			min = cur;
-		if (cur > max)
-			max = cur;
+		checkAxis(left + top);
+		checkAxis(right + top);
+		checkAxis(left + bottom);
+		checkAxis(right + bottom);
 
 		projection.min = min;
 		projection.max = max;
