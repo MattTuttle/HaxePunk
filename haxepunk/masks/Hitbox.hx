@@ -66,10 +66,8 @@ class Hitbox extends Mask
 	function get_x():Int return _x;
 	function set_x(value:Int):Int
 	{
-		if (_x == value) return value;
 		_x = value;
-		if (list != null) list.update();
-		else if (parent != null) update();
+		update();
 		return _x;
 	}
 
@@ -80,10 +78,8 @@ class Hitbox extends Mask
 	function get_y():Int return _y;
 	function set_y(value:Int):Int
 	{
-		if (_y == value) return value;
 		_y = value;
-		if (list != null) list.update();
-		else if (parent != null) update();
+		update();
 		return _y;
 	}
 
@@ -94,10 +90,8 @@ class Hitbox extends Mask
 	function get_width():Int return _width;
 	function set_width(value:Int):Int
 	{
-		if (_width == value) return value;
 		_width = value;
-		if (list != null) list.update();
-		else if (parent != null) update();
+		update();
 		return _width;
 	}
 
@@ -108,10 +102,8 @@ class Hitbox extends Mask
 	function get_height():Int return _height;
 	function set_height(value:Int):Int
 	{
-		if (_height == value) return value;
 		_height = value;
-		if (list != null) list.update();
-		else if (parent != null) update();
+		update();
 		return _height;
 	}
 
@@ -126,9 +118,11 @@ class Hitbox extends Mask
 			_parent.originY = -_y;
 			_parent.width = _width;
 			_parent.height = _height;
-			// update parent list
-			if (list != null)
-				list.update();
+		}
+		// update parent list
+		if (list != null)
+		{
+			list.update();
 		}
 	}
 
@@ -147,35 +141,24 @@ class Hitbox extends Mask
 	@:dox(hide)
 	override public function project(axis:Vector2, projection:Projection):Void
 	{
-		var px = _x;
-		var py = _y;
-		var cur:Float,
-			max:Float = Math.NEGATIVE_INFINITY,
+		var max:Float = Math.NEGATIVE_INFINITY,
 			min:Float = Math.POSITIVE_INFINITY;
 
-		cur = px * axis.x + py * axis.y;
-		if (cur < min)
-			min = cur;
-		if (cur > max)
-			max = cur;
+		var left = _x * axis.x;
+		var right = left + width * axis.x;
+		var top = _y * axis.y;
+		var bottom = top + height * axis.y;
 
-		cur = (px + _width) * axis.x + py * axis.y;
-		if (cur < min)
-			min = cur;
-		if (cur > max)
-			max = cur;
+		inline function checkAxis(cur)
+		{
+			if (cur < min) min = cur;
+			if (cur > max) max = cur;
+		}
 
-		cur = px * axis.x + (py + _height) * axis.y;
-		if (cur < min)
-			min = cur;
-		if (cur > max)
-			max = cur;
-
-		cur = (px + _width) * axis.x + (py + _height) * axis.y;
-		if (cur < min)
-			min = cur;
-		if (cur > max)
-			max = cur;
+		checkAxis(left + top);
+		checkAxis(right + top);
+		checkAxis(left + bottom);
+		checkAxis(right + bottom);
 
 		projection.min = min;
 		projection.max = max;

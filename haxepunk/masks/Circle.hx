@@ -27,7 +27,6 @@ class Circle extends Hitbox
 		_x = x + radius;
 		_y = y + radius;
 
-		_check.set(Type.getClassName(Mask), collideMask);
 		_check.set(Type.getClassName(Circle), collideCircle);
 		_check.set(Type.getClassName(Hitbox), collideHitbox);
 		_check.set(Type.getClassName(Grid), collideGrid);
@@ -59,7 +58,7 @@ class Circle extends Hitbox
 	{
 		var dx:Float = (_parent.x + _x) - (other._parent.x + other._x);
 		var dy:Float = (_parent.y + _y) - (other._parent.y + other._y);
-		return (dx * dx + dy * dy) < Math.pow(_radius + other._radius, 2);
+		return (dx * dx + dy * dy) < (_radius + other._radius) * (_radius + other._radius);
 	}
 
 	inline function collideGridTile(mx:Float, my:Float, hTileWidth:Float, hTileHeight:Float, thisX:Float, thisY:Float)
@@ -276,8 +275,7 @@ class Circle extends Hitbox
 		_radius = value;
 		_squaredRadius = value * value;
 		height = width = _radius + _radius;
-		if (list != null) list.update();
-		else if (parent != null) update();
+		update();
 		return _radius;
 	}
 
@@ -291,10 +289,11 @@ class Circle extends Hitbox
 			_parent.originX = -_x + radius;
 			_parent.originY = -_y + radius;
 			_parent.height = _parent.width = radius + radius;
-
-			// update parent list
-			if (list != null)
-				list.update();
+		}
+		// update parent list
+		if (list != null)
+		{
+			list.update();
 		}
 	}
 
