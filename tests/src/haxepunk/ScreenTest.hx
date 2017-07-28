@@ -17,6 +17,16 @@ class ScreenTest extends TestSuite
 	}
 
 	@Test
+	public function testSetXY()
+	{
+		var screen = new Screen();
+		screen.x = 50;
+		screen.y = 75;
+		Assert.areEqual(50, screen.x);
+		Assert.areEqual(75, screen.y);
+	}
+
+	@Test
 	public function testDefaultSize()
 	{
 		Assert.areEqual(320, HXP.width);

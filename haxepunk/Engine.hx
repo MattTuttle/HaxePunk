@@ -100,7 +100,7 @@ class Engine extends Sprite
 		HXP.width = width;
 		HXP.height = height;
 
-		HXP.screen = new Screen();
+		HXP.screen = new Screen(width, height);
 
 		// miscellaneous startup stuff
 		if (Random.randomSeed == 0) Random.randomizeSeed();

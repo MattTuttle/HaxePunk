@@ -67,5 +67,53 @@ class Camera extends Point
 			x = tx - (HXP.width * anchorX);
 			y = ty - (HXP.height * anchorY);
 		}
+
+		// camera shake
+		if (_shakeTime > 0)
+		{
+			var sx:Int = Std.random(_shakeMagnitude * 2 + 1) - _shakeMagnitude;
+			var sy:Int = Std.random(_shakeMagnitude * 2 + 1) - _shakeMagnitude;
+
+			x += sx - _shakeX;
+			y += sy - _shakeY;
+
+			_shakeX = sx;
+			_shakeY = sy;
+
+			_shakeTime -= HXP.elapsed;
+			if (_shakeTime < 0) _shakeTime = 0;
+		}
+		else if (_shakeX != 0 || _shakeY != 0)
+		{
+			x -= _shakeX;
+			y -= _shakeY;
+			_shakeX = _shakeY = 0;
+		}
 	}
+
+	/**
+	 * Cause the camera to shake for a specified length of time.
+	 * @param	duration	Duration of shake effect, in seconds.
+	 * @param	magnitude	Number of pixels to shake in any direction.
+	 * @since	2.5.3
+	 */
+	public function shake(duration:Float = 0.5, magnitude:Int = 4)
+	{
+		if (_shakeTime < duration) _shakeTime = duration;
+		_shakeMagnitude = magnitude;
+	}
+
+	/**
+	 * Stop the camera from shaking immediately.
+	 * @since	2.5.3
+	 */
+	public function shakeStop()
+	{
+		_shakeTime = 0;
+	}
+
+	var _shakeTime:Float=0;
+	var _shakeMagnitude:Int=0;
+	var _shakeX:Int=0;
+	var _shakeY:Int=0;
 }

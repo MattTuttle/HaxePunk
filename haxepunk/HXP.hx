@@ -26,12 +26,12 @@ class HXP
 	/**
 	 * Width of the game.
 	 */
-	public static var width:Int;
+	public static var width:Int = 0;
 
 	/**
 	 * Height of the game.
 	 */
-	public static var height:Int;
+	public static var height:Int = 0;
 
 	/**
 	 * Width of the window.
