@@ -114,8 +114,10 @@ class Engine
 		return new haxepunk.backend.lime.App(this);
 #elseif nme
 		return new haxepunk.backend.nme.App(this);
+#elseif linc_sdl
+		return new haxepunk.backend.linc.App(this);
 #else
-		return new haxepunk.backend.dummy.App();
+		return new haxepunk.backend.generic.App();
 #end
 	}
 

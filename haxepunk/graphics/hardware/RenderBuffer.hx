@@ -73,7 +73,7 @@ class RenderBuffer
 	public function use()
 	{
 		GL.bindBuffer(GL.ARRAY_BUFFER, glBuffer);
-#if cpp
+#if (cpp && (lime || nme))
 		byteOffset = buffer.byteOffset;
 		bytesData = buffer.buffer.getData();
 #else
@@ -83,7 +83,7 @@ class RenderBuffer
 
 	public inline function addFloat(v:Float)
 	{
-#if cpp
+#if (cpp && (lime || nme))
 		var bytesData = bytesData;
 		var offset = byteOffset; // helps hxcpp generator
 		untyped __global__.__hxcpp_memory_set_float(bytesData, offset, v);
@@ -96,7 +96,7 @@ class RenderBuffer
 
 	public inline function addVec(x:Float, y:Float)
 	{
-#if cpp
+#if (cpp && (lime || nme))
 		var bytesData = bytesData;
 		var offset = byteOffset; // helps hxcpp generator
 		untyped __global__.__hxcpp_memory_set_float(bytesData, offset, x);
@@ -111,7 +111,7 @@ class RenderBuffer
 
 	public inline function addInt(value:Int)
 	{
-#if cpp
+#if (cpp && (lime || nme))
 		untyped __global__.__hxcpp_memory_set_ui32(bytesData, byteOffset, value);
 		byteOffset += 4;
 #elseif js

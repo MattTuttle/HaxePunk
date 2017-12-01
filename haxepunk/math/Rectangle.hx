@@ -62,6 +62,11 @@ class Rectangle
 		return new Rectangle(x, y, width, height);
 	}
 
+	public function toString():String
+	{
+		return 'Rectangle[$x, $y, $width, $height]';
+	}
+
 	/**
 	 * Checks if the rectangle width and height values are at or less than zero.
 	 */

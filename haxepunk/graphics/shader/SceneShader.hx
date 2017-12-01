@@ -47,7 +47,11 @@ void main() {
 	{
 		buffer = GL.createBuffer();
 		GL.bindBuffer(GL.ARRAY_BUFFER, buffer);
-		var v = new Float32Array(_vertices);
+		var v = new Float32Array(_vertices.length);
+		for (i in 0..._vertices.length)
+		{
+			v[i] = _vertices[i];
+		}
 		#if (lime >= "4.0.0")
 		GL.bufferData(GL.ARRAY_BUFFER, v.length * Float32Array.BYTES_PER_ELEMENT, v, GL.STATIC_DRAW);
 		#else
@@ -81,10 +85,10 @@ void main() {
 
 	static var _vertices:Array<Float> = [
 		-1.0, -1.0, 0, 0,
-		1.0, -1.0, 1, 0,
+		 1.0, -1.0, 1, 0,
 		-1.0,  1.0, 0, 1,
-		1.0, -1.0, 1, 0,
-		1.0,  1.0, 1, 1,
+		 1.0, -1.0, 1, 0,
+		 1.0,  1.0, 1, 1,
 		-1.0,  1.0, 0, 1
 	];
 

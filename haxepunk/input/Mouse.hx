@@ -103,26 +103,12 @@ class Mouse
 	/**
 	 * Shows the native cursor
 	 */
-	public static function showCursor()
-	{
-		#if (lime || nme)
-		flash.ui.Mouse.show();
-		#else
-		throw "Unimplemented";
-		#end
-	}
+	public static inline function showCursor() HXP.app.showCursor();
 
 	/**
 	 * Hides the native cursor
 	 */
-	public static function hideCursor()
-	{
-		#if (lime || nme)
-		flash.ui.Mouse.hide();
-		#else
-		throw "Unimplemented";
-		#end
-	}
+	public static function hideCursor() HXP.app.hideCursor();
 
 	public static inline function define(input:InputType, button:MouseButton)
 	{

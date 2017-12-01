@@ -121,12 +121,13 @@ class HardwareRenderer
 				var floatsPerTriangle:Int = shader.floatsPerVertex * 3;
 				buffer.ensureSize(triangles, floatsPerTriangle);
 
+				GLUtils.checkForErrors();
+
 				ortho(-x, -x + HXP.windowWidth, -y + HXP.windowHeight, -y, 1000, -1000);
-				#if (lime >= "4.0.0")
-				GL.uniformMatrix4fv(shader.uniformIndex(UNIFORM_MATRIX), 1, false, _ortho);
-				#else
-				GL.uniformMatrix4fv(shader.uniformIndex(UNIFORM_MATRIX), false, _ortho);
-				#end
+
+				GL.uniformMatrix4fv(shader.uniformIndex(UNIFORM_MATRIX),
+					#if (lime >= "4.0.0") 1, #end // count
+					false, _ortho);
 
 				GLUtils.checkForErrors();
 
@@ -169,8 +170,8 @@ class HardwareRenderer
 
 		if (buffer == null || GLUtils.invalid(buffer.glBuffer))
 		{
-			destroy();
-			init();
+			destroyBuffer();
+			initBuffer();
 		}
 
 		var postProcess:Array<SceneShader> = scene.shaders;
@@ -234,7 +235,7 @@ class HardwareRenderer
 	}
 	public function endFrame() {}
 
-	inline function init()
+	inline function initBuffer()
 	{
 		if (buffer == null)
 		{
@@ -252,5 +253,5 @@ class HardwareRenderer
 		GL.bindFramebuffer(GL.FRAMEBUFFER, defaultFramebuffer);
 	}
 
-	inline function destroy() {}
+	inline function destroyBuffer() {}
 }

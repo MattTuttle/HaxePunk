@@ -36,6 +36,21 @@ interface App
 	public function getImageData(name:String):Null<ImageData>;
 
 	/**
+	 * Get app memory in bytes
+	 */
+	public function getMemory():Int;
+
+	/**
+	 * Show the mouse cursor
+	 */
+	public function showCursor():Void;
+
+	/**
+	 * Hide the mouse cursor
+	 */
+	public function hideCursor():Void;
+
+	/**
 	 * The mouse position relative to the app window starting at zero in the upper left
 	 */
 	public function getMouseX():Float;

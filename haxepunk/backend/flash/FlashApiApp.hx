@@ -188,6 +188,11 @@ class FlashApiApp extends Sprite implements haxepunk.App
 		TouchInput.init(this);
 	}
 
+	public inline function getMemory():Int return flash.system.System.totalMemory;
+
+	public inline function showCursor() flash.ui.Mouse.show();
+	public inline function hideCursor() flash.ui.Mouse.hide();
+
 	public inline function getMouseX() return stage.mouseX;
 	public inline function getMouseY() return stage.mouseY;
 

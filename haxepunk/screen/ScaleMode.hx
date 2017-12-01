@@ -18,7 +18,7 @@ class ScaleMode
 	public function new(integer:Bool = false)
 	{
 		this.integer = integer;
-		setBaseSize(HXP.width, HXP.height);
+		setBaseSize();
 	}
 
 	public function setBaseSize(width:Int = -1, height:Int = -1)

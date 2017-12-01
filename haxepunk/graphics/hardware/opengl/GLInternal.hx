@@ -8,6 +8,10 @@ typedef GLInternal = haxepunk.backend.lime.GLInternal;
 
 typedef GLInternal = haxepunk.backend.nme.GLInternal;
 
+#elseif linc_opengl
+
+typedef GLInternal = haxepunk.backend.linc.GLInternal;
+
 #else
 
 class GLInternal

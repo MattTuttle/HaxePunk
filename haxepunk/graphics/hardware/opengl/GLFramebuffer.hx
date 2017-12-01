@@ -5,5 +5,5 @@ typedef GLFramebuffer = lime.graphics.opengl.GLFramebuffer;
 #elseif nme
 typedef GLFramebuffer = flash.gl.GLFramebuffer;
 #else
-typedef GLFramebuffer = UInt;
+typedef GLFramebuffer = Null<UInt>;
 #end

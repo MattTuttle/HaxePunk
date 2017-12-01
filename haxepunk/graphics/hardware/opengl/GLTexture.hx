@@ -5,5 +5,5 @@ typedef GLTexture = lime.graphics.opengl.GLTexture;
 #elseif nme
 typedef GLTexture = flash.gl.GLTexture;
 #else
-typedef GLTexture = UInt;
+typedef GLTexture = Null<UInt>;
 #end

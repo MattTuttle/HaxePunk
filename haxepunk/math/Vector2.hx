@@ -12,6 +12,11 @@ class Vector2
 		this.y = y;
 	}
 
+	public function toString():String
+	{
+		return 'Vector2[$x, $y]';
+	}
+
 	/**
 	 * The length of this vector
 	 **/

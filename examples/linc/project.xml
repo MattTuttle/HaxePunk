@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	<meta title="test" package="com.example.app" version="1.0.0" company=""/>
+
+	<app file="test" main="Main" path="export"/>
+
+	<window fps="60" background="0x000000"/>
+	<window width="480" height="320" resizable="true" unless="mobile"/>
+	<window fullscreen="true" if="mobile"/>
+	<window orientation="landscape" vsync="true"/>
+	<window antialiasing="4"/>
+
+	<source path="source"/>
+
+	<haxelib name="HaxePunk"/>
+
+	<assets path="assets" include="*.png|*.jpg" type="image" embed="true"/>
+</project>

@@ -1,0 +1,14 @@
+-lib linc_sdl
+-lib linc_opengl
+-lib linc_stb
+-lib haxepunk
+-cp source
+-cpp export
+-main Main
+-D mac
+-D gl_debug
+-debug
+
+--next
+
+-cmd export/Main-debug

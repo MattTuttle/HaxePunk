@@ -5,5 +5,5 @@ typedef GLProgram = lime.graphics.opengl.GLProgram;
 #elseif nme
 typedef GLProgram = flash.gl.GLProgram;
 #else
-typedef GLProgram = UInt;
+typedef GLProgram = Null<UInt>;
 #end

@@ -8,6 +8,8 @@
 build-test/
 libs/
 bin
+examples/*/bin
+examples/*/export
 log.txt
 tests/report
 .temp
