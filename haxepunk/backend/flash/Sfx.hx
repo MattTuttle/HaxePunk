@@ -8,17 +8,17 @@ import flash.media.SoundChannel;
 import flash.media.SoundTransform;
 import flash.Assets;
 import haxepunk.math.MathUtil;
+import haxepunk.Signal;
 
 /**
  * Sound effect object used to play embedded sounds.
  */
-class Sfx
+class Sfx implements haxepunk.Sfx
 {
 	/**
 	 * Optional callback function for when the sound finishes playing.
 	 */
-	@:dox(hide) // mistaken for a class function
-	public var complete:Void -> Void;
+	public var onComplete = new Signal0();
 
 	/**
 	 * Creates a sound effect from an embedded source. Store a reference to
@@ -26,7 +26,7 @@ class Sfx
 	 * @param	source		The embedded sound class to use.
 	 * @param	complete	Optional callback function for when the sound finishes playing.
 	 */
-	public function new(source:Dynamic, complete:Void -> Void = null)
+	public function new(source:String)
 	{
 		_transform = new SoundTransform();
 		_volume = 1;
@@ -37,38 +37,8 @@ class Sfx
 		if (source == null)
 			throw "Invalid source Sound.";
 
-		if (Std.is(source, String))
-		{
-			_sound = Assets.getSound(source);
-			_sounds.set(source, _sound);
-		}
-		else
-		{
-			var className:String = Type.getClassName(Type.getClass(source));
-
-			if (StringTools.endsWith(className, "media.Sound"))
-			{
-				// used for loading sound runtime (data-driven for test and debug)
-				var __sound:Sound = cast source;
-				_sound = _sounds.get(__sound.url);
-				if ( _sound == null )
-				{
-					_sound = source;
-					_sounds.set(__sound.url, source);
-				}
-			}
-			else
-			{
-				_sound = _sounds.get(className);
-				if (_sound == null)
-				{
-					_sound = source;
-					_sounds.set(className, source);
-				}
-			}
-		}
-
-		this.complete = complete;
+		_sound = Assets.getSound(source);
+		_sounds.set(source, _sound);
 	}
 
 	/**
@@ -77,7 +47,23 @@ class Sfx
 	 * @param	pan	   Panning factor, a value from -1 to 1.
 	 * @param   loop   If the audio should loop infinitely
 	 */
-	public function play(volume:Float = 1, pan:Float = 0, loop:Bool = false)
+	public function play(volume:Float = 1, pan:Float = 0)
+	{
+		_play(volume, pan, false);
+	}
+
+	/**
+	 * Plays the sound looping. Will loop continuously until you call stop(), play(), or loop() again.
+	 * @param	volume	Volume factor, a value from 0 to 1.
+	 * @param	pan		Panning factor, a value from -1 to 1.
+	 */
+	public function loop(volume:Float = 1, pan:Float = 0)
+	{
+		_play(volume, pan, true);
+	}
+
+	// Internal play function
+	function _play(volume:Float, pan:Float, loop:Bool)
 	{
 		if (_sound == null) return;
 		if (playing) stop();
@@ -91,20 +77,10 @@ class Sfx
 		if (playing)
 		{
 			addPlaying();
-			_channel.addEventListener(Event.SOUND_COMPLETE, onComplete);
+			_channel.addEventListener(Event.SOUND_COMPLETE, onCompleteTrigger);
 		}
 		_looping = loop;
 		_position = 0;
-	}
-
-	/**
-	 * Plays the sound looping. Will loop continuously until you call stop(), play(), or loop() again.
-	 * @param	vol		Volume factor, a value from 0 to 1.
-	 * @param	pan		Panning factor, a value from -1 to 1.
-	 */
-	public function loop(vol:Float = 1, pan:Float = 0)
-	{
-		play(vol, pan, true);
 	}
 
 	/**
@@ -117,7 +93,7 @@ class Sfx
 		if (!playing) return false;
 		removePlaying();
 		_position = _channel.position;
-		_channel.removeEventListener(Event.SOUND_COMPLETE, onComplete);
+		_channel.removeEventListener(Event.SOUND_COMPLETE, onCompleteTrigger);
 		_channel.stop();
 		_channel = null;
 		return true;
@@ -132,19 +108,19 @@ class Sfx
 		if (playing)
 		{
 			addPlaying();
-			_channel.addEventListener(Event.SOUND_COMPLETE, onComplete);
+			_channel.addEventListener(Event.SOUND_COMPLETE, onCompleteTrigger);
 		}
 		_position = 0;
 	}
 
 	/** @private Event handler for sound completion. */
-	function onComplete(?e:Event)
+	function onCompleteTrigger(?e:Event)
 	{
 		if (_looping) loop(_volume, _pan);
 		else stop();
 
 		_position = 0;
-		if (complete != null) complete();
+		onComplete.invoke();
 	}
 
 	/** @private Add the sound to a list of those currently playing. */

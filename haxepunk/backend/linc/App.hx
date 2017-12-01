@@ -3,12 +3,24 @@ package haxepunk.backend.linc;
 #if (linc_sdl && linc_opengl)
 
 import haxepunk.graphics.hardware.ImageData;
+import haxepunk.input.Mouse;
 import haxepunk.utils.Color;
 import sdl.Renderer;
 import sdl.SDL;
 import sdl.Window;
+import sdl.Event;
 import glew.GLEW;
 import opengl.GL.*;
+
+@:enum
+abstract SDLMouseButton(Int)
+from Int to Int {
+	var SDL_BUTTON_LEFT   = 1;
+	var SDL_BUTTON_MIDDLE = 2;
+	var SDL_BUTTON_RIGHT  = 3;
+	// var SDL_BUTTON_X1     = 4;
+	// var SDL_BUTTON_X2     = 5;
+}
 
 class App implements haxepunk.App
 {
@@ -76,12 +88,44 @@ class App implements haxepunk.App
 		engine.onResize.invoke();
 	}
 
+	@:access(haxepunk.input.Mouse)
+	function handleEvent(e:Event)
+	{
+		switch (e.type)
+		{
+			case SDL_MOUSEBUTTONDOWN:
+				switch (e.button.button)
+				{
+					case SDL_BUTTON_LEFT:
+						Mouse.onMouseDown();
+					case SDL_BUTTON_RIGHT:
+						Mouse.onRightMouseDown();
+					case SDL_BUTTON_MIDDLE:
+						Mouse.onMiddleMouseDown();
+				}
+			case SDL_MOUSEBUTTONUP:
+				switch (e.button.button)
+				{
+					case SDL_BUTTON_LEFT:
+						Mouse.onMouseUp();
+					case SDL_BUTTON_RIGHT:
+						Mouse.onRightMouseUp();
+					case SDL_BUTTON_MIDDLE:
+						Mouse.onMiddleMouseUp();
+				}
+			case SDL_MOUSEWHEEL:
+				Mouse.onMouseWheel(e.wheel.y);
+			default:
+		}
+	}
+
 	function update()
 	{
 		while (SDL.hasAnEvent())
 		{
 			var e = SDL.pollEvent();
-			if(e.type == SDL_QUIT) return false;
+			if (e.type == SDL_QUIT) return false;
+			handleEvent(e);
 		}
 
 		SDL.getMouseState(mouseState);
@@ -110,6 +154,8 @@ class App implements haxepunk.App
 	{
 		return BytesImageData.get(name);
 	}
+
+	public function getSfx(name:String):Null<Sfx> return new OpenALSfx(name);
 
 	public inline function getMemory():Int return 0;
 

@@ -52,11 +52,11 @@ class BytesImageData implements ImageData
 
 	public function clearColor(color:Color)
 	{
-		// TODO: change to something faster (memset?)
-		for (i in 0...(height * width))
-		{
-			data[i] = color;
-		}
+		#if cpp
+		untyped __global__.__hxcpp_memory_memset(data, 0, data.length, color);
+		#else
+		for (i in 0...(height * width)) data[i] = color;
+		#end
 	}
 
 	public function drawCircle(x:Float, y:Float, radius:Float)

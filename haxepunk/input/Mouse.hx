@@ -177,7 +177,7 @@ class Mouse
 		mousePressed = mouseReleased = middleMousePressed = middleMouseReleased = rightMousePressed = rightMouseReleased = false;
 	}
 
-	static function onMouseDown(_)
+	static function onMouseDown()
 	{
 		if (!mouseDown)
 		{
@@ -188,7 +188,7 @@ class Mouse
 		}
 	}
 
-	static function onMouseUp(_)
+	static function onMouseUp()
 	{
 		mouseDown = false;
 		mouseUp = true;
@@ -202,7 +202,7 @@ class Mouse
 		_mouseWheelDelta = delta;
 	}
 
-	static function onMiddleMouseDown(_)
+	static function onMiddleMouseDown()
 	{
 		if (!middleMouseDown)
 		{
@@ -213,7 +213,7 @@ class Mouse
 		}
 	}
 
-	static function onMiddleMouseUp(_)
+	static function onMiddleMouseUp()
 	{
 		middleMouseDown = false;
 		middleMouseUp = true;
@@ -221,7 +221,7 @@ class Mouse
 		if (_buttonMap.exists(MouseButton.MIDDLE)) for (input in _buttonMap[MouseButton.MIDDLE]) Input.triggerRelease(input);
 	}
 
-	static function onRightMouseDown(_)
+	static function onRightMouseDown()
 	{
 		if (!rightMouseDown)
 		{
@@ -232,7 +232,7 @@ class Mouse
 		}
 	}
 
-	static function onRightMouseUp(_)
+	static function onRightMouseUp()
 	{
 		rightMouseDown = false;
 		rightMouseUp = true;

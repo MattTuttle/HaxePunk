@@ -1,6 +1,7 @@
 -lib linc_sdl
 -lib linc_opengl
 -lib linc_stb
+-lib linc_openal
 -lib haxepunk
 -cp source
 -cpp export

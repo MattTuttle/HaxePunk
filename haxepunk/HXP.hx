@@ -250,8 +250,7 @@ class HXP
 	static inline function get_pan():Float return _pan;
 	static function set_pan(value:Float):Float
 	{
-		if (value < -1) value = -1;
-		if (value > 1) value = 1;
+		value = MathUtil.clamp(value, -1, 1);
 		if (_pan == value) return value;
 		_pan = value;
 		Sfx.onGlobalUpdated(true);

@@ -4,7 +4,8 @@ TEST=openfl4
 
 .PHONY: all doc docs haxelib examples unit test build clean
 
-all: clean unit docs examples
+all:
+	cd examples/linc && haxe build.hxml
 
 docs:
 	@echo "Generating documentation"

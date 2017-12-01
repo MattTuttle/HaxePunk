@@ -65,6 +65,11 @@ class FlashApiApp extends Sprite implements haxepunk.App
 		return BitmapImageData.get(name);
 	}
 
+	public function getSfx(name:String):Sfx
+	{
+		return new Sfx(name);
+	}
+
 	function onEnterFrame(e:Event)
 	{
 		engine.onUpdate();
