@@ -30,7 +30,7 @@ void main() {
 	 */
 	public static inline function fromAsset(name:String):SceneShader
 	{
-		return new SceneShader(Assets.getText(name));
+		return new SceneShader(HXP.app.assets.getText(name));
 	}
 
 	/**

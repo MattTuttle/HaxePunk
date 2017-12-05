@@ -147,12 +147,12 @@ class DrawCommand
 		return command;
 	}
 
-	static function _prePopulatePool(n:Int, m:Int)
+	static function _prePopulatePool(numDrawCommands:Int, numTrianglesPerCommand:Int)
 	{
-		for (i in 0 ... n)
+		for (i in 0...numDrawCommands)
 		{
 			var cmd = new DrawCommand();
-			for (i in 0 ... m)
+			for (j in 0...numTrianglesPerCommand)
 			{
 				cmd.addData(new DrawTriangle());
 			}
@@ -323,7 +323,7 @@ class DrawCommand
 	inline function recycleData()
 	{
 		triangleCount = 0;
-		texture = null;
+		texture = Texture.nullTexture;
 		if (data != null)
 		{
 			_lastData._next = _dataPool;

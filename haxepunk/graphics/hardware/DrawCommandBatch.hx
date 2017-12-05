@@ -68,11 +68,6 @@ class DrawCommandBatch
 
 	public function getDrawCommand(texture:Texture, shader:Shader, smooth:Bool, blend:BlendMode, clipRect:Rectangle, x1:Float=0, y1:Float=0, x2:Float=0, y2:Float=0, x3:Float=0, y3:Float=0, flexibleLayer:Bool=false)
 	{
-		if (texture == null)
-		{
-			texture = Texture.nullTexture;
-		}
-
 		if (last != null && last.match(texture, shader, smooth, blend, clipRect))
 		{
 			// we can reuse the most recent draw call
@@ -160,45 +155,34 @@ class DrawCommandBatch
 		tx:Float, ty:Float,
 		color:Color, alpha:Float, flexibleLayer:Bool = false):Void
 	{
-		if (alpha > 0)
-		{
-			var uvx1:Float, uvy1:Float, uvx2:Float, uvy2:Float;
-			if (texture == null)
-			{
-				uvx1 = uvy1 = 0;
-				uvx2 = rw;
-				uvy2 = rh;
-			}
-			else
-			{
-				uvx1 = rx / texture.width;
-				uvy1 = ry / texture.height;
-				uvx2 = (rx + rw) / texture.width;
-				uvy2 = (ry + rh) / texture.height;
-			}
+		if (alpha <= 0) return;
 
-			// matrix transformations
-			var xa = rw * a + tx;
-			var yb = rw * b + ty;
-			var xc = rh * c + tx;
-			var yd = rh * d + ty;
+		var uvx1 = rx / texture.width;
+		var uvy1 = ry / texture.height;
+		var uvx2 = (rx + rw) / texture.width;
+		var uvy2 = (ry + rh) / texture.height;
 
-			var command = getDrawCommand(texture, shader, smooth, blend, clipRect, tx, ty, xa, yb, xc, yd, flexibleLayer);
+		// matrix transformations
+		var xa = rw * a + tx;
+		var yb = rw * b + ty;
+		var xc = rh * c + tx;
+		var yd = rh * d + ty;
 
-			command.addTriangle(
-				tx, ty, uvx1, uvy1,
-				xa, yb, uvx2, uvy1,
-				xc, yd, uvx1, uvy2,
-				color, alpha
-			);
+		var command = getDrawCommand(texture, shader, smooth, blend, clipRect, tx, ty, xa, yb, xc, yd, flexibleLayer);
 
-			command.addTriangle(
-				xc, yd, uvx1, uvy2,
-				xa, yb, uvx2, uvy1,
-				xa + rh * c, yb + rh * d, uvx2, uvy2,
-				color, alpha
-			);
-		}
+		command.addTriangle(
+			tx, ty, uvx1, uvy1,
+			xa, yb, uvx2, uvy1,
+			xc, yd, uvx1, uvy2,
+			color, alpha
+		);
+
+		command.addTriangle(
+			xc, yd, uvx1, uvy2,
+			xa, yb, uvx2, uvy1,
+			xa + rh * c, yb + rh * d, uvx2, uvy2,
+			color, alpha
+		);
 	}
 
 	public inline function addTriangle(texture:Texture, shader:Shader,

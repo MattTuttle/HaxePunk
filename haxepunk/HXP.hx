@@ -230,34 +230,6 @@ class HXP
 	static inline function set_fullscreen(value:Bool):Bool return HXP.app.fullscreen = value;
 
 	/**
-	 * Global volume factor for all sounds, a value from 0 to 1.
-	 */
-	public static var volume(default, set):Float = 1;
-	static function set_volume(value:Float):Float
-	{
-		value = MathUtil.clamp(value, 0, 1);
-		if (volume == value) return value;
-		volume = value;
-		Sfx.onGlobalUpdated(false);
-		return volume;
-	}
-
-	/**
-	 * Global panning factor for all sounds, a value from -1 to 1.
-	 * Panning only applies to mono sounds. It is ignored on stereo.
-	 */
-	public static var pan(get, set):Float;
-	static inline function get_pan():Float return _pan;
-	static function set_pan(value:Float):Float
-	{
-		value = MathUtil.clamp(value, -1, 1);
-		if (_pan == value) return value;
-		_pan = value;
-		Sfx.onGlobalUpdated(true);
-		return _pan;
-	}
-
-	/**
 	 * Optimized version of Lambda.indexOf for Array on dynamic platforms (Lambda.indexOf is less performant on those targets).
 	 *
 	 * @param	arr		The array to look into.
@@ -477,9 +449,6 @@ class HXP
 	@:dox(hide) public static var _updateTime:Float;
 	@:dox(hide) public static var _gameTime:Float;
 	@:dox(hide) public static var _systemTime:Float;
-
-	// Volume control.
-	static var _pan:Float = 0;
 
 	/** The Engine instance. */
 	public static var engine:Engine;

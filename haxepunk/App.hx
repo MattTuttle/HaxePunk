@@ -2,6 +2,7 @@ package haxepunk;
 
 import haxepunk.graphics.hardware.ImageData;
 import haxepunk.utils.Color;
+import haxepunk.audio.AudioSystem;
 
 interface App
 {
@@ -9,6 +10,16 @@ interface App
 	 * Toggles between windowed and fullscreen modes
 	 */
 	public var fullscreen(get, set):Bool;
+
+	/**
+	 * Instance of the app's audio system
+	 */
+	public var audio(default, null):AudioSystem;
+
+	/**
+	 *
+	 */
+	public var assets(default, null):Assets;
 
 	/**
 	 * Initialize the app with an instance of Engine
@@ -34,11 +45,6 @@ interface App
 	 * Retrieves a named ImageData if it exists in the app assets, otherwise it returns null
 	 */
 	public function getImageData(name:String):Null<ImageData>;
-
-	/**
-	 * Retrieves a sound effect if it exists in the app assets, otherwise it returns null
-	 */
-	public function getSfx(name:String):Null<Sfx>;
 
 	/**
 	 * Get app memory in bytes

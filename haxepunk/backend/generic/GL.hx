@@ -1,5 +1,12 @@
 package haxepunk.backend.generic;
 
+import haxepunk.graphics.hardware.opengl.GLBuffer;
+import haxepunk.graphics.hardware.opengl.GLFramebuffer;
+import haxepunk.graphics.hardware.opengl.GLProgram;
+import haxepunk.graphics.hardware.opengl.GLShader;
+import haxepunk.graphics.hardware.opengl.GLTexture;
+import haxepunk.graphics.hardware.opengl.GLUniformLocation;
+
 class GL
 {
 	public static inline var TEXTURE0:Int = 0;

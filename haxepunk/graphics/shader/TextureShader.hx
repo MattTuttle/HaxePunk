@@ -40,15 +40,13 @@ void main(void) {
 	}
 }";
 
-	#if (lime || nme)
 	/**
 	 * Create a custom shader from a text asset.
 	 */
 	public static inline function fromAsset(name:String):TextureShader
 	{
-		return new TextureShader(null, flash.Assets.getText(name));
+		return new TextureShader(null, HXP.app.assets.getText(name));
 	}
-	#end
 
 	public function new(?vertex:String, ?fragment:String)
 	{

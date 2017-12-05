@@ -2,6 +2,8 @@ package haxepunk.backend.linc;
 
 #if (linc_sdl && linc_opengl)
 
+import haxepunk.audio.AudioSystem;
+import haxepunk.backend.linc.audio.OpenALSystem;
 import haxepunk.graphics.hardware.ImageData;
 import haxepunk.input.Mouse;
 import haxepunk.utils.Color;
@@ -28,6 +30,9 @@ class App implements haxepunk.App
 	inline function get_fullscreen():Bool return false;
 	inline function set_fullscreen(value:Bool):Bool return false;
 
+	public var audio(default, null):AudioSystem;
+	public var assets(default, null) = new Assets();
+
 	var window:Window;
 	var engine:Engine;
 
@@ -38,9 +43,10 @@ class App implements haxepunk.App
 	public function new(engine:Engine)
 	{
 		var title = "Test";
-		width = 480;
-		height = 320;
+		width = 1280;
+		height = 720;
 		this.engine = engine;
+		this.audio = new OpenALSystem();
 		SDL.init(SDL_INIT_VIDEO);
 		window = SDL.createWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_RESIZABLE);
 		SDL.GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
@@ -50,6 +56,10 @@ class App implements haxepunk.App
 		SDL.GL_SetSwapInterval(true);
 		SDL.GL_CreateContext(window);
 		GLEW.init();
+
+		// lime enables this by default so do this in linc as well
+		glEnable(GL_BLEND);
+
 		mouseState = {x: 0, y:0, buttons:0};
 	}
 
@@ -66,10 +76,15 @@ class App implements haxepunk.App
 
 	function run()
 	{
-		while (update())
-		{
-			SDL.delay(16);
-		}
+		while (update()) {}
+
+		destroy();
+	}
+
+	function destroy()
+	{
+		audio.destroy();
+		audio = null;
 
 		engine.onClose.invoke();
 		SDL.quit();
@@ -154,8 +169,6 @@ class App implements haxepunk.App
 	{
 		return BytesImageData.get(name);
 	}
-
-	public function getSfx(name:String):Null<Sfx> return new OpenALSfx(name);
 
 	public inline function getMemory():Int return 0;
 

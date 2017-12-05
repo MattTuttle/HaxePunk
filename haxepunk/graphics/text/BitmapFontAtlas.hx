@@ -55,7 +55,7 @@ class BitmapFontAtlas extends TextureAtlas implements IBitmapFont
 	 */
 	public static function loadXMLFont(file:String):BitmapFontAtlas
 	{
-		var xmlText = Assets.getText(file);
+		var xmlText = HXP.app.assets.getText(file);
 		if (xmlText == null) throw 'BitmapFontAtlas: "$file" not found!';
 
 		var xml = Xml.parse(xmlText);

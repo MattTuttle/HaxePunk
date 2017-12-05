@@ -1,5 +1,7 @@
 package haxepunk.backend.linc;
 
+#if linc_opengl
+
 import haxepunk.graphics.hardware.Texture;
 
 class GLInternal
@@ -29,3 +31,5 @@ class GLInternal
 
 	static var textures = new Map<Texture, Int>();
 }
+
+#end

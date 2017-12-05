@@ -4,6 +4,8 @@ package haxepunk.backend.flash;
 
 import haxepunk.debug.Console;
 import haxepunk.utils.Color;
+import haxepunk.audio.AudioSystem;
+import haxepunk.Assets;
 
 import flash.display.OpenGLView;
 import flash.display.Sprite;
@@ -29,12 +31,16 @@ class FlashApiApp extends Sprite implements haxepunk.App
 		return value;
 	}
 
+	public var assets:Assets;
+	public var audio:AudioSystem;
 	var engine:Engine;
 
 	public function new(engine:Engine)
 	{
 		super();
 		this.engine = engine;
+		this.audio = new FlashAudioSystem();
+		this.assets = new Assets();
 
 		// on-stage event listener
 		addEventListener(Event.ADDED_TO_STAGE, onStage);

@@ -1,18 +1,33 @@
-package haxepunk.backend.linc;
+package haxepunk.backend.linc.audio;
 
 #if linc_openal
 
-import openal.AL.*;
+import haxe.io.BytesData;
+import openal.AL;
 import haxepunk.Signal;
 
-class OpenALSfx implements haxepunk.Sfx
+class OpenALSfx implements haxepunk.audio.Sfx
 {
 
 	public var onComplete = new Signal0();
 
-	public function new(source:String)
-	{
+	var source:Int;
+	var buffer:Int;
 
+	public function new(name:String)
+	{
+		var bytes = new BytesData();
+		source = AL.genSource();
+		buffer = AL.genBuffer();
+		var frequency = 0;
+		AL.bufferData(buffer, AL.FORMAT_STEREO16, frequency, bytes, 0, bytes.length);
+		AL.sourcei(source, AL.BUFFER, buffer);
+	}
+
+	public function destroy()
+	{
+		AL.deleteSource(source);
+		AL.deleteBuffer(buffer);
 	}
 
 	@:isVar public var volume(get, set):Float;

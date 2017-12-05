@@ -1,0 +1,15 @@
+-lib linc_sdl
+-lib linc_opengl
+-lib linc_stb
+-lib linc_openal
+-lib haxepunk
+-cp src
+-cpp bin
+-main Main
+-D mac
+-D gl_debug
+-debug
+
+--next
+
+-cmd bin/Main-debug

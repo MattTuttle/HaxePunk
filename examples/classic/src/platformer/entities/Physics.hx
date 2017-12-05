@@ -1,19 +1,19 @@
 package platformer.entities;
 
-import flash.geom.Point;
 import haxepunk.HXP;
 import haxepunk.Entity;
 import haxepunk.math.MathUtil;
+import haxepunk.math.Vector2;
 
 class Physics extends Entity
 {
 
 	// Define variables
-	public var velocity:Point;
-	public var acceleration:Point;
-	public var friction:Point;
-	public var maxVelocity:Point;
-	public var gravity:Point;
+	public var velocity:Vector2;
+	public var acceleration:Vector2;
+	public var friction:Vector2;
+	public var maxVelocity:Vector2;
+	public var gravity:Vector2;
 
 	public static var solid:String = "solid";
 
@@ -22,11 +22,11 @@ class Physics extends Entity
 		super(x, y);
 		_onGround = false;
 
-		velocity     = new Point();
-		acceleration = new Point();
-		friction     = new Point();
-		maxVelocity  = new Point();
-		gravity      = new Point();
+		velocity     = new Vector2();
+		acceleration = new Vector2();
+		friction     = new Vector2();
+		maxVelocity  = new Vector2();
+		gravity      = new Vector2();
 	}
 
 	public var onGround(get_onGround, null): Bool;

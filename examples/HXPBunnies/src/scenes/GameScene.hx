@@ -13,7 +13,6 @@ import haxepunk.input.Input;
 import haxepunk.input.Key;
 import haxepunk.input.Mouse;
 import haxepunk.Scene;
-import flash.Lib;
 import entities.Bunny;
 
 class GameScene extends Scene
@@ -95,7 +94,7 @@ class GameScene extends Scene
 
 	override public function update()
 	{
-		var t = Lib.getTimer();
+		var t = HXP.app.getTimeMillis();
 		pirate.x = Std.int((HXP.width - pirate.width) * (0.5 + 0.5 * Math.sin(t / 3000)));
 		pirate.y = Std.int(HXP.height - 1.3 * pirate.height + 70 - 30 * Math.sin(t / 100));
 

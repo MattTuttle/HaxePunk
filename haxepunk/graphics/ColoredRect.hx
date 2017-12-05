@@ -3,6 +3,7 @@ package haxepunk.graphics;
 import haxepunk.Graphic;
 import haxepunk.graphics.atlas.AtlasData;
 import haxepunk.graphics.shader.ColorShader;
+import haxepunk.graphics.hardware.Texture;
 import haxepunk.utils.Color;
 import haxepunk.math.Vector2;
 
@@ -25,7 +26,7 @@ class ColoredRect extends Graphic
 	@:access(haxepunk.graphics.hardware.SceneRenderer)
 	override public function render(point:Vector2, camera:Camera)
 	{
-		var command = AtlasData._batch.getDrawCommand(null, shader,
+		var command = AtlasData._batch.getDrawCommand(Texture.nullTexture, shader,
 				false, blend, screenClipRect(camera, point.x, point.y));
 
 		var fsx = camera.fullScaleX,

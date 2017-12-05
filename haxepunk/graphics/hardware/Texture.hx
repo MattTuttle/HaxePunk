@@ -8,12 +8,8 @@ class Texture
 	public var id(default, null):Int;
 	static var idSeq:Int = 0;
 
-	public var width(get, never):Int;
-	inline function get_width():Int return image.width;
-
-	public var height(get, never):Int;
-	inline function get_height():Int return image.height;
-
+	public var width(default, null):Int;
+	public var height(default, null):Int;
 	public var image(default, null):ImageData;
 
 	public static var nullTexture:Texture = new Texture(null);
@@ -22,6 +18,16 @@ class Texture
 	{
 		id = idSeq++;
 		this.image = image;
+		// set width/height here because hxcpp doesn't like interfaces
+		if (image == null)
+		{
+			width = height = 1; // set to 1 because 0 will cause a divide by zero error
+		}
+		else
+		{
+			width = image.width;
+			height = image.height;
+		}
 	}
 
 	public inline function getPixel(x:Int, y:Int):Int return image.getPixel(x, y);

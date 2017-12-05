@@ -7,6 +7,12 @@ class Main extends Engine
 
 	override public function init()
 	{
+		HXP.app.assets.add("../../assets/graphics");
+		HXP.app.assets.add("../../assets/font");
+		HXP.app.assets.add("assets/graphics", "gfx");
+		HXP.app.assets.add("assets/audio", "sfx");
+		HXP.app.assets.add("assets/atlas");
+
 		Console.enable();
 		HXP.scene = new effects.GameScene();
 	}

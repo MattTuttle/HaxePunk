@@ -1,6 +1,6 @@
 package haxepunk.tweens.sound;
 
-import haxepunk.Sfx;
+import haxepunk.audio.Sfx;
 import haxepunk.Tween;
 import haxepunk.utils.Ease.EaseFunction;
 

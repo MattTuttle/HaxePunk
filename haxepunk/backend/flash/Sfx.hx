@@ -13,7 +13,7 @@ import haxepunk.Signal;
 /**
  * Sound effect object used to play embedded sounds.
  */
-class Sfx implements haxepunk.Sfx
+class Sfx implements haxepunk.audio.Sfx
 {
 	/**
 	 * Optional callback function for when the sound finishes playing.
@@ -244,7 +244,7 @@ class Sfx implements haxepunk.Sfx
 			if (transform != null)
 			result = transform.pan;
 		}
-		return result + HXP.pan;
+		return result + HXP.app.audio.pan;
 	}
 
 	/**
@@ -264,7 +264,7 @@ class Sfx implements haxepunk.Sfx
 			if (transform != null)
 				result = transform.volume;
 		}
-		return result * HXP.volume;
+		return result * HXP.app.audio.volume;
 	}
 
 	/**

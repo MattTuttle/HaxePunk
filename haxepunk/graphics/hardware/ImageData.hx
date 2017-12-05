@@ -32,7 +32,7 @@ interface ImageData
 	/**
 	 * Draw a circle to the image data
 	 */
-	public function drawCircle(x:Float, y:Float, radius:Float):Void;
+	public function drawCircle(x:Int, y:Int, radius:Int):Void;
 
 	/**
 	 * Discards the image data

@@ -1,5 +1,7 @@
 package haxepunk.backend.nme;
 
+#if nme
+
 import nme.utils.Float32Array as F32Array;
 
 @:forward
@@ -13,3 +15,5 @@ abstract Float32Array(F32Array) from F32Array to F32Array
 		return new F32Array(inBufferOrArray, inStart, inElements);
 	}
 }
+
+#end

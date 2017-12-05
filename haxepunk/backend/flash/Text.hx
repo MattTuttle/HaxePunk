@@ -190,7 +190,7 @@ class Text extends Image
 #if debug
 			else
 			{
-				if (Console.enabled) HXP.engine.console.log("Could not found text style '" + tagName + "'");
+				if (Console.enabled) HXP.engine.console.log(["Could not found text style '" + tagName + "'"]);
 			}
 #end
 		}
@@ -198,7 +198,7 @@ class Text extends Image
 #if debug
 		if (_field.text != _text)
 		{
-			if (Console.enabled) HXP.engine.console.log("Text field and _text do not match!");
+			if (Console.enabled) HXP.engine.console.log(["Text field and _text do not match!"]);
 		}
 #end
 	}

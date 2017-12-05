@@ -48,7 +48,7 @@ class BitmapImageData implements ImageData
 		data.fillRect(data.rect, color);
 	}
 
-	public function drawCircle(x:Float, y:Float, radius:Float)
+	public function drawCircle(x:Int, y:Int, radius:Int)
 	{
 		var sprite = new flash.display.Sprite();
 		sprite.graphics.clear();

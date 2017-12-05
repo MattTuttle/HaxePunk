@@ -5,6 +5,7 @@ import haxepunk.Entity;
 import haxepunk.HXP;
 import haxepunk.Graphic;
 import haxepunk.graphics.hardware.DrawCommand;
+import haxepunk.graphics.hardware.Texture;
 import haxepunk.graphics.shader.ColorShader;
 import haxepunk.graphics.shader.Shader;
 import haxepunk.math.Vector2;
@@ -387,7 +388,7 @@ class DrawContext
 	{
 		if (shader == null) shader = new ColorShader();
 		var scene = (this.scene == null) ? (HXP.renderingScene == null ? HXP.scene : HXP.renderingScene) : this.scene;
-		command = scene.batch.getDrawCommand(null, shader, smooth, blend, null);
+		command = scene.batch.getDrawCommand(Texture.nullTexture, shader, smooth, blend, null);
 	}
 
 	inline function drawTriangle(v1:Vector2, v2:Vector2, v3:Vector2):Void

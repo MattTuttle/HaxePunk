@@ -28,7 +28,7 @@ class Fader extends Tween
 	public function fadeTo(volume:Float, duration:Float, ?ease:EaseFunction)
 	{
 		if (volume < 0) volume = 0;
-		_start = HXP.volume;
+		_start = HXP.app.audio.volume;
 		_range = volume - _start;
 		_target = duration;
 		_ease = ease;
@@ -39,7 +39,7 @@ class Fader extends Tween
 	@:dox(hide)
 	override function updateInternal()
 	{
-		HXP.volume = _start + _range * _t;
+		HXP.app.audio.volume = _start + _range * _t;
 	}
 
 	// Fader information.

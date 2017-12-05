@@ -37,7 +37,7 @@ abstract Float32Array(Bytes) from Bytes to Bytes
 		return v;
 	}
 
-	public function setInt32(pos:Int, value:Int)
+	public inline function setInt32(pos:Int, value:Int)
 	{
 		this.setInt32(pos, value);
 	}

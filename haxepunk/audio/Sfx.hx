@@ -1,4 +1,4 @@
-package haxepunk;
+package haxepunk.audio;
 
 import haxepunk.Signal;
 

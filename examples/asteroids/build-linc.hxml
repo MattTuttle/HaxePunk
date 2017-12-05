@@ -3,8 +3,8 @@
 -lib linc_stb
 -lib linc_openal
 -lib haxepunk
--cp source
--cpp export
+-cp src
+-cpp bin
 -main Main
 -D mac
 -D gl_debug
@@ -12,4 +12,4 @@
 
 --next
 
--cmd export/Main-debug
+-cmd bin/Main-debug
