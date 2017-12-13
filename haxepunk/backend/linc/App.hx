@@ -2,15 +2,18 @@ package haxepunk.backend.linc;
 
 #if (linc_sdl && linc_opengl)
 
+import haxe.ds.IntMap;
 import haxepunk.audio.AudioSystem;
 import haxepunk.backend.linc.audio.OpenALSystem;
 import haxepunk.graphics.hardware.ImageData;
 import haxepunk.input.Mouse;
+import haxepunk.input.Key;
 import haxepunk.utils.Color;
 import sdl.Renderer;
 import sdl.SDL;
 import sdl.Window;
 import sdl.Event;
+import sdl.Keycodes;
 import glew.GLEW;
 import opengl.GL.*;
 
@@ -71,7 +74,103 @@ class App implements haxepunk.App
 		engine._rate = 1000 / HXP.assignedFrameRate;
 		engine._last = getTimeMillis();
 		resize();
+		initKeymap();
 		run();
+	}
+
+	function initKeymap()
+	{
+		keymap.set(Keycodes.left, Key.LEFT);
+		keymap.set(Keycodes.up, Key.UP);
+		keymap.set(Keycodes.right, Key.RIGHT);
+		keymap.set(Keycodes.down, Key.DOWN);
+
+		keymap.set(Keycodes.enter, Key.ENTER);
+		keymap.set(Keycodes.space, Key.SPACE);
+		keymap.set(Keycodes.backspace, Key.BACKSPACE);
+		keymap.set(Keycodes.capslock, Key.CAPS_LOCK);
+		keymap.set(Keycodes.delete, Key.DELETE);
+		keymap.set(Keycodes.end, Key.END);
+		keymap.set(Keycodes.escape, Key.ESCAPE);
+		keymap.set(Keycodes.home, Key.HOME);
+		keymap.set(Keycodes.insert, Key.INSERT);
+		keymap.set(Keycodes.tab, Key.TAB);
+		keymap.set(Keycodes.pagedown, Key.PAGE_DOWN);
+		keymap.set(Keycodes.pageup, Key.PAGE_UP);
+		keymap.set(Keycodes.leftbracket, Key.LEFT_SQUARE_BRACKET);
+		keymap.set(Keycodes.rightbracket, Key.RIGHT_SQUARE_BRACKET);
+		keymap.set(Keycodes.backquote, Key.TILDE);
+
+		keymap.set(Keycodes.key_a, Key.A);
+		keymap.set(Keycodes.key_b, Key.B);
+		keymap.set(Keycodes.key_c, Key.C);
+		keymap.set(Keycodes.key_d, Key.D);
+		keymap.set(Keycodes.key_e, Key.E);
+		keymap.set(Keycodes.key_f, Key.F);
+		keymap.set(Keycodes.key_g, Key.G);
+		keymap.set(Keycodes.key_h, Key.H);
+		keymap.set(Keycodes.key_i, Key.I);
+		keymap.set(Keycodes.key_j, Key.J);
+		keymap.set(Keycodes.key_k, Key.K);
+		keymap.set(Keycodes.key_l, Key.L);
+		keymap.set(Keycodes.key_m, Key.M);
+		keymap.set(Keycodes.key_n, Key.N);
+		keymap.set(Keycodes.key_o, Key.O);
+		keymap.set(Keycodes.key_p, Key.P);
+		keymap.set(Keycodes.key_q, Key.Q);
+		keymap.set(Keycodes.key_r, Key.R);
+		keymap.set(Keycodes.key_s, Key.S);
+		keymap.set(Keycodes.key_t, Key.T);
+		keymap.set(Keycodes.key_u, Key.U);
+		keymap.set(Keycodes.key_v, Key.V);
+		keymap.set(Keycodes.key_w, Key.W);
+		keymap.set(Keycodes.key_x, Key.X);
+		keymap.set(Keycodes.key_y, Key.Y);
+		keymap.set(Keycodes.key_z, Key.Z);
+
+		keymap.set(Keycodes.f1, Key.F1);
+		keymap.set(Keycodes.f2, Key.F2);
+		keymap.set(Keycodes.f3, Key.F3);
+		keymap.set(Keycodes.f4, Key.F4);
+		keymap.set(Keycodes.f5, Key.F5);
+		keymap.set(Keycodes.f6, Key.F6);
+		keymap.set(Keycodes.f7, Key.F7);
+		keymap.set(Keycodes.f8, Key.F8);
+		keymap.set(Keycodes.f9, Key.F9);
+		keymap.set(Keycodes.f10, Key.F10);
+		keymap.set(Keycodes.f11, Key.F11);
+		keymap.set(Keycodes.f12, Key.F12);
+		keymap.set(Keycodes.f13, Key.F13);
+		keymap.set(Keycodes.f14, Key.F14);
+		keymap.set(Keycodes.f15, Key.F15);
+
+		keymap.set(Keycodes.key_0, Key.DIGIT_0);
+		keymap.set(Keycodes.key_1, Key.DIGIT_1);
+		keymap.set(Keycodes.key_2, Key.DIGIT_2);
+		keymap.set(Keycodes.key_3, Key.DIGIT_3);
+		keymap.set(Keycodes.key_4, Key.DIGIT_4);
+		keymap.set(Keycodes.key_5, Key.DIGIT_5);
+		keymap.set(Keycodes.key_6, Key.DIGIT_6);
+		keymap.set(Keycodes.key_7, Key.DIGIT_7);
+		keymap.set(Keycodes.key_8, Key.DIGIT_8);
+		keymap.set(Keycodes.key_9, Key.DIGIT_9);
+
+		keymap.set(Keycodes.kp_0, Key.NUMPAD_0);
+		keymap.set(Keycodes.kp_1, Key.NUMPAD_1);
+		keymap.set(Keycodes.kp_2, Key.NUMPAD_2);
+		keymap.set(Keycodes.kp_3, Key.NUMPAD_3);
+		keymap.set(Keycodes.kp_4, Key.NUMPAD_4);
+		keymap.set(Keycodes.kp_5, Key.NUMPAD_5);
+		keymap.set(Keycodes.kp_6, Key.NUMPAD_6);
+		keymap.set(Keycodes.kp_7, Key.NUMPAD_7);
+		keymap.set(Keycodes.kp_8, Key.NUMPAD_8);
+		keymap.set(Keycodes.kp_9, Key.NUMPAD_9);
+		keymap.set(Keycodes.kp_plus, Key.NUMPAD_ADD);
+		keymap.set(Keycodes.kp_decimal, Key.NUMPAD_DECIMAL);
+		keymap.set(Keycodes.kp_divide, Key.NUMPAD_DIVIDE);
+		keymap.set(Keycodes.kp_enter, Key.NUMPAD_ENTER);
+		keymap.set(Keycodes.kp_multiply, Key.NUMPAD_MULTIPLY);
+		keymap.set(Keycodes.kp_minus, Key.NUMPAD_SUBTRACT);
 	}
 
 	function run()
@@ -103,11 +202,21 @@ class App implements haxepunk.App
 		engine.onResize.invoke();
 	}
 
-	@:access(haxepunk.input.Mouse)
+	inline function getKeycode(key)
+	{
+		return keymap.exists(key) ? keymap.get(key) : key;
+	}
+
+	@:access(haxepunk.input)
 	function handleEvent(e:Event)
 	{
 		switch (e.type)
 		{
+			case SDL_KEYDOWN:
+				var shift = (e.key.keysym.mod & 3) != 0;
+				Key.onKeyDown(getKeycode(e.key.keysym.sym), shift);
+			case SDL_KEYUP:
+				Key.onKeyUp(getKeycode(e.key.keysym.sym));
 			case SDL_MOUSEBUTTONDOWN:
 				switch (e.button.button)
 				{
@@ -177,6 +286,8 @@ class App implements haxepunk.App
 
 	public inline function getMouseX():Float return mouseState.x;
 	public inline function getMouseY():Float return mouseState.y;
+
+	var keymap = new IntMap<Int>();
 }
 
 #end
