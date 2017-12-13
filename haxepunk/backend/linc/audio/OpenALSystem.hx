@@ -1,10 +1,9 @@
 package haxepunk.backend.linc.audio;
 
-import haxepunk.audio.Sfx;
-import haxepunk.math.MathUtil;
-
 #if linc_openal
 
+import haxepunk.audio.Sfx;
+import haxepunk.math.MathUtil;
 import openal.AL;
 
 class OpenALSystem implements haxepunk.audio.AudioSystem
