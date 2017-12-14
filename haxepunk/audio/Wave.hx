@@ -31,6 +31,9 @@ class Wave
             {
                 case "fmt ": wave.readFormat(b);
                 case "data": wave.readData(b);
+                default:
+                    var chunkSize = b.readInt32();
+                    b.read(chunkSize);
             }
         }
 

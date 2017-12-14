@@ -46,8 +46,8 @@ class App implements haxepunk.App
 	public function new(engine:Engine)
 	{
 		var title = "Test";
-		width = 1280;
-		height = 720;
+		width = 320;
+		height = 280;
 		this.engine = engine;
 		this.audio = new OpenALSystem();
 		SDL.init(SDL_INIT_VIDEO);

@@ -2,10 +2,8 @@ package haxepunk.backend.linc.audio;
 
 #if linc_openal
 
-import haxe.io.BytesData;
 import openal.AL;
 import haxepunk.Signal;
-import haxepunk.audio.Wave;
 
 class OpenALSfx implements haxepunk.audio.Sfx
 {
@@ -13,54 +11,77 @@ class OpenALSfx implements haxepunk.audio.Sfx
 	public var onComplete = new Signal0();
 
 	var source:Int;
-	var buffer:Int;
+	var buffer:OpenALBuffer;
+
+	/**
+	 * If the sound is currently playing.
+	 */
+	public var isPlaying(get, never):Bool;
+	inline function get_isPlaying():Bool return AL.getSourcei(source, AL.SOURCE_STATE) == AL.PLAYING;
+
+	/**
+	 * Position of the currently playing sound, in seconds.
+	 */
+	public var position(get, set):Float;
+	inline function get_position():Float return AL.getSourcef(source, AL.SEC_OFFSET);
+	inline function set_position(value:Float):Float
+	{
+		AL.sourcef(source, AL.SEC_OFFSET, value);
+		return value;
+	}
+
+	/**
+	 * Length of the sound, in seconds.
+	 */
+	public var length(get, never):Float;
+	inline function get_length():Float return buffer.length;
 
 	public function new(name:String)
 	{
-		var bytes = HXP.app.assets.getBytes(name);
-		var audio = Wave.fromBytes(bytes);
-		if (audio != null)
-		{
-			source = AL.genSource();
-			buffer = AL.genBuffer();
-			var format = switch (audio.channels)
-			{
-				case 1: audio.bitsPerSample == 16 ? AL.FORMAT_MONO16 : AL.FORMAT_MONO8;
-				case 2: audio.bitsPerSample == 16 ? AL.FORMAT_STEREO16 : AL.FORMAT_STEREO8;
-				default: throw 'Unsupported audio bitrate (${audio.bitsPerSample}) and channels (${audio.channels})';
-			}
-			AL.bufferData(buffer, format, audio.frequency, audio.data, 0, audio.data.length);
-			AL.sourcei(source, AL.BUFFER, buffer);
-		}
+		buffer = OpenALBuffer.load(name);
+		source = AL.genSource();
+		buffer.assignSource(source);
 	}
 
 	public function destroy()
 	{
 		AL.deleteSource(source);
-		AL.deleteBuffer(buffer);
 	}
 
 	@:isVar public var volume(get, set):Float;
 	inline function get_volume():Float return volume;
-	inline function set_volume(value:Float):Float return volume = value;
+	inline function set_volume(value:Float):Float
+	{
+		AL.sourcef(source, AL.GAIN, value);
+		return volume = value;
+	}
 
 	@:isVar public var pan(get, set):Float;
 	inline function get_pan():Float return pan;
-	inline function set_pan(value:Float):Float return pan = value;
+	inline function set_pan(value:Float):Float
+	{
+		AL.source3f(source, AL.POSITION, value, 0, 0);
+		AL.sourcei(source, AL.SOURCE_RELATIVE, AL.TRUE);
+		return pan = value;
+	}
 
 	public function play(volume:Float = 1, pan:Float = 0)
 	{
+		this.volume = volume;
+		this.pan = pan;
 		AL.sourcePlay(source);
 	}
 
 	public function loop(volume:Float = 1, pan:Float = 0)
 	{
-
+		AL.sourcei(source, AL.LOOPING, AL.TRUE);
+		play(volume, pan);
 	}
 
 	public function stop():Bool
 	{
-		return false;
+		AL.sourceStop(source);
+		return true;
 	}
 }
 

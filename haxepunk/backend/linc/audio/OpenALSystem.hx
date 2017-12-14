@@ -20,6 +20,7 @@ class OpenALSystem implements haxepunk.audio.AudioSystem
 
 	public function destroy()
 	{
+		OpenALBuffer.destroyAll();
 		var context = ALC.getCurrentContext();
 		ALC.makeContextCurrent(null);
 		ALC.destroyContext(context);

@@ -21,6 +21,21 @@ interface Sfx
 	public var pan(get, set):Float;
 
 	/**
+	 * If the sound is currently playing.
+	 */
+	public var isPlaying(get, never):Bool;
+
+	/**
+	 * Position of the currently playing sound, in seconds.
+	 */
+	public var position(get, set):Float;
+
+	/**
+	 * Length of the sound, in seconds.
+	 */
+	public var length(get, never):Float;
+
+	/**
 	 * Plays the sound once.
 	 * @param	volume Volume factor, a value from 0 to 1.
 	 * @param	pan	   Panning factor, a value from -1 to 1.

@@ -212,19 +212,29 @@ class Sfx implements haxepunk.audio.Sfx
 	/**
 	 * If the sound is currently playing.
 	 */
-	public var playing(get, null):Bool;
-	inline function get_playing():Bool return _channel != null;
+	public var isPlaying(get, never):Bool;
+	inline function get_isPlaying():Bool return _channel != null;
 
 	/**
 	 * Position of the currently playing sound, in seconds.
 	 */
-	public var position(get, null):Float;
+	public var position(get, set):Float;
 	function get_position():Float return (playing ? _channel.position : _position) / 1000;
+	function set_position(value:Float) {
+		if (playing)
+		{
+			return _channel.position = value * 1000;
+		}
+		else
+		{
+			return _position = value * 1000;
+		}
+	}
 
 	/**
 	 * Length of the sound, in seconds.
 	 */
-	public var length(get, null):Float;
+	public var length(get, never):Float;
 	function get_length():Float return _sound.length / 1000;
 
 	/**
