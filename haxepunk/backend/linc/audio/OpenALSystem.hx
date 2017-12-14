@@ -36,19 +36,15 @@ class OpenALSystem implements haxepunk.audio.AudioSystem
 	function set_volume(value:Float):Float
 	{
 		value = MathUtil.clamp(value, 0, 1);
-		if (volume == value) return value;
-		volume = value;
-		// TODO: update all sounds
-		return volume;
+		AL.listenerf(AL.GAIN, value);
+		return volume = value;
 	}
 
 	public var pan(default, set):Float = 0;
 	function set_pan(value:Float):Float
 	{
 		value = MathUtil.clamp(value, -1, 1);
-		if (pan == value) return value;
-		pan = value;
-		// TODO: update all sounds
+		AL.listener3f(AL.POSITION, value, 0, 0);
 		return pan;
 	}
 }

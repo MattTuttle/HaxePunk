@@ -61,7 +61,6 @@ class OpenALSfx implements haxepunk.audio.Sfx
 	inline function set_pan(value:Float):Float
 	{
 		AL.source3f(source, AL.POSITION, value, 0, 0);
-		AL.sourcei(source, AL.SOURCE_RELATIVE, AL.TRUE);
 		return pan = value;
 	}
 
