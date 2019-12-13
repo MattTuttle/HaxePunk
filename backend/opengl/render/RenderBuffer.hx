@@ -14,18 +14,30 @@ class RenderBuffer
 {
 	static inline var INITIAL_SIZE:Int = 100;
 
-	static inline function resize(length:Int, minChunks:Int, chunkSize:Int)
+	static inline function resize(numFloats:Int, minChunks:Int, chunkSize:Int)
 	{
 		return Std.int(Math.max(
-			Std.int(length * 2 / chunkSize),
+			Std.int(numFloats * 2 / chunkSize),
 			minChunks
 		) * chunkSize);
 	}
 
+	#if hl
+	var buffer:hl.Bytes;
+	#else
 	var buffer:Float32Array;
+	#end
 	public var glBuffer:GLBuffer;
 
-	public var length(default, null):Int = 0;
+	public var numFloats(default, null):Int = 0;
+
+	inline function bufferBytesSize():Int {
+		#if hl
+		return numFloats * 4;
+		#else
+		return numFloats * Float32Array.BYTES_PER_ELEMENT;
+		#end
+	}
 
 	#if js
 	var intArray:Int32Array;
@@ -50,7 +62,7 @@ class RenderBuffer
 	inline function bufferData(target, size, srcData, usage:Int)
 	{
 		#if hl
-		GL.bufferData(target, size, hl.Bytes.getArray(srcData), usage);
+		GL.bufferData(target, size, srcData, usage);
 		#elseif (html5 && lime >= "5.0.0")
 		GL.bufferDataWEBGL(target, srcData, usage);
 		#elseif (lime >= "4.0.0")
@@ -68,18 +80,22 @@ class RenderBuffer
 			init();
 		}
 
-		if (length < triangles * floatsPerTriangle)
+		if (numFloats < triangles * floatsPerTriangle)
 		{
-			length = resize(length, triangles, floatsPerTriangle);
+			numFloats = resize(numFloats, triangles, floatsPerTriangle);
 
-			buffer = new Float32Array(length);
+			#if hl
+			buffer = new hl.Bytes(bufferBytesSize());
+			#else
+			buffer = new Float32Array(numFloats);
 			#if js
 			intArray = new Int32Array(buffer.buffer);
+			#end
 			#end
 
 			use();
 
-			bufferData(GL.ARRAY_BUFFER, length * Float32Array.BYTES_PER_ELEMENT, buffer, GL.DYNAMIC_DRAW);
+			bufferData(GL.ARRAY_BUFFER, bufferBytesSize(), buffer, GL.DYNAMIC_DRAW);
 		}
 	}
 
@@ -101,6 +117,9 @@ class RenderBuffer
 		var offset = byteOffset; // helps hxcpp generator
 		untyped __global__.__hxcpp_memory_set_float(bytesData, offset, v);
 		byteOffset = offset + 4;
+#elseif hl
+		buffer.setF32(byteOffset, v);
+		byteOffset += 4;
 #else
 		buffer[byteOffset] = v;
 		byteOffset += 1;
@@ -115,6 +134,10 @@ class RenderBuffer
 		untyped __global__.__hxcpp_memory_set_float(bytesData, offset, x);
 		untyped __global__.__hxcpp_memory_set_float(bytesData, offset+4, y);
 		byteOffset = offset + 8;
+#elseif hl
+		buffer.setF32(byteOffset, x);
+		buffer.setF32(byteOffset+4, y);
+		byteOffset += 8;
 #else
 		buffer[byteOffset] = x;
 		buffer[byteOffset + 1] = y;
@@ -130,8 +153,11 @@ class RenderBuffer
 #elseif js
 		intArray[byteOffset] = value;
 		byteOffset += 1;
+#elseif hl
+		buffer.setI32(byteOffset, value);
+		byteOffset += 4;
 #else
-		buffer.setInt32(byteOffset * 4, value);
+		buffer.buffer.setInt32(byteOffset * 4, value);
 		byteOffset += 1;
 #end
 	}
@@ -154,11 +180,11 @@ class RenderBuffer
 	public inline function updateGraphicsCard()
 	{
 		#if hl
-		GL.bufferSubData(GL.ARRAY_BUFFER, 0, hl.Bytes.getArray(buffer), 0, length * Float32Array.BYTES_PER_ELEMENT);
+		GL.bufferSubData(GL.ARRAY_BUFFER, 0, buffer, 0, bufferBytesSize());
 		#elseif (html5 && lime >= "5.0.0")
 		GL.bufferSubDataWEBGL(GL.ARRAY_BUFFER, 0, buffer);
 		#elseif (lime >= "4.0.0")
-		GL.bufferSubData(GL.ARRAY_BUFFER, 0, length * Float32Array.BYTES_PER_ELEMENT, buffer);
+		GL.bufferSubData(GL.ARRAY_BUFFER, 0, bufferBytesSize(), buffer);
 		#else
 		GL.bufferSubData(GL.ARRAY_BUFFER, 0, buffer);
 		#end
