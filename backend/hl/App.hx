@@ -1,7 +1,7 @@
-package backend.hlsdl;
+package backend.hl;
 
-import haxepunk.HXP;
 #if hlsdl
+import haxepunk.HXP;
 import haxepunk.Engine;
 import sdl.Sdl;
 import sdl.GL;
@@ -37,23 +37,22 @@ class App implements haxepunk.App
 		var reg = ~/ES ([0-9]+\.[0-9]+)/;
 		if( reg.match(v) )
 			glES = Std.parseFloat(reg.matched(1));
-		#if hl
+
 		if( glES == null ) {
 			commonVA = GL.createVertexArray();
 			GL.bindVertexArray( commonVA );
 		}
-		#end
 	}
 
 	@:access(haxepunk.Engine)
 	public function init(engine:Engine)
 	{
+		this.engine = engine;
+		resize();
 		engine.checkScene();
 		engine.init();
 		engine._rate = 1000 / HXP.assignedFrameRate;
 		engine._last = getTimeMillis();
-		this.engine = engine;
-		resize();
 		run();
 	}
 

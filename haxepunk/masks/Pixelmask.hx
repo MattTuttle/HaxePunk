@@ -3,7 +3,7 @@ package haxepunk.masks;
 import haxepunk.Mask;
 import haxepunk.HXP;
 import haxepunk.assets.AssetCache;
-import haxepunk.graphics.hardware.Texture;
+import backend.generic.render.Texture;
 import haxepunk.math.Rectangle;
 import haxepunk.math.Vector2;
 

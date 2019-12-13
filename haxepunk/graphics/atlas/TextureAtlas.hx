@@ -22,7 +22,7 @@ class TextureAtlas extends Atlas
 	 */
 	public static function loadTexturePacker(file:String):TextureAtlas
 	{
-		var xml = Xml.parse(AssetLoader.getText(file));
+		var xml = Xml.parse(HXP.assetLoader.getText(file));
 		var root = xml.firstElement();
 		var atlas = new TextureAtlas(root.get("imagePath"));
 		for (sprite in root.elements())
@@ -114,7 +114,7 @@ private class GdxTexturePacker
 {
 	public static function load(file:String):TextureAtlas
 	{
-		var data:String = AssetLoader.getText(file);
+		var data:String = HXP.assetLoader.getText(file);
 		var inputDir:String = Path.directory(file);
 		var atlas:TextureAtlas = new TextureAtlas();
 		var reader:StringInput = new StringInput(data);

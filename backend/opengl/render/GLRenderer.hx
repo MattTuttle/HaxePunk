@@ -2,12 +2,12 @@ package backend.opengl.render;
 
 import haxepunk.utils.Log;
 import backend.generic.render.Renderer;
+import backend.generic.render.Texture;
 import backend.opengl.shader.SceneShader;
 import haxepunk.HXP;
 import haxepunk.Scene;
 import haxepunk.graphics.hardware.DrawCommand;
 import haxepunk.utils.BlendMode;
-import haxepunk.graphics.hardware.Texture;
 
 /**
  * OpenGL-based renderer. Based on work by @Yanrishatum and @Beeblerox.

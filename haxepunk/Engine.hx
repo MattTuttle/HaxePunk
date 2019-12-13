@@ -124,7 +124,7 @@ class Engine
 		#end
 #elseif hlsdl
 		renderer = new backend.opengl.render.GLRenderer();
-		return new backend.hlsdl.App();
+		return new backend.hl.App();
 #elseif unit_test
 		return new backend.generic.App();
 #else

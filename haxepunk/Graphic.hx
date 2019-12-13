@@ -9,7 +9,7 @@ import haxepunk.graphics.atlas.TileAtlas;
 import haxepunk.graphics.atlas.AtlasRegion;
 import haxepunk.graphics.atlas.AtlasResolutions;
 import haxepunk.graphics.atlas.IAtlasRegion;
-import haxepunk.graphics.hardware.Texture;
+import backend.generic.render.Texture;
 import haxepunk.math.Rectangle;
 import haxepunk.math.Vector2;
 import haxepunk.utils.BlendMode;

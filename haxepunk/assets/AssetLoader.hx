@@ -1,24 +1,18 @@
 package haxepunk.assets;
 
-import haxepunk.graphics.hardware.Texture;
+import haxepunk.utils.Color;
+import backend.generic.render.Texture;
 
 /**
  * AssetLoader is used to load a new copy of an asset, bypassing the cache.
  */
-class AssetLoader
+interface AssetLoader
 {
-	public static function getText(id:String):String
-	{
-		throw "Unimplemented";
-	}
+	public function createTexture(width:Int, height:Int, transparent:Bool=false, color:Color=0):Texture;
 
-	public static function getSound(id:String):Dynamic
-	{
-		throw "Unimplemented";
-	}
+	public function getText(id:String):String;
 
-	public static function getTexture(id:String):Texture
-	{
-		throw "Unimplemented";
-	}
+	public function getSound(id:String):Dynamic;
+
+	public function getTexture(id:String):Texture;
 }

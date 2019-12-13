@@ -9,7 +9,7 @@ import haxepunk.HXP;
 import haxepunk.assets.AssetLoader;
 import haxepunk.graphics.atlas.AtlasDataType;
 import haxepunk.graphics.atlas.TextureAtlas;
-import haxepunk.graphics.hardware.Texture;
+import backend.generic.render.Texture;
 import haxepunk.utils.Utf8String;
 
 @:enum
@@ -60,7 +60,7 @@ class BitmapFontAtlas extends TextureAtlas implements IBitmapFont
 	 */
 	public static function loadXMLFont(file:String):BitmapFontAtlas
 	{
-		var xmlText:Utf8String = AssetLoader.getText(file);
+		var xmlText:Utf8String = HXP.assetLoader.getText(file);
 		if (xmlText == null) throw 'BitmapFontAtlas: "$file" not found!';
 
 		var xml = Xml.parse(xmlText);

@@ -4,6 +4,7 @@ import haxepunk.math.MathUtil;
 
 /**
  * An abstract with various color utility functions.
+ * The color is stored in an unsigned integer in ARGB format.
  * @since	4.0.0
  **/
 abstract Color(UInt) from UInt to UInt
@@ -44,6 +45,15 @@ abstract Color(UInt) from UInt to UInt
 			b += Std.int(dB * t);
 			return a << 24 | r << 16 | g << 8 | b;
 		}
+	}
+
+	/**
+	 * Create a color from a BGRA unsigned integer
+	 */
+	public static inline function fromBGRA(bgra:UInt):Color
+	{
+		//         Alpha                 Red                    Green                   Blue
+		return (bgra & 0xff) << 24 | (bgra & 0xff00) << 8 | (bgra & 0xff0000) >> 8 | bgra >> 24;
 	}
 
 
@@ -230,5 +240,11 @@ abstract Color(UInt) from UInt to UInt
 	{
 		alpha = MathUtil.clamp(alpha, 0, 1);
 		return (Std.int(0xff * alpha) << 24) | this;
+	}
+
+	public inline function toBGRA():UInt
+	{
+		//         Blue                 Green                    Red                   Alpha
+		return (this & 0xff) << 24 | (this & 0xff00) << 8 | (this & 0xff0000) >> 8 | this >> 24;
 	}
 }

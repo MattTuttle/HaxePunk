@@ -1,5 +1,6 @@
 package haxepunk;
 
+import haxepunk.assets.AssetLoader;
 import haxe.Timer;
 import haxepunk.Tween.TweenType;
 import haxepunk.input.Mouse;
@@ -234,6 +235,23 @@ class HXP
 	public static var fullscreen(get, set):Bool;
 	static inline function get_fullscreen():Bool return HXP.app.fullscreen;
 	static inline function set_fullscreen(value:Bool):Bool return HXP.app.fullscreen = value;
+
+	/**
+	 * The default asset loader (for text, sound, and graphics)
+	 */
+	public static var assetLoader(get, null):AssetLoader;
+	static function get_assetLoader():AssetLoader {
+		if (assetLoader == null) {
+		#if (lime || nme)
+			assetLoader = new backend.flash.haxepunk.assets.AssetLoader();
+		#elseif hl
+			assetLoader = new backend.hl.FileAssetLoader();
+		#else
+			throw "Asset loader is not implemented on this target";
+		#end
+		}
+		return assetLoader;
+	}
 
 	/**
 	 * Global volume factor for all sounds, a value from 0 to 1.

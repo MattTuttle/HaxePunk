@@ -7,7 +7,7 @@ import haxepunk.graphics.atlas.AtlasResolutions;
 import haxepunk.graphics.atlas.IAtlasRegion;
 import haxepunk.graphics.atlas.TextureAtlas;
 import haxepunk.graphics.atlas.TileAtlas;
-import haxepunk.graphics.hardware.Texture;
+import backend.generic.render.Texture;
 import haxepunk.graphics.text.BitmapFont;
 import haxepunk.graphics.text.BitmapFontAtlas;
 import haxepunk.graphics.text.IBitmapFont;
@@ -59,7 +59,7 @@ class AssetCache
 	{
 		return AssetMacros.findAsset(this, textures, otherCache.textures, id, addRef, {
 			Log.info('loading texture $id into cache $name');
-			var texture = AssetLoader.getTexture(id);
+			var texture = HXP.assetLoader.getTexture(id);
 			if (!atlasData.exists(id))
 			{
 				var data = new AtlasData(texture, id);
@@ -100,7 +100,7 @@ class AssetCache
 
 	public function getText(id:String, addRef:Bool=true):String
 	{
-		return AssetMacros.findAsset(this, text, otherCache.text, id, addRef, AssetLoader.getText(id));
+		return AssetMacros.findAsset(this, text, otherCache.text, id, addRef, HXP.assetLoader.getText(id));
 	}
 
 	public function removeText(id:String)
@@ -115,7 +115,7 @@ class AssetCache
 
 	public function getSound(id:String, addRef:Bool=true):Dynamic
 	{
-		return AssetMacros.findAsset(this, sounds, otherCache.sounds, id, addRef, AssetLoader.getSound(id));
+		return AssetMacros.findAsset(this, sounds, otherCache.sounds, id, addRef, HXP.assetLoader.getSound(id));
 	}
 
 	public function removeSound(id:String)

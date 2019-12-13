@@ -40,7 +40,7 @@ void main () {
 	 */
 	public static inline function fromAsset(name:String):SceneShader
 	{
-		return new SceneShader(AssetLoader.getText(name));
+		return new SceneShader(HXP.assetLoader.getText(name));
 	}
 
 	public var active:Bool = true;

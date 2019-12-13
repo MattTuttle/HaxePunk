@@ -2,7 +2,7 @@ package backend.opengl;
 
 import haxepunk.utils.Log;
 import haxe.PosInfos;
-import haxepunk.graphics.hardware.Texture;
+import backend.generic.render.Texture;
 
 @:dox(hide)
 class GLUtils
@@ -10,7 +10,7 @@ class GLUtils
 	public static function bindTexture(texture:Texture, smooth:Bool, index:Int=GL.TEXTURE0)
 	{
 		GL.activeTexture(index);
-		GLInternal.bindTexture(texture);
+		texture.bind();
 		if (smooth)
 		{
 			GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
@@ -38,8 +38,8 @@ class GLUtils
 		#end
 	}
 
-	public static inline function invalid(obj:Any):Bool
+	public static inline function invalid(object:Any):Bool
 	{
-		return GLInternal.invalid(obj);
+		return object == 0;
 	}
 }

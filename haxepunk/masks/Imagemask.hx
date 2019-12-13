@@ -3,7 +3,6 @@ package haxepunk.masks;
 import haxepunk.HXP;
 import haxepunk.Mask;
 import haxepunk.graphics.Image;
-import haxepunk.graphics.hardware.Texture;
 import haxepunk.math.MathUtil;
 import haxepunk.math.Rectangle;
 
@@ -48,7 +47,7 @@ class Imagemask extends Pixelmask
 	 */
 	public function new(source:Image)
 	{
-		super(Texture.create(1, 1));
+		super(HXP.assetLoader.createTexture(1, 1));
 		_class = Type.getClassName(Type.getSuperClass(Type.getClass(this)));
 		_source = source;
 		update();
@@ -78,7 +77,7 @@ class Imagemask extends Pixelmask
 		_width = Math.ceil(r.width);
 		_height = Math.ceil(r.height);
 
-		_data = Texture.create(_width, _height, true, 0x00000000);
+		_data = HXP.assetLoader.createTexture(_width, _height, true, 0x00000000);
 		// TODO: get rid of this class???
 		// _source.render(_data, new Camera(-_x, -_y), new Camera(0, 0));
 
