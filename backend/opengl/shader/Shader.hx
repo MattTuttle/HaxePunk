@@ -1,13 +1,9 @@
-package haxepunk.graphics.shader;
+package backend.opengl.shader;
 
-import haxepunk.graphics.hardware.opengl.GL;
-import haxepunk.graphics.hardware.opengl.GLProgram;
-import haxepunk.graphics.hardware.opengl.GLShader;
-import haxepunk.graphics.hardware.opengl.GLUniformLocation;
-import haxepunk.graphics.hardware.opengl.GLUtils;
 import haxepunk.graphics.hardware.DrawCommand;
-import haxepunk.graphics.hardware.Float32Array;
-import haxepunk.graphics.hardware.RenderBuffer;
+import backend.opengl.render.RenderBuffer;
+import haxepunk.HXP;
+import haxepunk.utils.Log;
 
 class Attribute
 {
@@ -20,7 +16,7 @@ class Attribute
 	}
 	public var valuesPerElement:Int;
 
-	@:allow(haxepunk.graphics.hardware.RenderBuffer)
+	@:allow(backend.opengl.render.RenderBuffer)
 	private var dataPos(default, set):Int = -1; // for use by RenderBuffer to push data in VBOs
 	private function set_dataPos(v:Int) : Int
 	{
@@ -54,7 +50,7 @@ class Attribute
 	}
 }
 
-class Shader
+class Shader implements backend.generic.render.Shader
 {
 	public var glProgram:GLProgram;
 	public var floatsPerVertex(get, never):Int;
@@ -77,8 +73,7 @@ class Shader
 	public var texCoord:Attribute;
 	public var color:Attribute;
 
-	public var hasAttributes(get, never):Bool;
-	inline function get_hasAttributes() : Bool
+	public inline function hasAttributes():Bool
 	{
 		return attributeNames.length > 0;
 	}
@@ -102,6 +97,11 @@ class Shader
 		id = idSeq++;
 
 		Log.info('Shader #$idSeq initialized');
+	}
+
+	public inline function equals(other:backend.generic.render.Shader):Bool
+	{
+		return this.id == cast(other, Shader).id;
 	}
 
 	public function build()
@@ -183,22 +183,27 @@ class Shader
 
 	function setAttributePointers(nbTriangles:Int)
 	{
+		#if hl
+		var bytesPerElement = 4;
+		#else
+		var bytesPerElement = Float32Array.BYTES_PER_ELEMENT;
+		#end
 		var offset:Int = 0;
-		// var stride:Int = floatsPerVertex * Float32Array.BYTES_PER_ELEMENT;
-		var stride:Int = (2 + (texCoord.isEnabled ? 2 : 0) + (color.isEnabled ? 1 : 0)) * Float32Array.BYTES_PER_ELEMENT;
+		// var stride:Int = floatsPerVertex * bytesPerElement;
+		var stride:Int = (2 + (texCoord.isEnabled ? 2 : 0) + (color.isEnabled ? 1 : 0)) * bytesPerElement;
 		GL.vertexAttribPointer(position.index, 2, GL.FLOAT, false, stride, offset);
-		offset += 2 * Float32Array.BYTES_PER_ELEMENT;
+		offset += 2 * bytesPerElement;
 
 		if (texCoord.isEnabled)
 		{
 			GL.vertexAttribPointer(texCoord.index, 2, GL.FLOAT, false, stride, offset);
-			offset += 2 * Float32Array.BYTES_PER_ELEMENT;
+			offset += 2 * bytesPerElement;
 		}
 
 		if (color.isEnabled)
 		{
 			GL.vertexAttribPointer(color.index, 4, GL.UNSIGNED_BYTE, true, stride, offset);
-			offset += 1 * Float32Array.BYTES_PER_ELEMENT;
+			offset += 1 * bytesPerElement;
 		}
 
 		// Custom vertex attrib data is at the end of the buffer to speed up construction.
@@ -212,7 +217,7 @@ class Shader
 			if (attrib.isEnabled)
 			{
 				GL.vertexAttribPointer(attrib.index, attrib.valuesPerElement, GL.FLOAT, false, 0, offset);
-				offset += nbTriangles * 3 * attrib.valuesPerElement * Float32Array.BYTES_PER_ELEMENT;
+				offset += nbTriangles * 3 * attrib.valuesPerElement * bytesPerElement;
 			}
 		}
 	}
@@ -229,7 +234,11 @@ class Shader
 
 		for (name in uniformNames)
 		{
+			#if hl
+			throw "Uniform values are unimplemented";
+			#else
 			GL.uniform1f(uniformIndex(name), uniformValues[name]);
+			#end
 		}
 
 		GL.enableVertexAttribArray(position.index);

@@ -1,11 +1,13 @@
-package haxepunk.graphics.hardware;
+package backend.opengl.render;
 
-import haxepunk.graphics.hardware.opengl.GL;
-import haxepunk.graphics.hardware.opengl.GLFramebuffer;
-import haxepunk.graphics.hardware.opengl.GLUtils;
+import haxepunk.utils.Log;
+import backend.generic.render.Renderer;
+import backend.opengl.shader.SceneShader;
 import haxepunk.HXP;
-import haxepunk.graphics.shader.SceneShader;
+import haxepunk.Scene;
+import haxepunk.graphics.hardware.DrawCommand;
 import haxepunk.utils.BlendMode;
+import haxepunk.graphics.hardware.Texture;
 
 /**
  * OpenGL-based renderer. Based on work by @Yanrishatum and @Beeblerox.
@@ -14,7 +16,7 @@ import haxepunk.utils.BlendMode;
 @:dox(hide)
 @:access(haxepunk.Scene)
 @:access(haxepunk.Engine)
-class HardwareRenderer
+class GLRenderer implements Renderer
 {
 	public static var drawCallLimit:Int = -1;
 
@@ -117,7 +119,7 @@ class HardwareRenderer
 
 			if (width > 0 && height > 0)
 			{
-				var shader = drawCommand.shader;
+				var shader = cast(drawCommand.shader, backend.opengl.shader.Shader);
 				shader.bind();
 
 				// expand arrays if necessary
@@ -125,13 +127,18 @@ class HardwareRenderer
 				var floatsPerTriangle:Int = shader.floatsPerVertex * 3;
 				buffer.ensureSize(triangles, floatsPerTriangle);
 
-				#if (html5 && lime >= "5.0.0")
-				GL.uniformMatrix4fvWEBGL(shader.uniformIndex(UNIFORM_MATRIX), false, _ortho);
-				#elseif (lime >= "4.0.0")
-				GL.uniformMatrix4fv(shader.uniformIndex(UNIFORM_MATRIX), 1, false, _ortho);
-				#else
-				GL.uniformMatrix4fv(shader.uniformIndex(UNIFORM_MATRIX), false, _ortho);
-				#end
+				var matrixUniform = shader.uniformIndex(UNIFORM_MATRIX);
+				if (matrixUniform != null) {
+					#if hl
+					GL.uniformMatrix4fv(matrixUniform, false, hl.Bytes.getArray(_ortho.buffer), 0, 16 * Float32Array.BYTES_PER_ELEMENT);
+					#elseif (html5 && lime >= "5.0.0")
+					GL.uniformMatrix4fvWEBGL(matrixUniform, false, _ortho);
+					#elseif (lime >= "4.0.0")
+					GL.uniformMatrix4fv(matrixUniform, 1, false, _ortho);
+					#else
+					GL.uniformMatrix4fv(matrixUniform, false, _ortho);
+					#end
+				}
 
 				GLUtils.checkForErrors();
 
@@ -188,6 +195,7 @@ class HardwareRenderer
 		screenScaleX = screen.scaleX;
 		screenScaleY = screen.scaleY;
 
+#if (lime || nme)
 		var postProcess:Array<SceneShader> = scene.shaders;
 		var firstShader:SceneShader = null;
 		if (postProcess != null) for (p in postProcess)
@@ -216,6 +224,7 @@ class HardwareRenderer
 		{
 			bindDefaultFramebuffer();
 		}
+#end
 
 		x = Std.int(screen.x + Math.max(scene.x, 0));
 		y = Std.int(screen.y + Math.max(scene.y, 0));
@@ -234,6 +243,7 @@ class HardwareRenderer
 		screen.scaleX = screenScaleX;
 		screen.scaleY = screenScaleY;
 
+#if (lime || nme)
 		var postProcess:Array<SceneShader> = scene.shaders;
 		var hasPostProcess = false;
 		if (postProcess != null) for (p in postProcess)
@@ -313,6 +323,7 @@ class HardwareRenderer
 				GL.bindFramebuffer(GL.FRAMEBUFFER, null);
 			}
 		}
+#end
 	}
 
 	public function startFrame()

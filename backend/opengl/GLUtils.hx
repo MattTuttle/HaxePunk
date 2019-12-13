@@ -1,6 +1,8 @@
-package haxepunk.graphics.hardware.opengl;
+package backend.opengl;
 
+import haxepunk.utils.Log;
 import haxe.PosInfos;
+import haxepunk.graphics.hardware.Texture;
 
 @:dox(hide)
 class GLUtils

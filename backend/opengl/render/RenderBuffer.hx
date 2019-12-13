@@ -1,4 +1,4 @@
-package haxepunk.graphics.hardware;
+package backend.opengl.render;
 
 #if js
 #if haxe4
@@ -7,10 +7,8 @@ import js.lib.Int32Array;
 import js.html.Int32Array;
 #end
 #end
-import haxepunk.graphics.hardware.opengl.GL;
-import haxepunk.graphics.hardware.opengl.GLBuffer;
-import haxepunk.graphics.hardware.opengl.GLUtils;
-import haxepunk.graphics.shader.Shader.Attribute;
+import backend.opengl.shader.Shader.Attribute;
+import haxepunk.graphics.hardware.DrawCommand;
 
 class RenderBuffer
 {
@@ -24,11 +22,10 @@ class RenderBuffer
 		) * chunkSize);
 	}
 
-	public var buffer:Float32Array;
+	var buffer:Float32Array;
 	public var glBuffer:GLBuffer;
 
-	public var length(get, never):Int;
-	inline function get_length() return buffer.length;
+	public var length(default, null):Int = 0;
 
 	#if js
 	var intArray:Int32Array;
@@ -50,9 +47,11 @@ class RenderBuffer
 		glBuffer = GL.createBuffer();
 	}
 
-	function bufferData(target, size, srcData, usage)
+	inline function bufferData(target, size, srcData:Float32Array, usage:Int)
 	{
-		#if (html5 && lime >= "5.0.0")
+		#if hl
+		GL.bufferData(target, size, hl.Bytes.getArray(srcData.buffer), usage);
+		#elseif (html5 && lime >= "5.0.0")
 		GL.bufferDataWEBGL(target, srcData, usage);
 		#elseif (lime >= "4.0.0")
 		GL.bufferData(target, size, srcData, usage);
@@ -68,16 +67,19 @@ class RenderBuffer
 			buffer = null;
 			init();
 		}
-		var bufferLength = buffer == null ? 0 : buffer.length;
-		if (bufferLength < triangles * floatsPerTriangle)
+
+		if (length < triangles * floatsPerTriangle)
 		{
-			buffer = new Float32Array(resize(bufferLength, triangles, floatsPerTriangle));
+			length = resize(length, triangles, floatsPerTriangle);
+
+			buffer = new Float32Array(length);
 			#if js
 			intArray = new Int32Array(buffer.buffer);
 			#end
 
 			use();
-			bufferData(GL.ARRAY_BUFFER, buffer.length * Float32Array.BYTES_PER_ELEMENT, buffer, GL.DYNAMIC_DRAW);
+
+			bufferData(GL.ARRAY_BUFFER, length * Float32Array.BYTES_PER_ELEMENT, buffer, GL.DYNAMIC_DRAW);
 		}
 	}
 
@@ -151,7 +153,9 @@ class RenderBuffer
 
 	public inline function updateGraphicsCard()
 	{
-		#if (html5 && lime >= "5.0.0")
+		#if hl
+		GL.bufferSubData(GL.ARRAY_BUFFER, 0, hl.Bytes.getArray(buffer.buffer), 0, length * Float32Array.BYTES_PER_ELEMENT);
+		#elseif (html5 && lime >= "5.0.0")
 		GL.bufferSubDataWEBGL(GL.ARRAY_BUFFER, 0, buffer);
 		#elseif (lime >= "4.0.0")
 		GL.bufferSubData(GL.ARRAY_BUFFER, 0, length * Float32Array.BYTES_PER_ELEMENT, buffer);

@@ -22,6 +22,7 @@ class ButtonTray extends EntityList<DebugButton>
 		addButton("graphics/debug/console_visible.png", onHide);
 		addButton("graphics/debug/console_pause.png", onPause);
 		addButton("graphics/debug/console_step.png", onStep);
+#if (openfl || lime)
 		addButton("graphics/debug/console_drawcall_add.png", incrementDrawCallDebug);
 		addButton("graphics/debug/console_drawcall_all.png", resetDrawCallDebug);
 	}
@@ -35,4 +36,7 @@ class ButtonTray extends EntityList<DebugButton>
 	{
 		haxepunk.graphics.hardware.HardwareRenderer.drawCallLimit++;
 	}
+#else
+	}
+#end
 }

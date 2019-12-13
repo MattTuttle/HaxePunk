@@ -1,8 +1,10 @@
-package haxepunk.graphics.hardware.opengl;
+package backend.opengl;
+
+import haxepunk.graphics.hardware.Texture;
 
 class GLInternal
 {
-	@:allow(haxepunk.graphics.hardware.opengl.GLUtils)
+	@:allow(backend.opengl.GLUtils)
 	static function bindTexture(texture:Texture) {}
 
 	public static inline function invalid(object:UInt)

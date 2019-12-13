@@ -1,8 +1,8 @@
 package haxepunk.graphics.atlas;
 
+import backend.generic.render.Shader;
 import haxepunk.utils.BlendMode;
 import haxepunk.utils.Color;
-import haxepunk.graphics.shader.Shader;
 import haxepunk.math.MathUtil;
 import haxepunk.math.Rectangle;
 import haxepunk.math.Vector2;

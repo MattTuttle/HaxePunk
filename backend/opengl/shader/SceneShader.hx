@@ -1,11 +1,7 @@
-package haxepunk.graphics.shader;
+package backend.opengl.shader;
 
 import haxepunk.assets.AssetLoader;
-import haxepunk.graphics.hardware.opengl.GL;
-import haxepunk.graphics.hardware.opengl.GLBuffer;
-import haxepunk.graphics.hardware.opengl.GLUniformLocation;
-import haxepunk.graphics.hardware.opengl.GLUtils;
-import haxepunk.graphics.hardware.Float32Array;
+import haxepunk.HXP;
 
 /**
  * Used to create a custom shader.
@@ -58,7 +54,11 @@ void main () {
 	public var textureHeight(get, never):Int;
 	inline function get_textureHeight() return height == null ? HXP.screen.height : Std.int(Math.min(HXP.screen.height, height));
 
+	#if hl
+	var v:hl.Bytes;
+	#else
 	var v:Float32Array;
+	#end
 
 	/**
 	 * Create a custom shader from a string.
@@ -73,24 +73,33 @@ void main () {
 		position.name = "aPosition";
 		texCoord.name = "aTexCoord";
 	}
-	
+
 	function bufferData(target, size, srcData, usage)
 	{
 		#if (html5 && lime >= "5.0.0")
 		GL.bufferDataWEBGL(target, srcData, usage);
-		#elseif (lime >= "4.0.0")
+		#elseif (hl || lime >= "4.0.0")
 		GL.bufferData(target, size, srcData, usage);
 		#else
 		GL.bufferData(target, srcData, usage);
 		#end
 	}
-	
+
 	function createBuffer()
 	{
 		buffer = GL.createBuffer();
 		GL.bindBuffer(GL.ARRAY_BUFFER, buffer);
+		#if hl
+		var size = _vertices.length * 4;
+		v = new hl.Bytes(size);
+		for (i in 0..._vertices.length) {
+			v.setF32(i*4, _vertices[i]);
+		}
+		#else
 		v = new Float32Array(_vertices);
-		bufferData(GL.ARRAY_BUFFER, v.length * Float32Array.BYTES_PER_ELEMENT, v, GL.STATIC_DRAW);
+		var size = v.length * Float32Array.BYTES_PER_ELEMENT;
+		#end
+		bufferData(GL.ARRAY_BUFFER, size, v, GL.STATIC_DRAW);
 		GL.bindBuffer(GL.ARRAY_BUFFER, null);
 	}
 
@@ -115,6 +124,10 @@ void main () {
 		sy *= y;
 		if (_lastX != x || _lastY != y || _lastSx != sx || _lastSy != sy)
 		{
+			#if hl
+			throw "Unimplemented";
+			#else
+
 			#if nme
 			inline function f(i) v[i] = sx * 2 - 1;
 			f(4); f(12); f(16);
@@ -131,7 +144,8 @@ void main () {
 			v[3] = v[7] = v[15] = 1 - y;
 			#end
 
-			bufferData(GL.ARRAY_BUFFER, v.length * Float32Array.BYTES_PER_ELEMENT, v, GL.STATIC_DRAW);			
+			bufferData(GL.ARRAY_BUFFER, v.length * Float32Array.BYTES_PER_ELEMENT, v, GL.STATIC_DRAW);
+			#end // hl
 
 			_lastX = x;
 			_lastY = y;
@@ -148,11 +162,15 @@ void main () {
 			createBuffer();
 		}
 
+		#if hl
+		throw "Unimplemented";
+		#else
 		GL.vertexAttribPointer(position.index, 2, GL.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 0);
 		GL.vertexAttribPointer(texCoord.index, 2, GL.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
 
 		GL.uniform1i(image, 0);
 		GL.uniform2f(resolution, HXP.screen.width, HXP.screen.height);
+		#end // hl
 		GL.bindBuffer(GL.ARRAY_BUFFER, null);
 	}
 

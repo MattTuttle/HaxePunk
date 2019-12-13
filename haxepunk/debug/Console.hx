@@ -6,7 +6,6 @@ import haxepunk.math.Rectangle;
 import haxepunk.HXP;
 import haxepunk.cameras.UICamera;
 import haxepunk.graphics.Image;
-import haxepunk.graphics.hardware.HardwareRenderer;
 import haxepunk.input.Key;
 import haxepunk.input.Mouse;
 import haxepunk.input.MouseManager;
@@ -308,14 +307,17 @@ class Console extends Scene
 		_stepping = false;
 	}
 
+	@:access(haxepunk.Engine)
 	function updateMetrics()
 	{
 		var s = HXP.elapsed / SAMPLE_TIME;
 		_fps += 1 / HXP.elapsed * s;
 		_mem += HXP.app.getMemoryUse() / 1024 / 1024 * s;
 		_ent += HXP.scene.count * s;
-		_tri += HardwareRenderer.triangleCount * s;
-		_dc += HardwareRenderer.drawCallCount * s;
+		#if (openfl || lime)
+		_tri += haxepunk.graphics.hardware.HardwareRenderer.triangleCount * s;
+		_dc += haxepunk.graphics.hardware.HardwareRenderer.drawCallCount * s;
+		#end
 		_t += s;
 		if (_t >= 1)
 		{

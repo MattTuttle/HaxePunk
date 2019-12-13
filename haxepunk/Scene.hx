@@ -4,7 +4,6 @@ import haxe.ds.IntMap;
 import haxepunk.Signal;
 import haxepunk.assets.AssetCache;
 import haxepunk.graphics.atlas.AtlasData;
-import haxepunk.graphics.shader.SceneShader;
 import haxepunk.graphics.hardware.DrawCommandBatch;
 import haxepunk.graphics.hardware.Texture;
 import haxepunk.utils.BlendMode;
@@ -82,7 +81,9 @@ class Scene extends Tweener
 	 *
 	 * @since	4.0.0
 	 */
+	#if (lime || nme)
 	public var shaders:Null<Array<SceneShader>>;
+	#end
 
 	/**
 	 * Invoked before this Scene's update cycle begins each frame.

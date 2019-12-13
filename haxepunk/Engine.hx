@@ -2,11 +2,11 @@ package haxepunk;
 
 import haxepunk.Signal;
 import haxepunk.debug.Console;
-import haxepunk.graphics.hardware.HardwareRenderer;
 import haxepunk.input.Input;
 import haxepunk.math.Random;
 import haxepunk.math.Rectangle;
 import haxepunk.utils.Draw;
+import backend.generic.render.Renderer;
 
 /**
  * Main game Sprite class, added to the Stage.
@@ -71,6 +71,11 @@ class Engine
 	public var onClose:Signal0 = new Signal0();
 
 	/**
+	 * The hardware rendering method to use
+	 */
+	public var renderer(default, null):Renderer;
+
+	/**
 	 * Constructor. Defines startup information about your game.
 	 * @param	width			The width of your game.
 	 * @param	height			The height of your game.
@@ -102,7 +107,7 @@ class Engine
 
 		_iterator = new VisibleSceneIterator();
 
-		app.init();
+		app.init(this);
 	}
 
 	/**
@@ -110,7 +115,21 @@ class Engine
 	 */
 	function createApp():App
 	{
-		return new App(this);
+#if (lime || nme)
+		renderer = new backend.opengl.render.GLRenderer();
+		#if lime
+		return new backend.lime.haxepunk.App();
+		#else
+		return new backend.nme.haxepunk.App();
+		#end
+#elseif hlsdl
+		renderer = new backend.opengl.render.GLRenderer();
+		return new backend.hlsdl.App();
+#elseif unit_test
+		return new backend.generic.App();
+#else
+		#error "Invalid target";
+#end
 	}
 
 	/**
@@ -172,20 +191,20 @@ class Engine
 
 		preRender.invoke();
 
-		_renderer.startFrame();
+		renderer.startFrame();
 		for (scene in _iterator.reset(this))
 		{
-			_renderer.startScene(scene);
+			renderer.startScene(scene);
 			HXP.renderingScene = scene;
 			scene.render();
 			for (commands in scene.batch)
 			{
-				_renderer.render(commands);
+				renderer.render(commands);
 			}
-			_renderer.flushScene(scene);
+			renderer.flushScene(scene);
 		}
 		HXP.renderingScene = null;
-		_renderer.endFrame();
+		renderer.endFrame();
 
 		postRender.invoke();
 
@@ -342,8 +361,6 @@ class Engine
 	var _frameLast:Float = 0;
 	var _frameListSum:Int = 0;
 	var _frameList:Array<Int>;
-
-	var _renderer:HardwareRenderer = new HardwareRenderer();
 
 	var _iterator:VisibleSceneIterator;
 }

@@ -1,7 +1,7 @@
 package haxepunk.graphics.hardware;
 
+import backend.generic.render.Shader;
 import haxepunk.utils.BlendMode;
-import haxepunk.graphics.shader.Shader;
 import haxepunk.utils.Color;
 import haxepunk.math.MathUtil;
 import haxepunk.math.Rectangle;

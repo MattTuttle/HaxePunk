@@ -2,7 +2,6 @@ package haxepunk.graphics;
 
 import haxepunk.Graphic;
 import haxepunk.graphics.atlas.AtlasData;
-import haxepunk.graphics.shader.ColorShader;
 import haxepunk.utils.Color;
 import haxepunk.math.Vector2;
 
@@ -18,7 +17,9 @@ class ColoredRect extends Graphic
 		this.height = height;
 		this.color = color;
 		this.alpha = alpha;
-		this.shader = ColorShader.defaultShader;
+		#if (lime || nme || hlsdl)
+		this.shader = backend.opengl.shader.ColorShader.defaultShader;
+		#end
 	}
 
 	@:access(haxepunk.graphics.atlas.AtlasData)

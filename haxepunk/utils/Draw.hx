@@ -1,7 +1,7 @@
 package haxepunk.utils;
 
+import backend.generic.render.Shader;
 import haxepunk.utils.BlendMode;
-import haxepunk.graphics.shader.Shader;
 
 /**
  * Static class with access to miscellanious drawing functions.

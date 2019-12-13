@@ -1,4 +1,4 @@
-package haxepunk.graphics.hardware;
+package backend.opengl;
 
 #if cpp
 typedef F32Array = Array<cpp.Float32>;

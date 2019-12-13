@@ -1,14 +1,11 @@
-package haxepunk.graphics.hardware;
+package backend.opengl.render;
 
-import haxepunk.graphics.hardware.opengl.GL;
-import haxepunk.graphics.hardware.opengl.GLFramebuffer;
-import haxepunk.graphics.hardware.opengl.GLTexture;
-import haxepunk.graphics.hardware.opengl.GLUtils;
+import haxepunk.HXP;
 
 @:dox(hide)
 class FrameBuffer
 {
-	public var texture:GLTexture;
+	public var texture:Null<GLTexture>;
 
 	var framebuffer:GLFramebuffer;
 

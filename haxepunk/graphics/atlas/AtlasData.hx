@@ -1,7 +1,7 @@
 package haxepunk.graphics.atlas;
 
+import backend.generic.render.Shader;
 import haxepunk.assets.AssetCache;
-import haxepunk.graphics.shader.Shader;
 import haxepunk.graphics.hardware.DrawCommandBatch;
 import haxepunk.graphics.hardware.Texture;
 import haxepunk.math.MathUtil;

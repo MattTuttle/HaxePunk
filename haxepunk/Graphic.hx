@@ -1,6 +1,7 @@
 package haxepunk;
 
 import haxe.ds.Either;
+import backend.generic.render.Shader;
 import haxepunk.Signal;
 import haxepunk.assets.AssetCache;
 import haxepunk.graphics.atlas.Atlas;
@@ -9,8 +10,6 @@ import haxepunk.graphics.atlas.AtlasRegion;
 import haxepunk.graphics.atlas.AtlasResolutions;
 import haxepunk.graphics.atlas.IAtlasRegion;
 import haxepunk.graphics.hardware.Texture;
-import haxepunk.graphics.shader.Shader;
-import haxepunk.graphics.shader.TextureShader;
 import haxepunk.math.Rectangle;
 import haxepunk.math.Vector2;
 import haxepunk.utils.BlendMode;
@@ -259,7 +258,11 @@ class Graphic
 		smooth = smoothDefault;
 		pixelSnapping = pixelSnappingDefault;
 		color = Color.White;
-		shader = TextureShader.defaultShader;
+		#if (lime || nme || hlsdl)
+		shader = backend.opengl.shader.TextureShader.defaultShader;
+		#else
+		#error "Default texture shader is not defined"
+		#end
 		_class = Type.getClassName(Type.getClass(this));
 	}
 

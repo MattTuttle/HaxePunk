@@ -1,12 +1,11 @@
 package haxepunk.utils;
 
+import backend.generic.render.Shader;
 import haxepunk.utils.BlendMode;
 import haxepunk.Entity;
 import haxepunk.HXP;
 import haxepunk.Graphic;
 import haxepunk.graphics.hardware.DrawCommand;
-import haxepunk.graphics.shader.ColorShader;
-import haxepunk.graphics.shader.Shader;
 import haxepunk.math.Vector2;
 import haxepunk.utils.Color;
 
@@ -390,7 +389,14 @@ class DrawContext
 	@:access(haxepunk.graphics.hardware.SceneRenderer)
 	inline function begin()
 	{
-		if (shader == null) shader = new ColorShader();
+		if (shader == null)
+		{
+			#if (lime || nme || hlsdl)
+			shader = backend.opengl.shader.ColorShader.defaultShader;
+			#else
+			#error "Default color shader is not defined";
+			#end
+		}
 		var scene = (this.scene == null) ? (HXP.renderingScene == null ? HXP.scene : HXP.renderingScene) : this.scene;
 		command = scene.batch.getDrawCommand(null, shader, smooth, blend, null);
 	}

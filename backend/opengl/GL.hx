@@ -1,5 +1,8 @@
-package haxepunk.graphics.hardware.opengl;
+package backend.opengl;
 
+#if hlsdl
+typedef GL = sdl.GL;
+#else
 class GL
 {
 	public static inline var NO_ERROR:Int = 0;
@@ -69,7 +72,7 @@ class GL
 	public static function useProgram(_) {}
 	public static function enableVertexAttribArray(_) {}
 	public static function disableVertexAttribArray(_) {}
-	public static function getAttribLocation(_, _) {}
+	public static function getAttribLocation(_, _):Int { return 0; }
 	public static function vertexAttribPointer(_, _, _, _, _, _) {}
 	public static function blendEquation(_) {}
 	public static function blendEquationSeparate(_, _) {}
@@ -78,3 +81,4 @@ class GL
 	public static function drawArrays(_, _, _) {}
 	public static function bindTexture(_, _) {}
 }
+#end
