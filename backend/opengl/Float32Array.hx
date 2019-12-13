@@ -1,27 +1,29 @@
 package backend.opengl;
 
+import haxe.Int32;
+
 #if cpp
-typedef F32Array = Array<cpp.Float32>;
+typedef Float32 = cpp.Float32;
+#elseif hl
+typedef Float32 = hl.F32;
 #else
-typedef F32Array = Array<Float>;
+typedef Float32 = Float;
 #end
 
 @:forward
 @:arrayAccess
-abstract Float32Array(F32Array) from F32Array to F32Array
+abstract Float32Array(Array<Float32>) from Array<Float32> to Array<Float32>
 {
 	public static inline var BYTES_PER_ELEMENT = 4;
 
-	public var buffer(get, never):Float32Array;
-	inline function get_buffer():Float32Array return this;
-
 	public function new(inBufferOrArray:Dynamic, inStart:Int = 0, ?inElements:Null<Int>)
 	{
-		return new F32Array();
+		return new Array<Float32>();
 	}
 
-	public function setInt32(_, _)
+	public function setInt32(pos:Int, value:Int32)
 	{
-		throw "Unimplemented";
+		// TODO: need a better way to set this value so it doesn't have precision loss
+		this[pos] = value;
 	}
 }

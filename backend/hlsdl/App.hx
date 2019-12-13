@@ -19,6 +19,9 @@ class App implements haxepunk.App
 
 	var window:sdl.Window;
 
+	// Need a vertex array for desktop OpenGL
+	var commonVA:VertexArray;
+
 	public function new() {
 		var title = "Test";
 		width = 320;
@@ -28,6 +31,18 @@ class App implements haxepunk.App
 
 		// lime enables this by default so do this in linc as well
 		GL.enable(GL.BLEND);
+
+		var v = GL.getParameter(GL.VERSION);
+		var glES:Null<Float> = null;
+		var reg = ~/ES ([0-9]+\.[0-9]+)/;
+		if( reg.match(v) )
+			glES = Std.parseFloat(reg.matched(1));
+		#if hl
+		if( glES == null ) {
+			commonVA = GL.createVertexArray();
+			GL.bindVertexArray( commonVA );
+		}
+		#end
 	}
 
 	@:access(haxepunk.Engine)

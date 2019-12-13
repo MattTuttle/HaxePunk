@@ -130,7 +130,7 @@ class GLRenderer implements Renderer
 				var matrixUniform = shader.uniformIndex(UNIFORM_MATRIX);
 				if (matrixUniform != null) {
 					#if hl
-					GL.uniformMatrix4fv(matrixUniform, false, hl.Bytes.getArray(_ortho.buffer), 0, 16 * Float32Array.BYTES_PER_ELEMENT);
+					GL.uniformMatrix4fv(matrixUniform, false, hl.Bytes.getArray(_ortho), 0, 1);
 					#elseif (html5 && lime >= "5.0.0")
 					GL.uniformMatrix4fvWEBGL(matrixUniform, false, _ortho);
 					#elseif (lime >= "4.0.0")

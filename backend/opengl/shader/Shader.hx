@@ -235,7 +235,8 @@ class Shader implements backend.generic.render.Shader
 		for (name in uniformNames)
 		{
 			#if hl
-			throw "Uniform values are unimplemented";
+			var length = Float32Array.BYTES_PER_ELEMENT;
+			GL.uniform4fv(uniformIndex(name), hl.Bytes.fromValue(uniformValues[name], length), 0, 4);
 			#else
 			GL.uniform1f(uniformIndex(name), uniformValues[name]);
 			#end

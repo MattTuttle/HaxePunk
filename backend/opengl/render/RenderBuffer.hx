@@ -47,10 +47,10 @@ class RenderBuffer
 		glBuffer = GL.createBuffer();
 	}
 
-	inline function bufferData(target, size, srcData:Float32Array, usage:Int)
+	inline function bufferData(target, size, srcData, usage:Int)
 	{
 		#if hl
-		GL.bufferData(target, size, hl.Bytes.getArray(srcData.buffer), usage);
+		GL.bufferData(target, size, hl.Bytes.getArray(srcData), usage);
 		#elseif (html5 && lime >= "5.0.0")
 		GL.bufferDataWEBGL(target, srcData, usage);
 		#elseif (lime >= "4.0.0")
@@ -131,7 +131,7 @@ class RenderBuffer
 		intArray[byteOffset] = value;
 		byteOffset += 1;
 #else
-		buffer.buffer.setInt32(byteOffset * 4, value);
+		buffer.setInt32(byteOffset * 4, value);
 		byteOffset += 1;
 #end
 	}
@@ -154,7 +154,7 @@ class RenderBuffer
 	public inline function updateGraphicsCard()
 	{
 		#if hl
-		GL.bufferSubData(GL.ARRAY_BUFFER, 0, hl.Bytes.getArray(buffer.buffer), 0, length * Float32Array.BYTES_PER_ELEMENT);
+		GL.bufferSubData(GL.ARRAY_BUFFER, 0, hl.Bytes.getArray(buffer), 0, length * Float32Array.BYTES_PER_ELEMENT);
 		#elseif (html5 && lime >= "5.0.0")
 		GL.bufferSubDataWEBGL(GL.ARRAY_BUFFER, 0, buffer);
 		#elseif (lime >= "4.0.0")
