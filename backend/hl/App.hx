@@ -17,9 +17,6 @@ class App implements haxepunk.App
 	inline function get_fullscreen():Bool return false;
 	inline function set_fullscreen(value:Bool):Bool return value;
 
-	var width:Int;
-	var height:Int;
-
 	var mouseX:Float = 0;
 	var mouseY:Float = 0;
 
@@ -32,10 +29,8 @@ class App implements haxepunk.App
 
 	public function new() {
 		var title = "Test";
-		width = 320;
-		height = 280;
 		sdl.Sdl.init();
-		window = new sdl.Window(title, width, height);
+		window = new sdl.Window(title, HXP.width, HXP.height);
 
 		// lime enables this by default so do this in linc as well
 		GL.enable(GL.BLEND);
@@ -149,8 +144,8 @@ class App implements haxepunk.App
 
 	function resize()
 	{
-		width = window.width;
-		height = window.height;
+		var width = window.width;
+		var height = window.height;
 		if (HXP.width == 0 || HXP.height == 0)
 		{
 			// set initial size
