@@ -1,6 +1,11 @@
 package backend.hl;
 
+import haxepunk.utils.Log;
 #if hlsdl
+import haxepunk.input.Gamepad;
+import haxepunk.input.Key;
+import haxepunk.input.Mouse;
+import haxepunk.input.Input;
 import haxepunk.HXP;
 import haxepunk.Engine;
 import sdl.Sdl;
@@ -14,6 +19,9 @@ class App implements haxepunk.App
 
 	var width:Int;
 	var height:Int;
+
+	var mouseX:Float = 0;
+	var mouseY:Float = 0;
 
 	var engine:Engine;
 
@@ -56,6 +64,9 @@ class App implements haxepunk.App
 		run();
 	}
 
+	@:access(haxepunk.input.Mouse)
+	@:access(haxepunk.input.Key)
+	@:access(haxepunk.input.Gamepad)
 	function onEvent(e:sdl.Event):Bool
 	{
 		switch (e.type)
@@ -67,6 +78,47 @@ class App implements haxepunk.App
 						resize();
 					default:
 				}
+			case MouseDown:
+				Mouse.onMouseDown(true);
+			case MouseUp:
+				Mouse.onMouseUp(true);
+			case MouseWheel:
+				Mouse.onMouseWheel(e.wheelDelta);
+			case KeyDown:
+				var shift = false; // TODO: determine shift key?
+				Key.onKeyDown(e.keyCode, shift);
+			case KeyUp:
+				Key.onKeyUp(e.keyCode);
+			case MouseMove:
+				mouseX = e.mouseX;
+				mouseY = e.mouseY;
+			case TouchDown:
+				Mouse.onMouseDown(true);
+			case TouchUp:
+				Mouse.onMouseUp(true);
+			case GControllerAxis, JoystickAxisMotion:
+				var joy:Gamepad = Gamepad.gamepad(e.joystick);
+				joy.onAxisMove(e.button, e.value);
+			case GControllerDown, JoystickButtonDown:
+				var joy:Gamepad = Gamepad.gamepad(e.joystick);
+				joy.onButtonDown(e.button);
+			case GControllerUp, JoystickButtonUp:
+				var joy:Gamepad = Gamepad.gamepad(e.joystick);
+				joy.onButtonUp(e.button);
+			case GControllerAdded, JoystickAdded:
+				var joy = new Gamepad(e.joystick);
+				Gamepad.gamepads[e.joystick] = joy;
+				++Gamepad.gamepadCount;
+				Input.handlers.push(joy);
+				Gamepad.onConnect.invoke(joy);
+			case GControllerRemoved, JoystickRemoved:
+				var joy:Gamepad = Gamepad.gamepad(e.joystick);
+				joy.connected = false;
+				Gamepad.gamepads.remove(e.joystick);
+				--Gamepad.gamepadCount;
+				Input.handlers.remove(joy);
+				Gamepad.onDisconnect.invoke(joy);
+				Log.info('Gamepad (${joy.guid}: ${joy.name}) removed');
 			case Quit:
 				return true;
 			default:
@@ -119,7 +171,14 @@ class App implements haxepunk.App
 
 	public function multiTouchSupported():Bool return false;
 
-	public function getMouseX():Float return 0;
-	public function getMouseY():Float return 0;
+	public function getMouseX():Float
+	{
+		return mouseX;
+	}
+
+	public function getMouseY():Float
+	{
+		return mouseY;
+	}
 }
 #end
