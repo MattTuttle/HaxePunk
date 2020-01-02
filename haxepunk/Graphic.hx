@@ -260,7 +260,7 @@ class Graphic
 		color = Color.White;
 		#if (lime || nme || hlsdl)
 		shader = backend.opengl.shader.TextureShader.defaultShader;
-		#else
+		#elseif !unit_test
 		#error "Default texture shader is not defined"
 		#end
 		_class = Type.getClassName(Type.getClass(this));

@@ -62,6 +62,7 @@ class Texture implements backend.generic.render.Texture
 		input.bigEndian = true;
 		input.position = 8; // skip header
 
+		// find width/height
 		while (true)
 		{
 			var chunkLength = input.readInt32();
@@ -93,6 +94,8 @@ class Texture implements backend.generic.render.Texture
 
 		input.bigEndian = true;
 		input.position = 2;
+
+		// find width/height
 		while (true)
 		{
 			var data = input.readUInt16();
@@ -103,12 +106,12 @@ class Texture implements backend.generic.render.Texture
 					input.readByte();
 					height = input.readUInt16();
 					width = input.readUInt16();
-					trace(width, height);
 					break;
 				default:
 					input.position += length - 2;
 			}
 		}
+
 		var stride = width * 4;
 		var data = new hl.Bytes(stride * height);
 		if (width > 0 && height > 0 && Format.decodeJPG(original, input.length, data, width, height, stride, pixelFormat, 0))
