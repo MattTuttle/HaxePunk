@@ -262,7 +262,7 @@ class HXP
 		value = MathUtil.clamp(value, 0, 1);
 		if (volume == value) return value;
 		volume = value;
-		Sfx.onGlobalUpdated(false);
+		// TODO: update global audio value
 		return volume;
 	}
 
@@ -278,7 +278,7 @@ class HXP
 		if (value > 1) value = 1;
 		if (_pan == value) return value;
 		_pan = value;
-		Sfx.onGlobalUpdated(true);
+		// TODO: update global audio value
 		return _pan;
 	}
 

@@ -1,5 +1,6 @@
 package haxepunk.assets;
 
+import haxepunk.Sfx;
 import haxepunk.utils.Color;
 import backend.generic.render.Texture;
 
@@ -12,7 +13,7 @@ interface AssetLoader
 
 	public function getText(id:String):Null<String>;
 
-	public function getSound(id:String):Dynamic;
+	public function getSound(id:String):Sfx;
 
 	public function getTexture(id:String):Null<Texture>;
 

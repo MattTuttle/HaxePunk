@@ -36,10 +36,9 @@ class FileAssetLoader implements AssetLoader
 		return File.getContent(resolvePath(id));
 	}
 
-	public function getSound(id:String):Dynamic
+	public function getSound(id:String):Sfx
 	{
-		resolvePath(id);
-		throw "Sound asset loading is unimplemented";
+		return new Sfx(resolvePath(id));
 	}
 
 	public function getTexture(id:String):Texture
