@@ -31,7 +31,9 @@ class GameScene extends Scene
 	var bunny:Entity;
 	var bunnyList:Graphiclist;
 
-	// var overlayText:Text;
+#if openfl
+	var overlayText:Text;
+#end
 
 	public function new()
 	{
