@@ -10,8 +10,9 @@ interface Texture
 	public function getPixel(x:Int, y:Int):Color;
 	public function setPixel(x:Int, y:Int, c:Color):Void;
 
-	// specialized functions, not on every platform
+	// for removing background from bitmap fonts
 	public function removeColor(color:Color):Void;
+	// used in Image.createCircle
 	public function drawCircle(x:Float, y:Float, radius:Float):Void;
 
 	public function bind():Void;

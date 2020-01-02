@@ -1,0 +1,6 @@
+-lib HaxePunk
+-lib hlsdl
+-cp src
+-main Main
+-hl bunny.hl
+-debug

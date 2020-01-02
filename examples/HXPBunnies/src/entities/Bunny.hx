@@ -4,7 +4,7 @@ import haxepunk.Entity;
 import haxepunk.HXP;
 import haxepunk.graphics.Image;
 import haxepunk.Graphic;
-import flash.geom.Point;
+import haxepunk.math.Vector2;
 
 /**
  * ...
@@ -12,14 +12,14 @@ import flash.geom.Point;
  */
 class BunnyImage extends Image
 {
-	public var velocity:Point;
+	public var velocity:Vector2;
 	public var angularVelocity:Float;
 
 	public function new(graphic:ImageType)
 	{
 		super(graphic);
 
-		velocity = new Point();
+		velocity = new Vector2();
 		angularVelocity = 0;
 
 		maxX = HXP.width;

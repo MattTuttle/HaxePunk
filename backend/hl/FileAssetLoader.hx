@@ -1,5 +1,6 @@
 package backend.hl;
 
+import haxe.ds.StringMap;
 import sys.FileSystem;
 import sys.io.File;
 import haxepunk.utils.Log;
@@ -10,39 +11,40 @@ class FileAssetLoader implements AssetLoader
 {
 	public function new() {}
 
-	function verifyFileExists(path:String):Bool
+	function resolvePath(path:String):String
 	{
-		if (FileSystem.exists(path)) return true;
-
-		Log.critical('Invalid asset path $path');
-		return false;
+		if (FileSystem.exists(path))
+		{
+			return path;
+		}
+		for (shortcut in shortcuts.keys())
+		{
+			if (StringTools.startsWith(path, shortcut))
+			{
+				var newPath = StringTools.replace(path, shortcut, shortcuts.get(shortcut));
+				if (FileSystem.exists(newPath))
+				{
+					return newPath;
+				}
+			}
+		}
+		throw 'Invalid asset path $path';
 	}
 
 	public function getText(id:String):String
 	{
-		if (verifyFileExists(id))
-		{
-			return File.getContent(id);
-		}
-		return null;
+		return File.getContent(resolvePath(id));
 	}
 
 	public function getSound(id:String):Dynamic
 	{
-		if (verifyFileExists(id))
-		{
-			throw "Sound asset loading is unimplemented";
-		}
-		return null;
+		resolvePath(id);
+		throw "Sound asset loading is unimplemented";
 	}
 
 	public function getTexture(id:String):Texture
 	{
-		if (verifyFileExists(id))
-		{
-			return Texture.loadFromBytes(File.getBytes(id));
-		}
-		return null;
+		return Texture.loadFromBytes(File.getBytes(resolvePath(id)));
 	}
 
 	public function createTexture(width:Int, height:Int, transparent:Bool=false, color:Color=0):Texture
@@ -51,4 +53,11 @@ class FileAssetLoader implements AssetLoader
 		bytes.fill(0, width * height * 4, transparent ? 0 : color); // set default color
 		return new Texture(bytes, width, height);
 	}
+
+	public function addShortcut(path:String, pointsTo:String):Void
+	{
+		shortcuts.set(path, pointsTo);
+	}
+
+	var shortcuts = new StringMap<String>();
 }

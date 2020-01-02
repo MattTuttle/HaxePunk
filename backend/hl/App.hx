@@ -110,7 +110,11 @@ class App implements haxepunk.App
 		engine.onResize.invoke();
 	}
 
-	public function getTimeMillis():Float return 0;
+	public function getTimeMillis():Float
+	{
+		return haxe.Timer.stamp() * 1000;
+	}
+
 	public function getMemoryUse():Float return 0;
 
 	public function multiTouchSupported():Bool return false;

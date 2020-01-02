@@ -2,6 +2,7 @@
 *.sublime*
 *.zip
 *.n
+*.hl
 !run.n
 *.build
 *.hash

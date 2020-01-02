@@ -152,11 +152,13 @@ class Texture implements backend.generic.render.Texture
 
 	public function removeColor(color:Color):Void
 	{
+		dirty = true;
 		throw "Texture removeColor is unimplemented";
 	}
 
 	public function drawCircle(x:Float, y:Float, radius:Float):Void
 	{
+		dirty = true;
 		var x1 = Std.int(Math.max(0, x - radius));
 		var x2 = Std.int(Math.min(width, x + radius));
 		var y1 = Std.int(Math.max(0, y - radius));

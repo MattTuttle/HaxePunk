@@ -1,20 +1,23 @@
 import haxepunk.Engine;
 import haxepunk.HXP;
-import openfl.display.FPS;
-import flash.Lib;
 
 class Main extends Engine
 {
 
 	override public function init()
 	{
+		HXP.assetLoader.addShortcut("atlas", "assets/atlas");
+		HXP.assetLoader.addShortcut("gfx", "assets/graphics");
+
 		HXP.scene = new scenes.GameScene();
 
-		var fps:FPS = new FPS(10, 10, 0);
+#if openfl
+		var fps = new openfl.display.FPS(10, 10, 0);
 		var format = fps.defaultTextFormat;
 		format.size = 20;
 		fps.defaultTextFormat = format;
-		Lib.current.stage.addChild(fps);
+		flash.Lib.current.stage.addChild(fps);
+#end
 	}
 
 	public static function main() { new Main(); }
