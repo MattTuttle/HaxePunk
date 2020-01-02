@@ -156,7 +156,6 @@ class Image extends Graphic
 		return image;
 	}
 
-	#if (lime || nme)
 	/**
 	 * Creates a new circle Image.
 	 * @param	radius		Radius of the circle.
@@ -179,7 +178,6 @@ class Image extends Graphic
 
 		return image;
 	}
-	#end
 
 	/**
 	 * Centers the Image's originX/Y to its center.

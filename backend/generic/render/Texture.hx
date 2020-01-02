@@ -4,8 +4,8 @@ import haxepunk.utils.Color;
 
 interface Texture
 {
-	public var width:Int;
-	public var height:Int;
+	public var width(default, null):Int;
+	public var height(default, null):Int;
 
 	public function getPixel(x:Int, y:Int):Color;
 	public function setPixel(x:Int, y:Int, c:Color):Void;

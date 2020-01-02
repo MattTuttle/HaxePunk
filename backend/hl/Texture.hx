@@ -4,105 +4,118 @@ import backend.opengl.GLUtils;
 import haxepunk.utils.Color;
 import hl.Format;
 import haxe.io.Bytes;
+import haxe.io.BytesInput;
 import sdl.GL;
-
-enum ImageFormat
-{
-	Jpeg;
-	Png;
-	Gif;
-	Tga;
-	Unknown;
-}
 
 class Texture implements backend.generic.render.Texture
 {
-	public var width:Int = 0;
-	public var height:Int = 0;
+	static final pixelFormat = PixelFormat.BGRA;
 
-	var pixelFormat = PixelFormat.BGRA;
-	var data:hl.Bytes;
-	var format:ImageFormat = Unknown;
+	public var width(default, null):Int;
+	public var height(default, null):Int;
+
+	final data:hl.Bytes;
 	var texture:sdl.GL.Texture;
 	var dirty = false;
 
-	public function new(bytes:Bytes)
+	public function new(data:hl.Bytes, width:Int, height:Int)
 	{
-		// read first two bytes and compare to common image headers
-		switch (bytes.getUInt16(0))
+		this.data = data;
+		this.width = width;
+		this.height = height;
+
+		if (data != null)
+		{
+			dirty = true;
+			texture = GL.createTexture();
+		}
+	}
+
+	public static function loadFromBytes(bytes:Bytes):Null<Texture>
+	{
+		// read first two bytes in little-endian and compare to common image headers
+		return switch (bytes.getUInt16(0))
 		{
 			case 0xD8FF: decodeJPEG(bytes);
 			case 0x5089: decodePNG(bytes);
 			case 0x4947: decodeGIF(bytes);
 			default: throw "Unsupported texture format";
 		}
-		if (data != null)
-		{
-			dirty = true;
-			texture = GL.createTexture();
-			trace(StringTools.hex(getPixel(0, 0)));
-		}
 	}
 
-	inline function getInt32BigEndian(bytes:Bytes, pos:Int):Int
+	static function decodeGIF(bytes:Bytes):Null<Texture>
 	{
-		return bytes.get(pos) << 24 | bytes.get(pos+1) << 16 | bytes.get(pos+2) << 8 | bytes.get(pos+3);
-	}
-
-	inline function getUInt16BigEndian(bytes:Bytes, pos:Int):UInt
-	{
-		return bytes.get(pos) << 8 | bytes.get(pos+1);
-	}
-
-	function decodeGIF(bytes:Bytes)
-	{
-		format = Gif;
-		width = bytes.getUInt16(6);
-		height = bytes.getUInt16(8);
+		var original = hl.Bytes.fromBytes(bytes);
+		var width = bytes.getUInt16(6);
+		var height = bytes.getUInt16(8);
 		throw "GIF format not supported";
+		return new Texture(original, width, height);
 	}
 
-	function decodePNG(bytes:Bytes):Bool
+	static function decodePNG(bytes:Bytes):Null<Texture>
 	{
-		format = Png;
-		var offset = 8;
-		while (offset < bytes.length)
+		var input = new BytesInput(bytes);
+		var original = hl.Bytes.fromBytes(bytes);
+		var width = 0;
+		var height = 0;
+
+		input.bigEndian = true;
+		input.position = 8; // skip header
+
+		while (true)
 		{
-			var dataLen = getInt32BigEndian(bytes, offset);
-			if (bytes.getString(offset+4, 4) == "IHDR")
+			var chunkLength = input.readInt32();
+			if (input.readString(4) == "IHDR")
 			{
-				width = getInt32BigEndian(bytes, offset + 8);
-				height = getInt32BigEndian(bytes, offset + 12);
+				width = input.readInt32();
+				height = input.readInt32();
 				break;
 			}
-			offset += dataLen + 12;
+			if (chunkLength == 0) return null;
+			input.position += chunkLength + 4; // jump past crc and chunk data
 		}
+
 		var stride = width * 4;
-		data = new hl.Bytes(stride * height);
-		return Format.decodePNG(hl.Bytes.fromBytes(bytes), bytes.length, data, width, height, stride, pixelFormat, 0);
+		var data = new hl.Bytes(stride * height);
+		if (width > 0 && height > 0 && Format.decodePNG(original, input.length, data, width, height, stride, pixelFormat, 0))
+		{
+			return new Texture(data, width, height);
+		}
+		return null;
 	}
 
-	function decodeJPEG(bytes:Bytes):Bool
+	static function decodeJPEG(bytes:Bytes):Null<Texture>
 	{
-		format = Jpeg;
-		var offset = 2;
-		while (offset < bytes.length)
+		var input = new BytesInput(bytes);
+		var original = hl.Bytes.fromBytes(bytes);
+		var width = 0;
+		var height = 0;
+
+		input.bigEndian = true;
+		input.position = 2;
+		while (true)
 		{
-			var data = getUInt16BigEndian(bytes, offset);
+			var data = input.readUInt16();
+			var length = input.readUInt16();
 			switch (data)
 			{
 				case 0xFFC2, 0xFFC1, 0xFFC0:
-					height = getUInt16BigEndian(bytes, offset + 5);
-					width = getUInt16BigEndian(bytes, offset + 7);
+					input.readByte();
+					height = input.readUInt16();
+					width = input.readUInt16();
+					trace(width, height);
 					break;
 				default:
-					offset += 2;
-					offset += getUInt16BigEndian(bytes, offset);
+					input.position += length - 2;
 			}
 		}
 		var stride = width * 4;
-		data = new hl.Bytes(stride * height);
-		return Format.decodeJPG(hl.Bytes.fromBytes(bytes), bytes.length, data, width, height, stride, pixelFormat, 0);
+		var data = new hl.Bytes(stride * height);
+		if (width > 0 && height > 0 && Format.decodeJPG(original, input.length, data, width, height, stride, pixelFormat, 0))
+		{
+			return new Texture(data, width, height);
+		}
+		return null;
 	}
 
 	public function bind()
@@ -144,11 +157,28 @@ class Texture implements backend.generic.render.Texture
 
 	public function drawCircle(x:Float, y:Float, radius:Float):Void
 	{
-		throw "Texture drawCircle is unimplemented";
+		var x1 = Std.int(Math.max(0, x - radius));
+		var x2 = Std.int(Math.min(width, x + radius));
+		var y1 = Std.int(Math.max(0, y - radius));
+		var y2 = Std.int(Math.min(height, y + radius));
+		var radiusSquared = radius * radius;
+		for (py in y1...y2)
+		{
+			var dy = py - y;
+			for (px in x1...x2)
+			{
+				var dx = px - x;
+				if (dx * dx + dy * dy < radiusSquared)
+				{
+					setPixel(px, py, 0xFFFFFF);
+				}
+			}
+		}
 	}
 
 	public function dispose():Void
 	{
-
+		GL.deleteTexture(texture);
+		texture = null;
 	}
 }

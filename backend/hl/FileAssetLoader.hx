@@ -40,13 +40,15 @@ class FileAssetLoader implements AssetLoader
 	{
 		if (verifyFileExists(id))
 		{
-			return new Texture(File.getBytes(id));
+			return Texture.loadFromBytes(File.getBytes(id));
 		}
 		return null;
 	}
 
 	public function createTexture(width:Int, height:Int, transparent:Bool=false, color:Color=0):Texture
 	{
-		return null;
+		var bytes = new hl.Bytes(width * height * 4);
+		bytes.fill(0, width * height * 4, transparent ? 0 : color); // set default color
+		return new Texture(bytes, width, height);
 	}
 }
