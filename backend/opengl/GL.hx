@@ -2,6 +2,8 @@ package backend.opengl;
 
 #if hlsdl
 typedef GL = sdl.GL;
+#elseif js
+typedef GL = js.html.webgl.GL;
 #else
 class GL
 {

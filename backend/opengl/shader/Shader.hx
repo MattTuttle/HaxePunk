@@ -1,5 +1,6 @@
 package backend.opengl.shader;
 
+import backend.opengl.render.GLRenderer;
 import haxepunk.graphics.hardware.DrawCommand;
 import backend.opengl.render.RenderBuffer;
 import haxepunk.HXP;
@@ -106,35 +107,12 @@ class Shader implements backend.generic.render.Shader
 
 	public function build()
 	{
-		var vertexShader = compile(GL.VERTEX_SHADER, vertexSource);
-		var fragmentShader = compile(GL.FRAGMENT_SHADER, fragmentSource);
-
-		glProgram = GL.createProgram();
-		GL.attachShader(glProgram, fragmentShader);
-		GL.attachShader(glProgram, vertexShader);
-		GL.linkProgram(glProgram);
-		#if hxp_gl_debug
-		if (GL.getProgramParameter(glProgram, GL.LINK_STATUS) == 0)
-			throw "Unable to initialize the shader program.";
-		#end
-
+		glProgram = GLRenderer.build(vertexSource, fragmentSource);
 		position.rebind();
 		texCoord.rebind();
 		color.rebind();
 		for (v in attributes.iterator())
 			v.rebind();
-	}
-
-	function compile(type:Int, source:String):GLShader
-	{
-		var shader = GL.createShader(type);
-		GL.shaderSource(shader, source);
-		GL.compileShader(shader);
-		#if hxp_gl_debug
-		if (GL.getShaderParameter(shader, GL.COMPILE_STATUS) == 0)
-			throw "Error compiling vertex shader: " + GL.getShaderInfoLog(shader);
-		#end
-		return shader;
 	}
 
 	public function destroy()
@@ -176,7 +154,7 @@ class Shader implements backend.generic.render.Shader
 
 		buffer.addVertexAttribData(_attribs, drawCommand.triangleCount * 3);
 
-		buffer.updateGraphicsCard();
+		GLRenderer.bufferSubData(buffer);
 
 		setAttributePointers(drawCommand.triangleCount);
 	}

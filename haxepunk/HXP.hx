@@ -246,8 +246,10 @@ class HXP
 			assetLoader = new backend.flash.haxepunk.assets.AssetLoader();
 		#elseif hl
 			assetLoader = new backend.hl.FileAssetLoader();
+		#elseif js
+			assetLoader = new backend.html5.AssetLoader();
 		#else
-			throw "Asset loader is not implemented on this target";
+			#error "Asset loader is not implemented on this target"
 		#end
 		}
 		return assetLoader;

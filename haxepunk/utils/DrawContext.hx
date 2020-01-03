@@ -391,7 +391,7 @@ class DrawContext
 	{
 		if (shader == null)
 		{
-			#if (lime || nme || hlsdl)
+			#if (lime || nme || hlsdl || js)
 			shader = backend.opengl.shader.ColorShader.defaultShader;
 			#elseif !unit_test
 			#error "Default color shader is not defined";

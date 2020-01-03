@@ -28,11 +28,11 @@ class App implements haxepunk.App
 	var commonVA:VertexArray;
 
 	public function new() {
-		var title = "Test";
+		var title = "HaxePunk";
 		sdl.Sdl.init();
 		window = new sdl.Window(title, HXP.width, HXP.height);
 
-		// lime enables this by default so do this in linc as well
+		// lime enables this by default so do this in hl as well
 		GL.enable(GL.BLEND);
 
 		var v = GL.getParameter(GL.VERSION);

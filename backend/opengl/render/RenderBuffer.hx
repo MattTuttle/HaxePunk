@@ -59,19 +59,6 @@ class RenderBuffer
 		glBuffer = GL.createBuffer();
 	}
 
-	inline function bufferData(target, size, srcData, usage:Int)
-	{
-		#if hl
-		GL.bufferData(target, size, srcData, usage);
-		#elseif (html5 && lime >= "5.0.0")
-		GL.bufferDataWEBGL(target, srcData, usage);
-		#elseif (lime >= "4.0.0")
-		GL.bufferData(target, size, srcData, usage);
-		#else
-		GL.bufferData(target, srcData, usage);
-		#end
-	}
-
 	public function ensureSize(triangles:Int, floatsPerTriangle:Int)
 	{
 		if (GLUtils.invalid(glBuffer))
@@ -88,14 +75,14 @@ class RenderBuffer
 			buffer = new hl.Bytes(bufferBytesSize());
 			#else
 			buffer = new Float32Array(numFloats);
-			#if js
+			#if (lime && js)
 			intArray = new Int32Array(buffer.buffer);
 			#end
 			#end
 
 			use();
 
-			bufferData(GL.ARRAY_BUFFER, bufferBytesSize(), buffer, GL.DYNAMIC_DRAW);
+			GLRenderer.bufferData(GL.ARRAY_BUFFER, bufferBytesSize(), buffer, GL.DYNAMIC_DRAW);
 		}
 	}
 
@@ -175,19 +162,6 @@ class RenderBuffer
 			for (k in 0 ... nbVertices * attrib.valuesPerElement)
 				addFloat(attribData[++attrib.dataPos]);
 		}
-	}
-
-	public inline function updateGraphicsCard()
-	{
-		#if hl
-		GL.bufferSubData(GL.ARRAY_BUFFER, 0, buffer, 0, bufferBytesSize());
-		#elseif (html5 && lime >= "5.0.0")
-		GL.bufferSubDataWEBGL(GL.ARRAY_BUFFER, 0, buffer);
-		#elseif (lime >= "4.0.0")
-		GL.bufferSubData(GL.ARRAY_BUFFER, 0, bufferBytesSize(), buffer);
-		#else
-		GL.bufferSubData(GL.ARRAY_BUFFER, 0, buffer);
-		#end
 	}
 
 	// Add DrawCommand triangle position only

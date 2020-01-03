@@ -1,6 +1,6 @@
-package backend.hl;
+package backend.openal;
 
-class Sfx implements haxepunk.Sfx
+class Sfx implements backend.generic.Sfx
 {
 	public function new(source:String)
 	{

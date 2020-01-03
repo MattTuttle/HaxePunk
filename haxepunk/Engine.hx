@@ -71,7 +71,7 @@ class Engine
 	public var onClose:Signal0 = new Signal0();
 
 	/**
-	 * The hardware rendering method to use
+	 * The rendering method to use
 	 */
 	public var renderer(default, null):Renderer;
 
@@ -94,7 +94,7 @@ class Engine
 
 		// set width/height or default them to 1280x720
 		HXP.width = width == 0 ? 1280 : width;
-		HXP.height = height == 0 ? 720 : width;
+		HXP.height = height == 0 ? 720 : height;
 
 		HXP.screen = new Screen();
 		HXP.app = app = createApp();
@@ -127,6 +127,9 @@ class Engine
 #elseif hlsdl
 		renderer = new backend.opengl.render.GLRenderer();
 		return new backend.hl.App();
+#elseif js
+		renderer = new backend.opengl.render.GLRenderer();
+		return new backend.html5.App();
 #elseif unit_test
 		return new backend.generic.App();
 #else

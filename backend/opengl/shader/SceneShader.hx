@@ -1,5 +1,8 @@
 package backend.opengl.shader;
 
+#if !hl
+
+import backend.opengl.render.GLRenderer;
 import haxepunk.assets.AssetLoader;
 import haxepunk.HXP;
 
@@ -70,26 +73,13 @@ void main () {
 		texCoord.name = "aTexCoord";
 	}
 
-	function bufferData(target, size, srcData, usage)
-	{
-		#if hl
-		GL.bufferData(target, size, hl.Bytes.getArray(srcData), usage);
-		#elseif (html5 && lime >= "5.0.0")
-		GL.bufferDataWEBGL(target, srcData, usage);
-		#elseif (hl || lime >= "4.0.0")
-		GL.bufferData(target, size, srcData, usage);
-		#else
-		GL.bufferData(target, srcData, usage);
-		#end
-	}
-
 	function createBuffer()
 	{
 		buffer = GL.createBuffer();
 		GL.bindBuffer(GL.ARRAY_BUFFER, buffer);
 		v = new Float32Array(_vertices);
 		var size = v.length * Float32Array.BYTES_PER_ELEMENT;
-		bufferData(GL.ARRAY_BUFFER, size, v, GL.STATIC_DRAW);
+		GLRenderer.bufferData(GL.ARRAY_BUFFER, size, v, GL.STATIC_DRAW);
 		GL.bindBuffer(GL.ARRAY_BUFFER, null);
 	}
 
@@ -130,7 +120,7 @@ void main () {
 			v[3] = v[7] = v[15] = 1 - y;
 			#end
 
-			bufferData(GL.ARRAY_BUFFER, v.length * Float32Array.BYTES_PER_ELEMENT, v, GL.STATIC_DRAW);
+			GLRenderer.bufferData(GL.ARRAY_BUFFER, v.length * Float32Array.BYTES_PER_ELEMENT, v, GL.STATIC_DRAW);
 
 			_lastX = x;
 			_lastY = y;
@@ -181,3 +171,5 @@ void main () {
 	static var _lastSy:Float = 0;
 	static var buffer:GLBuffer;
 }
+
+#end

@@ -258,7 +258,7 @@ class Graphic
 		smooth = smoothDefault;
 		pixelSnapping = pixelSnappingDefault;
 		color = Color.White;
-		#if (lime || nme || hlsdl)
+		#if (lime || nme || hlsdl || js)
 		shader = backend.opengl.shader.TextureShader.defaultShader;
 		#elseif !unit_test
 		#error "Default texture shader is not defined"

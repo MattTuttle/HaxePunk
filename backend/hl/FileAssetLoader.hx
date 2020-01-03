@@ -1,5 +1,6 @@
 package backend.hl;
 
+import backend.openal.Sfx;
 import haxe.ds.StringMap;
 import sys.FileSystem;
 import sys.io.File;
