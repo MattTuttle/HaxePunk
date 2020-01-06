@@ -1,6 +1,7 @@
 package backend.html5;
 
 import js.Browser;
+import js.lib.Promise;
 import js.html.Image;
 import js.html.webgl.GL;
 import js.html.CanvasElement;
@@ -30,20 +31,21 @@ class Texture implements backend.generic.render.Texture
 		this.height = canvas.height = height;
 	}
 
-	public static function loadFromURL(path:String):Null<Texture>
+	public static function loadFromURL(path:String):Promise<Texture>
 	{
-		var texture = new Texture();
-		var image = new js.html.Image();
-		image.onload = function() {
-			texture.setSize(image.width, image.height);
-			texture.canvas.getContext("2d").drawImage(image, 0, 0);
-			texture.dirty = true;
-		};
-		image.onabort = function() {
-			trace("Download was aborted");
-		}
-		image.src = path;
-		return texture;
+		return new js.lib.Promise<Texture>(function(resolve, reject) {
+			var image = new js.html.Image();
+			image.onload = function() {
+				var texture = new Texture(image.width, image.height);
+				texture.canvas.getContext("2d").drawImage(image, 0, 0);
+				texture.dirty = true;
+				resolve(texture);
+			};
+			image.onabort = function() {
+				reject("Download was aborted");
+			}
+			image.src = path;
+		});
 	}
 
 	public function getPixel(x:Int, y:Int):Color

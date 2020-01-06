@@ -23,7 +23,7 @@ class AssetLoader implements haxepunk.assets.AssetLoader
 
 	public function getTexture(id:String):Texture
 	{
-		return Texture.loadFromURL(id);
+		throw "Texture needs to be preloaded before calling getTexture for " + id;
 	}
 
 	public function createTexture(width:Int, height:Int, transparent:Bool=false, color:Color=0):Texture
