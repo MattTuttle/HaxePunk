@@ -1,5 +1,6 @@
 package backend.hl;
 
+import haxepunk.Signal.Signal0;
 import haxepunk.utils.Color;
 import hl.Format;
 import haxe.io.Bytes;

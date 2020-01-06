@@ -1,10 +1,9 @@
 package backend.html5;
 
+import backend.html5.Texture;
 import haxe.ds.StringMap;
-import haxepunk.utils.Log;
-import haxepunk.utils.Color;
 import haxepunk.Sfx;
-import backend.generic.render.Texture;
+import haxepunk.utils.Color;
 
 class AssetLoader implements haxepunk.assets.AssetLoader
 {
@@ -22,17 +21,14 @@ class AssetLoader implements haxepunk.assets.AssetLoader
 		return null;
 	}
 
-	public function getTexture(id:String):Null<Texture>
+	public function getTexture(id:String):Texture
 	{
-		trace(id);
-		trace("getTexture Unimplemented");
-		return null;
+		return Texture.loadFromURL(id);
 	}
 
 	public function createTexture(width:Int, height:Int, transparent:Bool=false, color:Color=0):Texture
 	{
-		trace("createTexture Unimplemented");
-		return null;
+		return new Texture(width, height);
 	}
 
 	public function addShortcut(path:String, pointsTo:String):Void
