@@ -1,25 +1,22 @@
 package backend.html5;
 
+import haxepunk.Signal.Signal0;
 import haxepunk.assets.AssetCache;
 import haxepunk.HXP;
 import haxepunk.Scene;
-import haxepunk.Entity;
-import haxepunk.graphics.Image;
 import backend.html5.Texture;
 
 class Preloader extends Scene
 {
 
-	var needLoaded:Int = 0;
-	var readyScene:Class<Scene>;
+	public var onLoad:Signal0 = new Signal0();
 
-	public function new(assets:Array<String>, readyScene:Class<Scene>) {
+	public function new(assets:Array<String>) {
 		super();
 		for (asset in assets)
 		{
 			preloadTexture(asset);
 		}
-		this.readyScene = readyScene;
 	}
 
 	function preloadTexture(url:String)
@@ -37,7 +34,9 @@ class Preloader extends Scene
 	{
 		needLoaded -= 1;
 		if (needLoaded == 0) {
-			HXP.scene = Type.createInstance(readyScene, []);
+			onLoad.invoke();
 		}
 	}
+
+	var needLoaded:Int = 0;
 }
