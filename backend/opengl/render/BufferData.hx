@@ -2,15 +2,15 @@ package backend.opengl.render;
 
 #if js
 #if haxe4
-import js.lib.Int32Array;
+import js.lib.Uint32Array;
 #else
-import js.html.Int32Array;
+import js.html.Uint32Array;
 #end
 #end
 import backend.opengl.shader.Shader.Attribute;
 import haxepunk.graphics.hardware.DrawCommand;
 
-class RenderBuffer
+class BufferData
 {
 	static inline var INITIAL_SIZE:Int = 100;
 
@@ -27,7 +27,14 @@ class RenderBuffer
 	#else
 	var buffer:Float32Array;
 	#end
-	public var glBuffer:GLBuffer;
+
+	#if js
+	var intView:Uint32Array;
+	#end
+
+	#if cpp
+	var bytesData:haxe.io.BytesData;
+	#end
 
 	public var numFloats(default, null):Int = 0;
 
@@ -39,56 +46,34 @@ class RenderBuffer
 		#end
 	}
 
-	#if js
-	var intArray:Int32Array;
-	#end
-
-	#if cpp
-	var bytesData:haxe.io.BytesData;
-	#end
-
 	var byteOffset:Int;
 
-	public function new()
-	{
-		init();
-	}
+	public function new() {}
 
-	public function init()
+	public function needsResize(triangles:Int, floatsPerTriangle:Int):Bool
 	{
-		glBuffer = GL.createBuffer();
-	}
-
-	public function ensureSize(triangles:Int, floatsPerTriangle:Int)
-	{
-		if (GLUtils.invalid(glBuffer))
-		{
-			buffer = null;
-			init();
-		}
-
 		if (numFloats < triangles * floatsPerTriangle)
 		{
 			numFloats = resize(numFloats, triangles, floatsPerTriangle);
 
-			#if hl
+#if hl
 			buffer = new hl.Bytes(bufferBytesSize());
-			#else
+#else
 			buffer = new Float32Array(numFloats);
-			#if (lime && js)
-			intArray = new Int32Array(buffer.buffer);
-			#end
-			#end
+	#if js
+			// overlap int array with float array
+			intView = new Uint32Array(buffer.buffer, 0);
+	#end
+#end
+			return true;
 
-			use();
-
-			GLRenderer.bufferData(GL.ARRAY_BUFFER, bufferBytesSize(), buffer, GL.DYNAMIC_DRAW);
+			reset();
 		}
+		return false;
 	}
 
-	public function use()
+	public function reset()
 	{
-		GL.bindBuffer(GL.ARRAY_BUFFER, glBuffer);
 #if cpp
 		byteOffset = buffer.byteOffset;
 		bytesData = buffer.buffer.getData();
@@ -132,13 +117,13 @@ class RenderBuffer
 #end
 	}
 
-	public inline function addInt(value:Int)
+	public inline function addInt(value:UInt)
 	{
 #if cpp
 		untyped __global__.__hxcpp_memory_set_ui32(bytesData, byteOffset, value);
 		byteOffset += 4;
 #elseif js
-		intArray[byteOffset] = value;
+		intView[byteOffset] = value;
 		byteOffset += 1;
 #elseif hl
 		buffer.setI32(byteOffset, value);

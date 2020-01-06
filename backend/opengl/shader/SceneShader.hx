@@ -1,6 +1,6 @@
 package backend.opengl.shader;
 
-#if !hl
+#if !js
 
 import backend.opengl.render.GLRenderer;
 import haxepunk.assets.AssetLoader;
@@ -131,6 +131,7 @@ void main () {
 
 	override public function bind()
 	{
+		#if js var GL = GLRenderer._GL; #end
 		super.bind();
 		if (GLUtils.invalid(buffer))
 		{

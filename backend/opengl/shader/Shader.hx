@@ -2,7 +2,7 @@ package backend.opengl.shader;
 
 import backend.opengl.render.GLRenderer;
 import haxepunk.graphics.hardware.DrawCommand;
-import backend.opengl.render.RenderBuffer;
+import backend.opengl.render.BufferData;
 import haxepunk.HXP;
 import haxepunk.utils.Log;
 
@@ -17,7 +17,7 @@ class Attribute
 	}
 	public var valuesPerElement:Int;
 
-	@:allow(backend.opengl.render.RenderBuffer)
+	@:allow(backend.opengl.render.BufferData)
 	private var dataPos(default, set):Int = -1; // for use by RenderBuffer to push data in VBOs
 	private function set_dataPos(v:Int) : Int
 	{
@@ -122,7 +122,7 @@ class Shader implements backend.generic.render.Shader
 	}
 
 	static var _attribs:Array<Attribute> = new Array();
-	public function prepare(drawCommand:DrawCommand, buffer:RenderBuffer)
+	public function prepare(drawCommand:DrawCommand, buffer:BufferData)
 	{
 		if (!position.isEnabled) return;
 		HXP.clear(_attribs);
@@ -131,7 +131,7 @@ class Shader implements backend.generic.render.Shader
 			if (attributes[name].isEnabled) _attribs.push(attributes[name]);
 		}
 
-		buffer.use();
+		buffer.reset();
 		if (texCoord.isEnabled)
 		{
 			if (color.isEnabled)
@@ -161,26 +161,24 @@ class Shader implements backend.generic.render.Shader
 
 	function setAttributePointers(nbTriangles:Int)
 	{
-		#if hl
-		var bytesPerElement = 4;
-		#else
+		var vertexAttribPointer = #if js GLRenderer._GL.vertexAttribPointer #else GL.vertexAttribPointer #end;
+
 		var bytesPerElement = Float32Array.BYTES_PER_ELEMENT;
-		#end
 		var offset:Int = 0;
 		// var stride:Int = floatsPerVertex * bytesPerElement;
 		var stride:Int = (2 + (texCoord.isEnabled ? 2 : 0) + (color.isEnabled ? 1 : 0)) * bytesPerElement;
-		GL.vertexAttribPointer(position.index, 2, GL.FLOAT, false, stride, offset);
+		vertexAttribPointer(position.index, 2, GL.FLOAT, false, stride, offset);
 		offset += 2 * bytesPerElement;
 
 		if (texCoord.isEnabled)
 		{
-			GL.vertexAttribPointer(texCoord.index, 2, GL.FLOAT, false, stride, offset);
+			vertexAttribPointer(texCoord.index, 2, GL.FLOAT, false, stride, offset);
 			offset += 2 * bytesPerElement;
 		}
 
 		if (color.isEnabled)
 		{
-			GL.vertexAttribPointer(color.index, 4, GL.UNSIGNED_BYTE, true, stride, offset);
+			vertexAttribPointer(color.index, 4, GL.UNSIGNED_BYTE, true, stride, offset);
 			offset += 1 * bytesPerElement;
 		}
 
@@ -194,7 +192,7 @@ class Shader implements backend.generic.render.Shader
 			var attrib = attributes[n];
 			if (attrib.isEnabled)
 			{
-				GL.vertexAttribPointer(attrib.index, attrib.valuesPerElement, GL.FLOAT, false, 0, offset);
+				vertexAttribPointer(attrib.index, attrib.valuesPerElement, GL.FLOAT, false, 0, offset);
 				offset += nbTriangles * 3 * attrib.valuesPerElement * bytesPerElement;
 			}
 		}
@@ -202,6 +200,7 @@ class Shader implements backend.generic.render.Shader
 
 	public function bind()
 	{
+		#if js var GL = GLRenderer._GL; #end
 		if (GLUtils.invalid(glProgram))
 		{
 			destroy();
@@ -227,11 +226,12 @@ class Shader implements backend.generic.render.Shader
 			if (attributes[n].isEnabled)
 				GL.enableVertexAttribArray(attributes[n].index);
 
-		GLUtils.checkForErrors();
+		GLRenderer.checkForErrors();
 	}
 
 	public function unbind()
 	{
+		#if js var GL = GLRenderer._GL; #end
 		GL.useProgram(null);
 		GL.disableVertexAttribArray(position.index);
 		if (texCoord.isEnabled) GL.disableVertexAttribArray(texCoord.index);
@@ -246,6 +246,7 @@ class Shader implements backend.generic.render.Shader
 	 */
 	public inline function attributeIndex(name:String):Int
 	{
+		#if js var GL = GLRenderer._GL; #end
 #if unit_test
 		return 0;
 #else
@@ -258,6 +259,7 @@ class Shader implements backend.generic.render.Shader
 	 */
 	public inline function uniformIndex(name:String):GLUniformLocation
 	{
+		#if js var GL = GLRenderer._GL; #end
 		if (!uniformIndices.exists(name))
 		{
 			uniformIndices[name] = GL.getUniformLocation(glProgram, name);

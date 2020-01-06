@@ -1,5 +1,6 @@
 package backend.html5;
 
+import js.lib.Date;
 import backend.opengl.render.GLRenderer;
 import js.Browser;
 import js.html.CanvasElement;
@@ -18,11 +19,11 @@ class App implements haxepunk.App
 
 	public function new()
 	{
-		trace("hello world");
 		var el = Browser.document.getElementById("haxepunk");
 		canvas = cast(el, CanvasElement);
 		canvas.width = HXP.width;
 		canvas.height = HXP.height;
+		GLRenderer._GL = canvas.getContextWebGL();
 	}
 
 	@:access(haxepunk.Engine)
@@ -39,20 +40,27 @@ class App implements haxepunk.App
 
 	function resize()
 	{
-		HXP.width = canvas.width;
-		HXP.height = canvas.height;
+		var width = canvas.width;
+		var height = canvas.height;
+		if (HXP.width == 0 || HXP.height == 0)
+		{
+			// set initial size
+			HXP.width = width;
+			HXP.height = height;
+			HXP.screen.scaleMode.setBaseSize();
+		}
+		HXP.resize(width, height);
+		engine.onResize.invoke();
 	}
+
+	var last:Float = 0;
 
 	function loop(?elapsed:Float)
 	{
 		Browser.window.requestAnimationFrame(loop);
-		var gl = canvas.getContextWebGL();
-		GLRenderer.GL = gl;
 		engine.onUpdate();
 
-		var color = HXP.screen.color;
-		gl.clearColor(color.red, color.green, color.blue, 1);
-		gl.clear(GL.COLOR_BUFFER_BIT);
+		GLRenderer.clear(HXP.screen.color);
 		engine.onRender();
 	}
 

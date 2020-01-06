@@ -4,7 +4,7 @@ import haxepunk.assets.AssetLoader;
 
 class TextureShader extends Shader
 {
-#if (lime || nme)
+#if (lime || nme || js)
 	static var VERTEX_SHADER =
 "#ifdef GL_ES
 precision mediump float;

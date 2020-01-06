@@ -1,5 +1,6 @@
 package haxepunk;
 
+import backend.generic.render.Shader;
 import haxe.ds.IntMap;
 import haxepunk.Signal;
 import haxepunk.assets.AssetCache;
@@ -81,9 +82,7 @@ class Scene extends Tweener
 	 *
 	 * @since	4.0.0
 	 */
-	#if (lime || nme)
-	public var shaders:Null<Array<SceneShader>>;
-	#end
+	public var shaders:Null<Array<Shader>>;
 
 	/**
 	 * Invoked before this Scene's update cycle begins each frame.

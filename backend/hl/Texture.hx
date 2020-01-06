@@ -1,6 +1,5 @@
 package backend.hl;
 
-import backend.opengl.GLUtils;
 import haxepunk.utils.Color;
 import hl.Format;
 import haxe.io.Bytes;
@@ -133,8 +132,6 @@ class Texture implements backend.generic.render.Texture
 			GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER , GL.NEAREST);
 			GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
 		}
-
-		GLUtils.checkForErrors();
 	}
 
 	inline function getByteIndex(x:Int, y:Int):Int
