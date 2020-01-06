@@ -311,15 +311,25 @@ class GLRenderer implements Renderer
 		}
 	}
 
+	public static inline function createArrayBuffer():GLBuffer
+	{
+		return _GL.createBuffer();
+	}
+
+	public static inline function bindArrayBuffer(buffer:GLBuffer)
+	{
+		_GL.bindBuffer(GL.ARRAY_BUFFER, buffer);
+	}
+
 	@:access(backend.opengl.render.BufferData)
 	inline function bindRenderbuffer(triangles:Int, floatsPerTriangle:Int)
 	{
 		if (GLUtils.invalid(renderBuffer))
 		{
 			renderBufferData.buffer = null;
-			renderBuffer = _GL.createBuffer();
-			_GL.bindBuffer(GL.ARRAY_BUFFER, renderBuffer);
+			renderBuffer = createArrayBuffer();
 		}
+		bindArrayBuffer(renderBuffer);
 		if (renderBufferData.needsResize(triangles, floatsPerTriangle))
 		{
 			bufferData(GL.ARRAY_BUFFER, renderBufferData.bufferBytesSize(), renderBufferData.buffer, GL.DYNAMIC_DRAW);

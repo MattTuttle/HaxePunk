@@ -1,7 +1,5 @@
 package backend.opengl.shader;
 
-#if !js
-
 import backend.opengl.render.GLRenderer;
 import haxepunk.assets.AssetLoader;
 import haxepunk.HXP;
@@ -75,12 +73,11 @@ void main () {
 
 	function createBuffer()
 	{
-		buffer = GL.createBuffer();
-		GL.bindBuffer(GL.ARRAY_BUFFER, buffer);
+		buffer = GLRenderer.createArrayBuffer();
+		GLRenderer.bindArrayBuffer(buffer);
 		v = new Float32Array(_vertices);
 		var size = v.length * Float32Array.BYTES_PER_ELEMENT;
 		GLRenderer.bufferData(GL.ARRAY_BUFFER, size, v, GL.STATIC_DRAW);
-		GL.bindBuffer(GL.ARRAY_BUFFER, null);
 	}
 
 	override public function build()
@@ -96,8 +93,11 @@ void main () {
 		{
 			createBuffer();
 		}
+		else
+		{
+			GLRenderer.bindArrayBuffer(buffer);
+		}
 
-		GL.bindBuffer(GL.ARRAY_BUFFER, buffer);
 		var x:Float = w / HXP.screen.width,
 			y:Float = h / HXP.screen.height;
 		sx *= x;
@@ -131,28 +131,27 @@ void main () {
 
 	override public function bind()
 	{
-		#if js var GL = GLRenderer._GL; #end
+		#if js var _GL = GLRenderer._GL; #end
 		super.bind();
 		if (GLUtils.invalid(buffer))
 		{
 			createBuffer();
 		}
 
-		GL.vertexAttribPointer(position.index, 2, GL.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 0);
-		GL.vertexAttribPointer(texCoord.index, 2, GL.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+		_GL.vertexAttribPointer(position.index, 2, GL.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 0);
+		_GL.vertexAttribPointer(texCoord.index, 2, GL.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
 
-		GL.uniform1i(image, 0);
+		_GL.uniform1i(image, 0);
 		#if hl
 		var b = new hl.Bytes(4);
 		b.setF32(0, HXP.screen.width);
 		b.setF32(4, HXP.screen.height);
 		b.setF32(8, 0);
 		b.setF32(12, 0);
-		GL.uniform4fv(resolution, b, 0, 1);
+		_GL.uniform4fv(resolution, b, 0, 1);
 		#else
-		GL.uniform2f(resolution, HXP.screen.width, HXP.screen.height);
+		_GL.uniform2f(resolution, HXP.screen.width, HXP.screen.height);
 		#end
-		GL.bindBuffer(GL.ARRAY_BUFFER, null);
 	}
 
 	static var _vertices:Array<Float> = [
@@ -172,5 +171,3 @@ void main () {
 	static var _lastSy:Float = 0;
 	static var buffer:GLBuffer;
 }
-
-#end
