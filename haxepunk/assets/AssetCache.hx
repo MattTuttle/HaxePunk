@@ -37,7 +37,7 @@ class AssetCache
 	var textures:Map<String, Texture> = new Map();
 	var text:Map<String, String> = new Map();
 	// TODO: abstraction for Sound type
-	var sounds:Map<String, Dynamic> = new Map();
+	var sounds:Map<String, Sfx> = new Map();
 	var regions:Map<String, IAtlasRegion> = new Map();
 	var bitmapFonts:Map<String, IBitmapFont> = new Map();
 	var tileAtlases:Map<String, TileAtlas> = new Map();
@@ -108,12 +108,12 @@ class AssetCache
 		text.remove(id);
 	}
 
-	public function addSound(id:String, sound:Dynamic)
+	public function addSound(id:String, sound:Sfx)
 	{
 		sounds[id] = sound;
 	}
 
-	public function getSound(id:String, addRef:Bool=true):Dynamic
+	public function getSound(id:String, addRef:Bool=true):Sfx
 	{
 		return AssetMacros.findAsset(this, sounds, otherCache.sounds, id, addRef, HXP.assetLoader.getSound(id));
 	}

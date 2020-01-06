@@ -10,9 +10,9 @@ class Sfx implements backend.generic.Sfx
 	/**
 	 * Alter the volume factor (a value from 0 to 1) of the sound during playback.
 	 */
-	public var volume:Float;
-
-	public var type:String;
+	public var volume(get, set):Float;
+	function get_volume():Float return 0;
+	function set_volume(value:Float):Float return value;
 
 	/**
 	 * Plays the sound once.

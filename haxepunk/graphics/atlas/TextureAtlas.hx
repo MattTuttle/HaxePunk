@@ -6,7 +6,6 @@ import haxe.io.Path;
 import haxe.io.StringInput;
 import haxepunk.HXP;
 import haxepunk.assets.AssetCache;
-import haxepunk.assets.AssetLoader;
 import haxepunk.graphics.atlas.AtlasData;
 import haxepunk.math.Rectangle;
 import haxepunk.math.Vector2;

@@ -1,6 +1,6 @@
 package backend.opengl.shader;
 
-import haxepunk.assets.AssetLoader;
+import haxepunk.HXP;
 
 class TextureShader extends Shader
 {
@@ -75,15 +75,13 @@ void main(void) {
 }";
 #end
 
-	#if (lime || nme)
 	/**
 	 * Create a custom shader from a text asset.
 	 */
 	public static inline function fromAsset(name:String):TextureShader
 	{
-		return new TextureShader(null, AssetLoader.getText(name));
+		return new TextureShader(null, HXP.assetLoader.getText(name));
 	}
-	#end
 
 	public function new(?vertex:String, ?fragment:String)
 	{

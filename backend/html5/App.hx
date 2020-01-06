@@ -1,5 +1,6 @@
 package backend.html5;
 
+import haxepunk.input.Mouse;
 import js.lib.Date;
 import backend.opengl.render.GLRenderer;
 import js.Browser;
@@ -12,6 +13,8 @@ class App implements haxepunk.App
 {
 	var engine:Engine;
 	var canvas:CanvasElement;
+	var mouseX:Int;
+	var mouseY:Int;
 
 	public var fullscreen(get, set):Bool;
 	inline function get_fullscreen():Bool return false;
@@ -24,6 +27,23 @@ class App implements haxepunk.App
 		canvas.width = HXP.width;
 		canvas.height = HXP.height;
 		GLRenderer._GL = canvas.getContextWebGL();
+
+		listenForEvents();
+	}
+
+	@:access(haxepunk.input.Mouse)
+	function listenForEvents()
+	{
+		canvas.addEventListener('mousemove', function(e) {
+			mouseX = e.mouseX;
+			mouseY = e.mouseY;
+		});
+		canvas.addEventListener('mousedown', function(e) {
+			Mouse.onMouseDown(e.button);
+		});
+		canvas.addEventListener('mouseup', function(e) {
+			Mouse.onMouseUp(e.button);
+		});
 	}
 
 	@:access(haxepunk.Engine)
@@ -53,8 +73,6 @@ class App implements haxepunk.App
 		engine.onResize.invoke();
 	}
 
-	var last:Float = 0;
-
 	function loop(?elapsed:Float)
 	{
 		Browser.window.requestAnimationFrame(loop);
@@ -73,6 +91,6 @@ class App implements haxepunk.App
 
 	public function multiTouchSupported():Bool return false;
 
-	public function getMouseX():Float return 0;
-	public function getMouseY():Float return 0;
+	public function getMouseX():Float return mouseX;
+	public function getMouseY():Float return mouseY;
 }

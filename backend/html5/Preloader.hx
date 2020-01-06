@@ -13,24 +13,37 @@ class Preloader extends Scene
 
 	public function new(assets:Array<String>) {
 		super();
-		for (asset in assets)
+		for (path in assets)
 		{
-			preloadTexture(asset);
+			preloadAsset(path);
 		}
 	}
 
-	function preloadTexture(url:String)
+	function preloadAsset(path:String)
 	{
 		needLoaded += 1;
-		Texture.loadFromURL(url).then(function(texture) {
-			AssetCache.global.addTexture(url, texture);
-			finishLoad();
-		}, function(_) {
-			finishLoad();
-		});
+		var extension = path.split(".").pop();
+		if (extension == "jpg" || extension == "jpeg" || extension == "png")
+		{
+			Texture.loadFromURL(path).then(function(texture) {
+				AssetCache.global.addTexture(path, texture);
+				assetFinished();
+			}, function(_) {
+				assetFinished();
+			});
+		}
+		else if (extension == "mp3" || extension == "ogg" || extension == "wav")
+		{
+			Sfx.loadFromURL(path).then(function(sfx) {
+				AssetCache.global.addSound(path, sfx);
+				assetFinished();
+			}, function(_) {
+				assetFinished();
+			});
+		}
 	}
 
-	function finishLoad()
+	function assetFinished()
 	{
 		needLoaded -= 1;
 		if (needLoaded == 0) {

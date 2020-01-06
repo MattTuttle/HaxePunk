@@ -1,18 +1,35 @@
 package backend.html5;
 
+import js.lib.Promise;
+import js.html.Audio;
+import haxepunk.math.MathUtil;
+
 class Sfx implements backend.generic.Sfx
 {
-	public function new(source:String)
+	function new(audio:Audio)
 	{
-		throw "Unimplemented";
+		this.audio = audio;
+	}
+
+	public static function loadFromURL(source:String):Promise<Sfx>
+	{
+		var audio = new Audio();
+		var sfx = new Sfx(audio);
+		return new Promise<Sfx>(function(resolve, reject) {
+			audio.preload = 'auto';
+			audio.src = source;
+			audio.oncanplay = function() {
+				resolve(sfx);
+			}
+		});
 	}
 
 	/**
 	 * Alter the volume factor (a value from 0 to 1) of the sound during playback.
 	 */
-	public var volume:Float;
-
-	public var type:String;
+	public var volume(get, set):Float;
+	function get_volume():Float return audio.volume;
+	function set_volume(value:Float):Float return audio.volume = MathUtil.clamp(value, 0, 1);
 
 	/**
 	 * Plays the sound once.
@@ -22,10 +39,15 @@ class Sfx implements backend.generic.Sfx
 	 */
 	public function play(volume:Float = 1, pan:Float = 0, loop:Bool = false)
 	{
-		throw "Unimplemented";
+		this.volume = volume;
+		audio.loop = loop;
+		audio.play();
 	}
 
-	public function resume() {}
+	public function resume()
+	{
+		audio.play();
+	}
 
 	/**
 	 * Plays the sound looping. Will loop continuously until you call stop(), play(), or loop() again.
@@ -44,6 +66,9 @@ class Sfx implements backend.generic.Sfx
 	 */
 	public function stop():Bool
 	{
-		return false;
+		audio.pause();
+		return audio.paused;
 	}
+
+	var audio:Audio;
 }

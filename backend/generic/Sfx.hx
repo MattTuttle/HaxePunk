@@ -5,9 +5,7 @@ interface Sfx
 	/**
 	 * Alter the volume factor (a value from 0 to 1) of the sound during playback.
 	 */
-	public var volume:Float;
-
-	public var type:String;
+	public var volume(get, set):Float;
 
 	/**
 	 * Plays the sound once.

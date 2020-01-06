@@ -6,7 +6,6 @@ import haxe.xml.Fast;
 import haxe.xml.Access as Fast;
 #end
 import haxepunk.HXP;
-import haxepunk.assets.AssetLoader;
 import haxepunk.graphics.atlas.AtlasDataType;
 import haxepunk.graphics.atlas.TextureAtlas;
 import backend.generic.render.Texture;
