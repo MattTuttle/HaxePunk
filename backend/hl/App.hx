@@ -1,5 +1,6 @@
 package backend.hl;
 
+import backend.openal.AudioEngine;
 #if hlsdl
 import haxepunk.utils.Log;
 import haxepunk.input.Gamepad;
@@ -48,6 +49,8 @@ class App implements haxepunk.App
 			commonVA = GL.createVertexArray();
 			GL.bindVertexArray( commonVA );
 		}
+
+		AudioEngine.initOpenAL();
 	}
 
 	@:access(haxepunk.Engine)
@@ -189,6 +192,7 @@ class App implements haxepunk.App
 	function run()
 	{
 		mainLoop();
+		AudioEngine.quit();
 		Sdl.quit();
 		Sys.exit(0);
 	}

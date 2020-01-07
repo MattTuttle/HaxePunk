@@ -39,7 +39,7 @@ class FileAssetLoader implements AssetLoader
 
 	public function getSound(id:String):Sfx
 	{
-		return new Sfx(resolvePath(id));
+		return Sfx.loadFromBytes(File.getBytes(resolvePath(id)));
 	}
 
 	public function getTexture(id:String):Texture

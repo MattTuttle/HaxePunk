@@ -19,7 +19,7 @@ class Texture implements backend.generic.render.Texture
 
 	public function new(width:Int=0, height:Int=0)
 	{
-		this.canvas = cast Browser.document.createElement("canvas");
+		canvas = cast Browser.document.createElement("canvas");
 		setSize(width, height);
 
 		texture = GLRenderer._GL.createTexture();
@@ -93,5 +93,6 @@ class Texture implements backend.generic.render.Texture
 	{
 		GLRenderer._GL.deleteTexture(texture);
 		texture = null;
+		canvas = null;
 	}
 }
