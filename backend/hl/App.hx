@@ -1,7 +1,7 @@
 package backend.hl;
 
-import haxepunk.utils.Log;
 #if hlsdl
+import haxepunk.utils.Log;
 import haxepunk.input.Gamepad;
 import haxepunk.input.Key;
 import haxepunk.input.Mouse;
@@ -17,6 +17,8 @@ class App implements haxepunk.App
 	inline function get_fullscreen():Bool return false;
 	inline function set_fullscreen(value:Bool):Bool return value;
 
+	static var CODEMAP = [for( i in 0...2048 ) i];
+
 	var mouseX:Float = 0;
 	var mouseY:Float = 0;
 
@@ -29,6 +31,7 @@ class App implements haxepunk.App
 
 	public function new() {
 		var title = "HaxePunk";
+		initChars();
 		sdl.Sdl.init();
 		window = new sdl.Window(title, HXP.width, HXP.height);
 
@@ -81,9 +84,11 @@ class App implements haxepunk.App
 				Mouse.onMouseWheel(e.wheelDelta);
 			case KeyDown:
 				var shift = false; // TODO: determine shift key?
-				Key.onKeyDown(e.keyCode, shift);
+				if( e.keyCode & (1 << 30) != 0 ) e.keyCode = (e.keyCode & ((1 << 30) - 1)) + 1000;
+				Key.onKeyDown(CODEMAP[e.keyCode], shift);
 			case KeyUp:
-				Key.onKeyUp(e.keyCode);
+				if( e.keyCode & (1 << 30) != 0 ) e.keyCode = (e.keyCode & ((1 << 30) - 1)) + 1000;
+				Key.onKeyUp(CODEMAP[e.keyCode]);
 			case MouseMove:
 				mouseX = e.mouseX;
 				mouseY = e.mouseY;
@@ -119,6 +124,52 @@ class App implements haxepunk.App
 			default:
 		}
 		return true;
+	}
+
+	static function initChars():Void
+	{
+		// Pulled from heaps for key mapping
+		inline function addKey(sdl, keyCode) {
+			CODEMAP[sdl] = keyCode;
+		}
+
+		// ASCII
+		for( i in 0...26 )
+			addKey(97 + i, Key.A + i);
+		for( i in 0...12 )
+			addKey(1058 + i, Key.F1 + i);
+		for( i in 0...12 )
+			addKey(1104 + i, Key.F13 + i);
+
+		// NUMPAD
+		addKey(1087, Key.NUMPAD_ADD);
+		addKey(1088, Key.NUMPAD_ENTER);
+		for( i in 0...9 )
+			addKey(1089 + i, Key.NUMPAD_1 + i);
+		addKey(1098, Key.NUMPAD_0);
+
+		// EXTRA
+		var keys = [
+			1077 => Key.END,
+			1074 => Key.HOME,
+			1080 => Key.LEFT,
+			1082 => Key.UP,
+			1079 => Key.RIGHT,
+			1081 => Key.DOWN,
+			1073 => Key.INSERT,
+			127 => Key.DELETE,
+			//Key.NUMPAD_0-9
+			//Key.A-Z
+			//Key.F1-F12
+			1087 => Key.NUMPAD_ADD,
+			1088 => Key.NUMPAD_ENTER,
+			1057 => Key.CAPS_LOCK,
+			// Because hlsdl uses sym code, instead of scancode - INTL_BACKSLASH always reports 0x5C, e.g. regular slash.
+			//none => Key.INTL_BACKSLASH
+			//1070 => Key.PRINT_SCREEN
+		];
+		for( sdl in keys.keys() )
+			addKey(sdl, keys.get(sdl));
 	}
 
 	function mainLoop()

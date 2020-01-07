@@ -41,6 +41,10 @@ class Preloader extends Scene
 				assetFinished();
 			});
 		}
+		else
+		{
+			trace("nothing loading for " + path);
+		}
 	}
 
 	function assetFinished()
