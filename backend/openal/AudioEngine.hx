@@ -1,38 +1,114 @@
 package backend.openal;
 
+import haxe.CallStack;
 #if hlopenal
 
+import backend.openal.formats.AudioData;
 import haxepunk.math.MathUtil;
-import haxe.io.Bytes;
 import openal.ALC;
 import openal.AL;
 import openal.EFX;
 
 class AudioEngine
 {
-	public static function createBuffer(bytes:hl.Bytes, length:Int, sampleRate:Int, format:Int):Buffer
-	{
-		AL.genBuffers(1, tmpBytes);
-		var buffer = Buffer.ofInt(tmpBytes.getI32(0));
+	static final BUFFER_SIZE:Int = 4096*8;
+	static final NUM_BUFFERS:Int = 2;
 
-		AL.bufferData(buffer, format, bytes, length, sampleRate);
-		var error = AL.getError();
-		if (error != AL.NO_ERROR) {
-			trace("AL Error: " + error);
-			AL.deleteBuffers(1, tmpBytes);
-		}
-		return buffer;
+	public static function emptySource(source:Source):Void
+	{
+		var buffers = AL.getSourcei(source, AL.BUFFERS_QUEUED);
+		AL.sourceUnqueueBuffers(source, buffers, tmpBytes);
+		checkError();
 	}
 
-	public static function createSource():Source
+	static function stream(buffer:Buffer, data:AudioData):Bool
+	{
+		// TODO: check if this needs to be re-allocated every time we stream
+		var bytes = haxe.io.Bytes.alloc(BUFFER_SIZE);
+		var size = data.fillBuffer(bytes, BUFFER_SIZE);
+		if (size > 0)
+		{
+			AL.bufferData(buffer, data.format, bytes, size, data.sampleRate);
+			checkError();
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	@:access(backend.openal.Sfx)
+	public static function addSfx(sfx:Sfx)
 	{
 		AL.genSources(1, tmpBytes);
-		return Source.ofInt(tmpBytes.getI32(0));
+		var source = Source.ofInt(tmpBytes.getI32(0));
+		// create several audio buffers and fill them with data
+		for (i in 0...NUM_BUFFERS)
+		{
+			AL.genBuffers(1, tmpBytes);
+			var buffer = Buffer.ofInt(tmpBytes.getI32(0));
+			stream(buffer, sfx.data);
+			tmpBytes.setI32(i*4, buffer.toInt());
+			sfx.buffers.push(buffer);
+		}
+		// attach the audio buffers to the source
+		AL.sourceQueueBuffers(source, NUM_BUFFERS, tmpBytes);
+		checkError();
+		sfx.source = source;
+		sounds.push(sfx);
+	}
+
+	static function checkError()
+	{
+		var error = AL.getError();
+		if (error != AL.NO_ERROR) {
+			for (i in CallStack.callStack())
+			{
+				trace(i);
+			}
+			trace("AL Error: " + error);
+		}
+	}
+
+	@:access(backend.openal.Sfx)
+	public static function update()
+	{
+		var removeSfx = [];
+		for (sfx in sounds)
+		{
+			var source = sfx.source;
+			var processed = AL.getSourcei(source, AL.BUFFERS_PROCESSED);
+			for (_ in 0...processed)
+			{
+				var buffer = sfx.buffers.shift();
+				trace(buffer);
+				tmpBytes.setI32(0, buffer.toInt());
+				AL.sourceUnqueueBuffers(source, 1, tmpBytes);
+				checkError();
+				if (stream(buffer, sfx.data))
+				{
+					AL.sourceQueueBuffers(source, 1, tmpBytes);
+					sfx.buffers.push(buffer);
+					checkError();
+				}
+				else
+				{
+					// sfx is finish, remove it
+					removeSfx.push(sfx);
+					trace("remove");
+				}
+			}
+		}
+		for (sfx in removeSfx)
+		{
+			sounds.remove(sfx);
+		}
 	}
 
 	public static function initOpenAL()
 	{
-		tmpBytes = new hl.Bytes(16);
+		tmpBytes = new hl.Bytes(64);
 
 		var device = ALC.openDevice(null);
 		var context = ALC.createContext(device, null);
@@ -69,6 +145,7 @@ class AudioEngine
 
 	static var tmpBytes:hl.Bytes;
 	static var maxAuxiliarySends:Int;
+	static var sounds = new Array<Sfx>();
 }
 
 #end

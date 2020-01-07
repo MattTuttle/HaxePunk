@@ -179,6 +179,7 @@ class App implements haxepunk.App
 	{
 		while (Sdl.processEvents(onEvent))
 		{
+			AudioEngine.update();
 			engine.onUpdate();
 
 			var color = HXP.screen.color;
