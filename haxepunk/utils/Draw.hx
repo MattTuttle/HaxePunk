@@ -1,6 +1,6 @@
 package haxepunk.utils;
 
-import backend.generic.render.Shader;
+import haxepunk.backend.generic.render.Shader;
 import haxepunk.utils.BlendMode;
 
 /**

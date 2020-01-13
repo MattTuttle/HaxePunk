@@ -1,6 +1,6 @@
 package haxepunk.graphics.atlas;
 
-import backend.generic.render.Shader;
+import haxepunk.backend.generic.render.Shader;
 import haxepunk.utils.BlendMode;
 import haxepunk.utils.Color;
 import haxepunk.math.MathUtil;

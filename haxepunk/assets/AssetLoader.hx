@@ -1,8 +1,8 @@
 package haxepunk.assets;
 
-import haxepunk.Sfx;
 import haxepunk.utils.Color;
-import backend.generic.render.Texture;
+import haxepunk.backend.generic.Sound;
+import haxepunk.backend.generic.render.Texture;
 
 /**
  * AssetLoader is used to load a new copy of an asset, bypassing the cache.
@@ -13,9 +13,7 @@ interface AssetLoader
 
 	public function getText(id:String):Null<String>;
 
-	public function getSound(id:String):Sfx;
+	public function getSound(id:String):Sound;
 
 	public function getTexture(id:String):Null<Texture>;
-
-	public function addShortcut(path:String, pointsTo:String):Void;
 }

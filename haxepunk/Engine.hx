@@ -6,7 +6,7 @@ import haxepunk.input.Input;
 import haxepunk.math.Random;
 import haxepunk.math.Rectangle;
 import haxepunk.utils.Draw;
-import backend.generic.render.Renderer;
+import haxepunk.backend.generic.render.Renderer;
 
 /**
  * Main game Sprite class, added to the Stage.
@@ -118,20 +118,20 @@ class Engine
 	function createApp():App
 	{
 #if (lime || nme)
-		renderer = new backend.opengl.render.GLRenderer();
+		renderer = new haxepunk.backend.opengl.render.GLRenderer();
 		#if lime
-		return new backend.lime.haxepunk.App();
+		return new haxepunk.backend.lime.App();
 		#else
-		return new backend.nme.haxepunk.App();
+		return new haxepunk.backend.nme.App();
 		#end
 #elseif hlsdl
-		renderer = new backend.opengl.render.GLRenderer();
-		return new backend.hl.App();
+		renderer = new haxepunk.backend.opengl.render.GLRenderer();
+		return new haxepunk.backend.hl.App();
 #elseif js
-		renderer = new backend.opengl.render.GLRenderer();
-		return new backend.html5.App();
+		renderer = new haxepunk.backend.opengl.render.GLRenderer();
+		return new haxepunk.backend.html5.App();
 #elseif unit_test
-		return new backend.generic.App();
+		return new haxepunk.backend.generic.App();
 #else
 		#error "Invalid target";
 #end

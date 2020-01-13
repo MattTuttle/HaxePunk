@@ -1,7 +1,7 @@
 package haxepunk.graphics.atlas;
 
 import haxepunk.assets.AssetCache;
-import backend.generic.render.Texture;
+import haxepunk.backend.generic.render.Texture;
 
 /**
  * Abstract representing either a `String`, a `AtlasData` or a `Texture`.

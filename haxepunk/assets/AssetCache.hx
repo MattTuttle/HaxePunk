@@ -7,10 +7,12 @@ import haxepunk.graphics.atlas.AtlasResolutions;
 import haxepunk.graphics.atlas.IAtlasRegion;
 import haxepunk.graphics.atlas.TextureAtlas;
 import haxepunk.graphics.atlas.TileAtlas;
-import backend.generic.render.Texture;
 import haxepunk.graphics.text.BitmapFont;
 import haxepunk.graphics.text.BitmapFontAtlas;
 import haxepunk.graphics.text.IBitmapFont;
+import haxepunk.backend.generic.Sound;
+import haxepunk.backend.generic.render.Texture;
+
 using haxepunk.assets.AssetMacros;
 
 /**
@@ -36,8 +38,7 @@ class AssetCache
 
 	var textures:Map<String, Texture> = new Map();
 	var text:Map<String, String> = new Map();
-	// TODO: abstraction for Sound type
-	var sounds:Map<String, Sfx> = new Map();
+	var sounds:Map<String, Sound> = new Map();
 	var regions:Map<String, IAtlasRegion> = new Map();
 	var bitmapFonts:Map<String, IBitmapFont> = new Map();
 	var tileAtlases:Map<String, TileAtlas> = new Map();
@@ -108,12 +109,12 @@ class AssetCache
 		text.remove(id);
 	}
 
-	public function addSound(id:String, sound:Sfx)
+	public function addSound(id:String, sound:Sound)
 	{
 		sounds[id] = sound;
 	}
 
-	public function getSound(id:String, addRef:Bool=true):Sfx
+	public function getSound(id:String, addRef:Bool=true):Sound
 	{
 		return AssetMacros.findAsset(this, sounds, otherCache.sounds, id, addRef, HXP.assetLoader.getSound(id));
 	}

@@ -1,9 +1,9 @@
 package haxepunk.graphics.atlas;
 
-import backend.generic.render.Shader;
+import haxepunk.backend.generic.render.Shader;
 import haxepunk.assets.AssetCache;
 import haxepunk.graphics.hardware.DrawCommandBatch;
-import backend.generic.render.Texture;
+import haxepunk.backend.generic.render.Texture;
 import haxepunk.math.MathUtil;
 import haxepunk.math.Rectangle;
 import haxepunk.math.Vector2;

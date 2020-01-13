@@ -18,7 +18,7 @@ class ColoredRect extends Graphic
 		this.color = color;
 		this.alpha = alpha;
 		#if (lime || nme || hlsdl)
-		this.shader = backend.opengl.shader.ColorShader.defaultShader;
+		this.shader = haxepunk.backend.opengl.shader.ColorShader.defaultShader;
 		#end
 	}
 

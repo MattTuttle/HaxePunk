@@ -243,11 +243,11 @@ class HXP
 	static function get_assetLoader():AssetLoader {
 		if (assetLoader == null) {
 		#if (lime || nme)
-			assetLoader = new backend.flash.haxepunk.assets.AssetLoader();
+			assetLoader = new haxepunk.backend.flash.assets.AssetLoader();
 		#elseif hl
-			assetLoader = new backend.hl.FileAssetLoader();
+			assetLoader = new haxepunk.backend.hl.FileAssetLoader();
 		#elseif js
-			assetLoader = new backend.html5.AssetLoader();
+			assetLoader = new haxepunk.backend.html5.AssetLoader();
 		#elseif !unit_test
 			#error "Asset loader is not implemented on this target"
 		#end

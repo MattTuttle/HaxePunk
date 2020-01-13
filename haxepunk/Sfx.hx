@@ -2,15 +2,15 @@ package haxepunk;
 
 #if hl
 
-typedef Sfx = backend.openal.Sfx;
+typedef Sfx = haxepunk.backend.openal.Sfx;
 
 #elseif openfl
 
-typedef Sfx = backend.flash.Sfx;
+typedef Sfx = haxepunk.backend.flash.Sfx;
 
 #elseif js
 
-typedef Sfx = backend.html5.Sfx;
+typedef Sfx = haxepunk.backend.html5.Sfx;
 
 #elseif unit_test
 

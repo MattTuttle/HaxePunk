@@ -1,7 +1,7 @@
 package haxepunk;
 
 import haxe.ds.Either;
-import backend.generic.render.Shader;
+import haxepunk.backend.generic.render.Shader;
 import haxepunk.Signal;
 import haxepunk.assets.AssetCache;
 import haxepunk.graphics.atlas.Atlas;
@@ -9,7 +9,7 @@ import haxepunk.graphics.atlas.TileAtlas;
 import haxepunk.graphics.atlas.AtlasRegion;
 import haxepunk.graphics.atlas.AtlasResolutions;
 import haxepunk.graphics.atlas.IAtlasRegion;
-import backend.generic.render.Texture;
+import haxepunk.backend.generic.render.Texture;
 import haxepunk.math.Rectangle;
 import haxepunk.math.Vector2;
 import haxepunk.utils.BlendMode;
@@ -259,7 +259,7 @@ class Graphic
 		pixelSnapping = pixelSnappingDefault;
 		color = Color.White;
 		#if (lime || nme || hlsdl || js)
-		shader = backend.opengl.shader.TextureShader.defaultShader;
+		shader = haxepunk.backend.opengl.shader.TextureShader.defaultShader;
 		#elseif !unit_test
 		#error "Default texture shader is not defined"
 		#end

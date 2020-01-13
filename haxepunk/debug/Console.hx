@@ -12,6 +12,10 @@ import haxepunk.input.MouseManager;
 import haxepunk.utils.CircularBuffer;
 import haxepunk.utils.DrawContext;
 
+#if (lime || nme || hlsdl || js)
+typedef HardwareRenderer = haxepunk.backend.opengl.render.GLRenderer;
+#end
+
 @:access(haxepunk.graphics.hardware)
 @:access(haxepunk.Engine)
 class Console extends Scene
@@ -314,9 +318,9 @@ class Console extends Scene
 		_fps += 1 / HXP.elapsed * s;
 		_mem += HXP.app.getMemoryUse() / 1024 / 1024 * s;
 		_ent += HXP.scene.count * s;
-		#if (openfl || lime)
-		_tri += haxepunk.graphics.hardware.HardwareRenderer.triangleCount * s;
-		_dc += haxepunk.graphics.hardware.HardwareRenderer.drawCallCount * s;
+		#if opengl_stats
+		_tri += HardwareRenderer.triangleCount * s;
+		_dc += HardwareRenderer.drawCallCount * s;
 		#end
 		_t += s;
 		if (_t >= 1)

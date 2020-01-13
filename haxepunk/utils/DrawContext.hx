@@ -1,6 +1,6 @@
 package haxepunk.utils;
 
-import backend.generic.render.Shader;
+import haxepunk.backend.generic.render.Shader;
 import haxepunk.utils.BlendMode;
 import haxepunk.Entity;
 import haxepunk.HXP;
@@ -392,7 +392,7 @@ class DrawContext
 		if (shader == null)
 		{
 			#if (lime || nme || hlsdl || js)
-			shader = backend.opengl.shader.ColorShader.defaultShader;
+			shader = haxepunk.backend.opengl.shader.ColorShader.defaultShader;
 			#elseif !unit_test
 			#error "Default color shader is not defined";
 			#end

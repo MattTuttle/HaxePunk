@@ -8,7 +8,7 @@ import haxe.xml.Access as Fast;
 import haxepunk.HXP;
 import haxepunk.graphics.atlas.AtlasDataType;
 import haxepunk.graphics.atlas.TextureAtlas;
-import backend.generic.render.Texture;
+import haxepunk.backend.generic.render.Texture;
 import haxepunk.utils.Utf8String;
 
 @:enum

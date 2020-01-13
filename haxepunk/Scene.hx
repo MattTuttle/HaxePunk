@@ -1,12 +1,12 @@
 package haxepunk;
 
-import backend.generic.render.Shader;
+import haxepunk.backend.generic.render.Shader;
 import haxe.ds.IntMap;
 import haxepunk.Signal;
 import haxepunk.assets.AssetCache;
 import haxepunk.graphics.atlas.AtlasData;
 import haxepunk.graphics.hardware.DrawCommandBatch;
-import backend.generic.render.Texture;
+import haxepunk.backend.generic.render.Texture;
 import haxepunk.utils.BlendMode;
 import haxepunk.utils.Color;
 import haxepunk.utils.DrawContext;

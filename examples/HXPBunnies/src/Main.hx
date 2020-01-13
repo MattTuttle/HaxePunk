@@ -6,9 +6,6 @@ class Main extends Engine
 
 	override public function init()
 	{
-		HXP.assetLoader.addShortcut("atlas", "assets/atlas");
-		HXP.assetLoader.addShortcut("gfx", "assets/graphics");
-
 		HXP.scene = new scenes.GameScene();
 
 #if openfl
