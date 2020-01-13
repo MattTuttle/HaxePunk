@@ -16,14 +16,22 @@ typedef PreloadPath = {
 
 class Preloader
 {
+	#if !macro
+
 	public var required(default, null):Int = 0;
 	public var loaded(default, null):Int = 0;
 	public var failed(default, null):Int = 0;
 
 	var onload:Void->Void;
+	var cache:AssetCache;
+	var assets = new StringMap<Array<String>>();
 
-	public function new()
+	public function new(?cache:AssetCache)
 	{
+		if (cache == null)
+		{
+			cache = haxepunk.assets.AssetCache.global;
+		}
 	}
 
 	public function addAsset(path:String, ?aliases:Array<String>)
@@ -31,29 +39,31 @@ class Preloader
 		assets.set(path, [path].concat(aliases == null ? [] : aliases));
 	}
 
-	function check() {
+	function check()
+	{
 		if (required == loaded + failed)
 			onload();
 	}
 
-	function success() {
+	function success()
+	{
 		loaded += 1;
 		check();
 	}
 
-	function fail() {
+	function fail()
+	{
 		failed += 1;
 		check();
 	}
 
-	#if !macro
 	function loadTexture(path:String)
 	{
 		var aliases = assets.get(path);
 		#if (!lime && js)
 		haxepunk.backend.html5.Texture.loadFromURL(path).then(function(texture) {
 			for (alias in aliases) {
-				haxepunk.assets.AssetCache.global.addTexture(alias, texture);
+				cache.addTexture(alias, texture);
 			}
 			success();
 		}, function(_) {
@@ -68,7 +78,7 @@ class Preloader
 		else
 		{
 			for (alias in aliases) {
-				haxepunk.assets.AssetCache.global.addTexture(alias, texture);
+				cache.addTexture(alias, texture);
 			}
 			success();
 		}
@@ -81,7 +91,7 @@ class Preloader
 		#if (!lime && js)
 		haxepunk.backend.html5.Sound.loadFromURL(path).then(function(sound) {
 			for (alias in aliases) {
-				haxepunk.assets.AssetCache.global.addSound(alias, sound);
+				cache.addSound(alias, sound);
 			}
 			success();
 		}, function(_) {
@@ -96,17 +106,15 @@ class Preloader
 		else
 		{
 			for (alias in aliases) {
-				haxepunk.assets.AssetCache.global.addSound(alias, sound);
+				cache.addSound(alias, sound);
 			}
 			success();
 		}
 		#end
 	}
-	#end
 
 	public function load(onload:Void->Void)
 	{
-		#if !macro
 		this.onload = onload;
 		for (path in assets.keys())
 		{
@@ -119,8 +127,12 @@ class Preloader
 					loadSound(path);
 			}
 		}
-		#end
 	}
+
+	#end // !macro
+
+// ------------------------------------
+// MACRO SECTION
 
 	public static macro function build():Array<Field>
 	{
@@ -136,9 +148,10 @@ class Preloader
 					{
 						if (meta.name == ":preload")
 						{
-							var preloadBlocks = [for (param in meta.params) preload(parseMetaPath(param))];
+							var preloadBlocks = [for (param in meta.params) findAssets(parseMetaPath(param))];
 							// wrap the function block with the preloader code
 							f.expr = macro {
+								_preloader = new haxepunk.assets.Preloader();
 								$b{preloadBlocks};
 								_preloader.load(function() {
 									${f.expr};
@@ -155,7 +168,7 @@ class Preloader
 			fields.push({
 				name: '_preloader',
 				pos: Context.currentPos(),
-				kind: FieldType.FVar(macro : haxepunk.assets.Preloader, macro new haxepunk.assets.Preloader())
+				kind: FieldType.FVar(macro : haxepunk.assets.Preloader, null)
 			});
 		}
 		return fields;
@@ -194,7 +207,7 @@ class Preloader
 		};
 	}
 
-	static function preload(preloadPath:PreloadPath):Expr {
+	static function findAssets(preloadPath:PreloadPath):Expr {
 		var search = [preloadPath.path];
 		var iterations = 0;
 		var exprs = [];
@@ -227,6 +240,4 @@ class Preloader
 		return macro $b{exprs};
 	}
 	#end
-
-	var assets = new StringMap<Array<String>>();
 }
