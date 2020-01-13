@@ -12,6 +12,10 @@ typedef Sfx = backend.flash.Sfx;
 
 typedef Sfx = backend.html5.Sfx;
 
+#elseif unit_test
+
+typedef Sfx = Dynamic;
+
 #else
 
 #error "Sfx type not defined"

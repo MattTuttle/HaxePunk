@@ -1,8 +1,14 @@
 package haxepunk.assets;
 
+#if macro
+import haxe.io.Path;
+import sys.FileSystem;
+import haxe.macro.Expr;
+#end
+
 class AssetMacros
 {
-	macro public static function findAsset(cache:haxe.macro.Expr, map:haxe.macro.Expr, other:haxe.macro.Expr, id:haxe.macro.Expr, addRef:haxe.macro.Expr, fallback:haxe.macro.Expr, ?onRef:haxe.macro.Expr)
+	macro public static function findAsset(cache:Expr, map:Expr, other:Expr, id:Expr, addRef:Expr, fallback:Expr, ?onRef:Expr)
 	{
 		if (onRef == null) onRef = macro {};
 		return macro {
@@ -37,5 +43,39 @@ class AssetMacros
 			}
 			result;
 		}
+	}
+
+	macro public static function preload(path:String, as:String):Expr
+	{
+		var search = [path];
+		var iterations = 0;
+		while (iterations < 1000 && search.length > 0)
+		{
+			path = search.pop();
+			trace(path);
+			if (FileSystem.exists(path))
+			{
+				if (FileSystem.isDirectory(path))
+				{
+					for (item in FileSystem.readDirectory(path))
+					{
+						var from = Path.join([path, item]);
+						// search.push(from);
+					}
+				}
+				else
+				{
+					switch (Path.extension(path))
+					{
+						case "jpg", "jpeg", "png":
+							trace("texture");
+						case "mp3", "ogg", "wav":
+							trace("audio");
+					}
+				}
+			}
+			iterations += 1;
+		}
+		return macro null;
 	}
 }

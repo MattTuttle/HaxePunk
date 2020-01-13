@@ -248,7 +248,7 @@ class HXP
 			assetLoader = new backend.hl.FileAssetLoader();
 		#elseif js
 			assetLoader = new backend.html5.AssetLoader();
-		#else
+		#elseif !unit_test
 			#error "Asset loader is not implemented on this target"
 		#end
 		}

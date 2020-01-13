@@ -11,8 +11,30 @@ import haxepunk.Scene;
 import haxepunk.graphics.hardware.DrawCommand;
 import haxepunk.utils.BlendMode;
 
-#if !js
-typedef _GL = backend.opengl.GL;
+#if hlsdl
+typedef GLBuffer = sdl.GL.Buffer;
+typedef GLFramebuffer = sdl.GL.Framebuffer;
+typedef GLProgram = sdl.GL.Program;
+typedef GLShader = sdl.GL.Shader;
+typedef GLTexture = sdl.GL.Texture;
+typedef GLUniformLocation = sdl.GL.Uniform;
+typedef GL = sdl.GL;
+typedef _GL = sdl.GL;
+#elseif js
+typedef GLBuffer = js.html.webgl.Buffer;
+typedef GLFramebuffer = js.html.webgl.Framebuffer;
+typedef GLProgram = js.html.webgl.Program;
+typedef GLShader = js.html.webgl.Shader;
+typedef GLTexture = js.html.webgl.Texture;
+typedef GLUniformLocation = js.html.webgl.UniformLocation;
+typedef GL = js.html.webgl.GL;
+#else
+typedef GLBuffer = Null<UInt>;
+typedef GLFramebuffer = Null<UInt>;
+typedef GLProgram = Null<UInt>;
+typedef GLShader = Null<UInt>;
+typedef GLTexture = Null<UInt>;
+typedef GLUniformLocation = Null<UInt>;
 #end
 
 @:dox(hide)
@@ -35,7 +57,7 @@ class GLRenderer implements Renderer
 	public static var drawCallLimit:Int = -1;
 
 	#if js
-	public static var _GL:backend.opengl.GL;
+	public static var _GL:GL;
 	#end
 
 	public static inline var UNIFORM_MATRIX:String = "uMatrix";
