@@ -19,14 +19,6 @@ typedef GLShader = sdl.GL.Shader;
 typedef GLTexture = sdl.GL.Texture;
 typedef GLUniformLocation = sdl.GL.Uniform;
 typedef GL = sdl.GL;
-#elseif js
-typedef GLBuffer = js.html.webgl.Buffer;
-typedef GLFramebuffer = js.html.webgl.Framebuffer;
-typedef GLProgram = js.html.webgl.Program;
-typedef GLShader = js.html.webgl.Shader;
-typedef GLTexture = js.html.webgl.Texture;
-typedef GLUniformLocation = js.html.webgl.UniformLocation;
-typedef GL = js.html.webgl.GL;
 #elseif lime
 typedef GL = lime.graphics.opengl.GL;
 typedef GLBuffer = lime.graphics.opengl.GLBuffer;
@@ -43,6 +35,14 @@ typedef GLProgram = nme.gl.GLProgram;
 typedef GLShader = nme.gl.GLShader;
 typedef GLTexture = nme.gl.GLTexture;
 typedef GLUniformLocation = nme.gl.GLUniformLocation;
+#elseif js
+typedef GLBuffer = js.html.webgl.Buffer;
+typedef GLFramebuffer = js.html.webgl.Framebuffer;
+typedef GLProgram = js.html.webgl.Program;
+typedef GLShader = js.html.webgl.Shader;
+typedef GLTexture = js.html.webgl.Texture;
+typedef GLUniformLocation = js.html.webgl.UniformLocation;
+typedef GL = js.html.webgl.GL;
 #else
 typedef GLBuffer = Null<UInt>;
 typedef GLFramebuffer = Null<UInt>;
@@ -52,7 +52,7 @@ typedef GLTexture = Null<UInt>;
 typedef GLUniformLocation = Null<UInt>;
 #end
 
-#if !js
+#if (lime || !js)
 typedef _GL = GL;
 #end
 
@@ -75,7 +75,7 @@ class GLRenderer implements Renderer
 {
 	public static var drawCallLimit:Int = -1;
 
-	#if js
+	#if (!lime && js)
 	public static var _GL:GL;
 	#end
 

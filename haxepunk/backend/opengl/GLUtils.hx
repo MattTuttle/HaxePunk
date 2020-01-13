@@ -8,10 +8,11 @@ import haxepunk.backend.generic.render.Texture;
 class GLUtils
 {
 
-
 	public static inline function invalid(object:Any):Bool
 	{
-		#if js
+		#if nme
+		return object == null || !object.isValid();
+		#elseif (lime || js)
 		return object == null;
 		#else
 		return object == 0;

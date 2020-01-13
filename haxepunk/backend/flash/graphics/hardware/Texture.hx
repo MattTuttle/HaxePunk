@@ -2,6 +2,7 @@ package haxepunk.backend.flash.graphics.hardware;
 
 import haxepunk.utils.Color;
 
+import haxepunk.backend.opengl.render.GLRenderer;
 import flash.display.BitmapData;
 import flash.geom.Point;
 
@@ -46,10 +47,44 @@ class Texture implements haxepunk.backend.generic.render.Texture
 		data.setPixel(x, y, c);
 	}
 
-	public function bind():Void
+	#if openfl
+
+	#if (openfl >= "8.9.2")
+	public static var renderer:openfl._internal.renderer.context3D.Context3DRenderer;
+	#elseif (openfl >= "8.0.0")
+	public static var renderer:openfl.display.OpenGLRenderer;
+	public static var gl:WebGLRenderContext;
+	#end
+
+	#if (openfl < "8.9.2")
+	@:access(openfl.display.OpenGLRenderer.__context3D)
+	#end
+	@:access(openfl.display.Stage)
+	@:access(openfl.display3D.textures.TextureBase.__getTexture)
+	@:allow(haxepunk.graphics.hardware.opengl.GLUtils)
+	public function bind()
 	{
-		// TODO: bind this thing!
+		#if (openfl < "8.0.0")
+		var renderer = @:privateAccess (HXP.app.stage.__renderer).renderSession;
+		#end
+		GL.bindTexture(GL.TEXTURE_2D, data.getTexture(
+		#if (openfl < "8.9.2")
+			renderer.__context3D
+		#else
+			renderer.context3D
+		#end
+		).__getTexture());
 	}
+
+	#elseif nme
+
+	public function bind()
+	{
+		//if (!texture.premultipliedAlpha) texture.premultipliedAlpha = true;
+		GL.bindBitmapDataTexture(data);
+	}
+
+	#end
 
 	public function dispose():Void
 	{

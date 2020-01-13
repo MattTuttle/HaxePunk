@@ -161,7 +161,7 @@ class Shader implements haxepunk.backend.generic.render.Shader
 
 	function setAttributePointers(nbTriangles:Int)
 	{
-		var vertexAttribPointer = #if js GLRenderer._GL.vertexAttribPointer #else GL.vertexAttribPointer #end;
+		var vertexAttribPointer = #if (!lime && js) GLRenderer._GL.vertexAttribPointer #else GL.vertexAttribPointer #end;
 
 		var bytesPerElement = Float32Array.BYTES_PER_ELEMENT;
 		var offset:Int = 0;
@@ -200,7 +200,7 @@ class Shader implements haxepunk.backend.generic.render.Shader
 
 	public function bind()
 	{
-		#if js var GL = GLRenderer._GL; #end
+		#if (!lime && js) var GL = GLRenderer._GL; #end
 		if (GLUtils.invalid(glProgram))
 		{
 			destroy();
@@ -231,7 +231,7 @@ class Shader implements haxepunk.backend.generic.render.Shader
 
 	public function unbind()
 	{
-		#if js var GL = GLRenderer._GL; #end
+		#if (!lime && js) var GL = GLRenderer._GL; #end
 		GL.useProgram(null);
 		GL.disableVertexAttribArray(position.index);
 		if (texCoord.isEnabled) GL.disableVertexAttribArray(texCoord.index);
@@ -246,7 +246,7 @@ class Shader implements haxepunk.backend.generic.render.Shader
 	 */
 	public inline function attributeIndex(name:String):Int
 	{
-		#if js var GL = GLRenderer._GL; #end
+		#if (!lime && js) var GL = GLRenderer._GL; #end
 #if unit_test
 		return 0;
 #else
@@ -259,7 +259,7 @@ class Shader implements haxepunk.backend.generic.render.Shader
 	 */
 	public inline function uniformIndex(name:String):GLUniformLocation
 	{
-		#if js var GL = GLRenderer._GL; #end
+		#if (!lime && js) var GL = GLRenderer._GL; #end
 		if (!uniformIndices.exists(name))
 		{
 			uniformIndices[name] = GL.getUniformLocation(glProgram, name);

@@ -1,4 +1,4 @@
-package haxepunk;
+package haxepunk.backend.nme;
 
 #if nme
 

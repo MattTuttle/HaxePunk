@@ -1,6 +1,6 @@
 package haxepunk.backend.lime;
 
-import haxepunk.backend.lime.GLInternal;
+import haxepunk.backend.flash.graphics.hardware.Texture;
 
 class App extends haxepunk.backend.flash.FlashApp
 {
@@ -21,9 +21,9 @@ class App extends haxepunk.backend.flash.FlashApp
 			var renderer:openfl._internal.renderer.context3D.Context3DRenderer = cast event.renderer;
 			#else
 			var renderer:openfl.display.OpenGLRenderer = cast event.renderer;
-			GLInternal.gl = renderer.gl;
+			Texture.gl = renderer.gl;
 			#end
-			GLInternal.renderer = renderer;
+			Texture.renderer = renderer;
 			engine.onRender();
 		});
 		#else

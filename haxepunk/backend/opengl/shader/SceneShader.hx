@@ -130,7 +130,7 @@ void main () {
 
 	override public function bind()
 	{
-		#if js var _GL = GLRenderer._GL; #end
+		#if (!lime && js) var _GL = GLRenderer._GL; #end
 		super.bind();
 		if (GLUtils.invalid(buffer))
 		{
