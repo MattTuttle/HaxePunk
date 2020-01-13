@@ -7,6 +7,7 @@ import sys.io.File;
 import haxepunk.assets.AssetLoader;
 import haxepunk.utils.Log;
 import haxepunk.utils.Color;
+import haxepunk.backend.generic.Sound;
 
 class FileAssetLoader implements AssetLoader
 {
@@ -26,9 +27,9 @@ class FileAssetLoader implements AssetLoader
 		return File.getContent(resolvePath(id));
 	}
 
-	public function getSound(id:String):Sfx
+	public function getSound(id:String):Sound
 	{
-		return Sfx.loadFromBytes(File.getBytes(resolvePath(id)));
+		return Sound.loadFromBytes(File.getBytes(resolvePath(id)));
 	}
 
 	public function getTexture(id:String):Texture

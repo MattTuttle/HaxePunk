@@ -17,6 +17,7 @@ import haxepunk.math.Vector2;
  * Updated by `Engine`, main game container that holds all currently active Entities.
  * Useful for organization, eg. "Menu", "Level1", etc.
  */
+#if !macro @:autoBuild(haxepunk.assets.Preloader.build()) #end
 class Scene extends Tweener
 {
 	static var drawContext:DrawContext = new DrawContext();

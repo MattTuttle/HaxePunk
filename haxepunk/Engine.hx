@@ -14,6 +14,7 @@ import haxepunk.backend.generic.render.Renderer;
  *
  * Your main class **needs** to extends this.
  */
+#if !macro @:autoBuild(haxepunk.assets.Preloader.build()) #end
 class Engine
 {
 	public var console:Console;

@@ -9,6 +9,17 @@ class AudioData
 	public var sampleRate:Int;
 	public var format:Int;
 
+	public static function loadFromBytes(bytes:Bytes):Null<AudioData>
+	{
+		// read first two bytes in little-endian and compare to common image headers
+		return switch (bytes.getUInt16(0))
+		{
+			case 0x4952: new Wav(bytes);
+			case 0x674F: new Ogg(bytes);
+			default: throw "Unsupported audio format";
+		};
+	}
+
 	function getBufferFormat(channels:Int, bitsPerSample:Int):Int
 	{
 		if (bitsPerSample == 8)

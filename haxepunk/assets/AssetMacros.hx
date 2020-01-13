@@ -44,38 +44,4 @@ class AssetMacros
 			result;
 		}
 	}
-
-	macro public static function preload(path:String, as:String):Expr
-	{
-		var search = [path];
-		var iterations = 0;
-		while (iterations < 1000 && search.length > 0)
-		{
-			path = search.pop();
-			trace(path);
-			if (FileSystem.exists(path))
-			{
-				if (FileSystem.isDirectory(path))
-				{
-					for (item in FileSystem.readDirectory(path))
-					{
-						var from = Path.join([path, item]);
-						// search.push(from);
-					}
-				}
-				else
-				{
-					switch (Path.extension(path))
-					{
-						case "jpg", "jpeg", "png":
-							trace("texture");
-						case "mp3", "ogg", "wav":
-							trace("audio");
-					}
-				}
-			}
-			iterations += 1;
-		}
-		return macro null;
-	}
 }

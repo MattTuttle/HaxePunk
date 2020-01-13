@@ -1,13 +1,14 @@
 package haxepunk.backend.openal;
 
+import openal.AL;
+import haxe.io.Bytes;
 import haxepunk.backend.openal.formats.*;
 import haxepunk.math.MathUtil;
-import haxe.io.Bytes;
-import openal.AL;
+import haxepunk.backend.generic.Sound;
 
 class Sfx implements haxepunk.backend.generic.Sfx
 {
-	public function new(data:AudioData)
+	public function new(data:SoundSource)
 	{
 		this.data = data;
 		AudioEngine.addSfx(this);
@@ -19,17 +20,6 @@ class Sfx implements haxepunk.backend.generic.Sfx
 		AudioEngine.emptySource(source);
 		buffers = [];
 		data = null;
-	}
-
-	public static function loadFromBytes(bytes:Bytes):Null<Sfx>
-	{
-		// read first two bytes in little-endian and compare to common image headers
-		return new Sfx(switch (bytes.getUInt16(0))
-		{
-			case 0x4952: new Wav(bytes);
-			case 0x674F: new Ogg(bytes);
-			default: throw "Unsupported audio format";
-		});
 	}
 
 	/**

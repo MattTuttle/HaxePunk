@@ -15,7 +15,7 @@ class AssetLoader implements haxepunk.assets.AssetLoader
 		return "";
 	}
 
-	public function getSound(id:String):Null<Sfx>
+	public function getSound(id:String):Null<Sound>
 	{
 		throw "Sound needs to be preloaded before calling getSound for " + id;
 	}

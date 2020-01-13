@@ -1,35 +1,22 @@
 package haxepunk.backend.html5;
 
-import js.lib.Promise;
-import js.html.Audio;
 import haxepunk.math.MathUtil;
+import haxepunk.backend.generic.Sound;
 
+@:access(haxepunk.backend.html5.Sound)
 class Sfx implements haxepunk.backend.generic.Sfx
 {
-	function new(audio:Audio)
+	public function new(sound:SoundSource)
 	{
-		this.audio = audio;
-	}
-
-	public static function loadFromURL(source:String):Promise<Sfx>
-	{
-		var audio = new Audio();
-		var sfx = new Sfx(audio);
-		return new Promise<Sfx>(function(resolve, reject) {
-			audio.preload = 'auto';
-			audio.src = source;
-			audio.oncanplay = function() {
-				resolve(sfx);
-			}
-		});
+		this.sound = sound;
 	}
 
 	/**
 	 * Alter the volume factor (a value from 0 to 1) of the sound during playback.
 	 */
 	public var volume(get, set):Float;
-	function get_volume():Float return audio.volume;
-	function set_volume(value:Float):Float return audio.volume = MathUtil.clamp(value, 0, 1);
+	function get_volume():Float return sound.audio.volume;
+	function set_volume(value:Float):Float return sound.audio.volume = MathUtil.clamp(value, 0, 1);
 
 	/**
 	 * Plays the sound once.
@@ -40,13 +27,13 @@ class Sfx implements haxepunk.backend.generic.Sfx
 	public function play(volume:Float = 1, pan:Float = 0, loop:Bool = false)
 	{
 		this.volume = volume;
-		audio.loop = loop;
-		audio.play();
+		sound.audio.loop = loop;
+		sound.audio.play();
 	}
 
 	public function resume()
 	{
-		audio.play();
+		sound.audio.play();
 	}
 
 	/**
@@ -66,9 +53,9 @@ class Sfx implements haxepunk.backend.generic.Sfx
 	 */
 	public function stop():Bool
 	{
-		audio.pause();
-		return audio.paused;
+		sound.audio.pause();
+		return sound.audio.paused;
 	}
 
-	var audio:Audio;
+	var sound:Sound;
 }
