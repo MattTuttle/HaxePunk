@@ -29,7 +29,10 @@ class App implements haxepunk.App
 		canvas = cast(el, CanvasElement);
 		canvas.width = HXP.width;
 		canvas.height = HXP.height;
-		GLRenderer._GL = canvas.getContextWebGL({ alpha: false });
+		var gl = canvas.getContextWebGL({ alpha: false });
+		gl.pixelStorei(GL.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
+		gl.enable(GL.BLEND);
+		GLRenderer._GL = gl;
 
 		listenForEvents();
 	}

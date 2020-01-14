@@ -14,6 +14,8 @@ import haxepunk.graphics.Image;
 import haxepunk.graphics.atlas.Atlas;
 import haxepunk.graphics.atlas.AtlasRegion;
 import haxepunk.graphics.hardware.Texture;
+import haxepunk.graphics.text.TextOptions;
+import haxepunk.graphics.text.BorderOptions;
 import haxepunk.utils.Color;
 import haxepunk.math.Vector2;
 

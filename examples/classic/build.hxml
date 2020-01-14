@@ -1,0 +1,6 @@
+-lib haxepunk
+-cp src
+-main Main
+-debug
+
+-js out/example.js
