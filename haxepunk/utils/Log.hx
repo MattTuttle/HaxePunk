@@ -28,7 +28,7 @@ abstract LogLevel(Int) from Int to Int
 		var d = Date.now().toString();
 		var p = StringTools.lpad(pos.fileName, " ", longest) + ":" + StringTools.lpad(Std.string(pos.lineNumber), " ", 4) + ":";
 		var l = toString();
-		#if desktop
+		#if (desktop || macro)
 		var colorize = color && Sys.systemName() != "Windows";
 		if (pos.fileName.length > longest) longest = pos.fileName.length;
 		if (!colorize) return '$d $p  $l: $s';

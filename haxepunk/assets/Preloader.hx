@@ -22,8 +22,8 @@ class Preloader
 	public var loaded(default, null):Int = 0;
 	public var failed(default, null):Int = 0;
 
-	var onload:Void->Void;
 	var cache:AssetCache;
+	public var onLoad = new haxepunk.Signal.Signal0();
 	var assets = new StringMap<Array<String>>();
 
 	public function new(?cache:AssetCache)
@@ -42,7 +42,7 @@ class Preloader
 	function check()
 	{
 		if (required == loaded + failed)
-			onload();
+			onLoad.invoke();
 	}
 
 	function success()
@@ -113,9 +113,8 @@ class Preloader
 		#end
 	}
 
-	public function load(onload:Void->Void)
+	public function load()
 	{
-		this.onload = onload;
 		for (path in assets.keys())
 		{
 			required += 1;
@@ -152,10 +151,11 @@ class Preloader
 							// wrap the function block with the preloader code
 							f.expr = macro {
 								_preloader = new haxepunk.assets.Preloader();
-								$b{preloadBlocks};
-								_preloader.load(function() {
+								_preloader.onLoad.bind(function() {
 									${f.expr};
 								});
+								$b{preloadBlocks};
+								_preloader.load();
 							};
 							found = true;
 						}
@@ -235,6 +235,11 @@ class Preloader
 				}
 			}
 			iterations += 1;
+		}
+
+		if (exprs.length == 0)
+		{
+			Log.warning('No assets found for path ${preloadPath.path}');
 		}
 
 		return macro $b{exprs};
