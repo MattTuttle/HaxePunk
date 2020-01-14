@@ -1,4 +1,4 @@
-package haxepunk.backend.generic;
+package haxepunk.audio;
 
 import haxepunk.assets.AssetCache;
 

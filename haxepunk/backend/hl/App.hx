@@ -49,8 +49,6 @@ class App implements haxepunk.App
 			commonVA = GL.createVertexArray();
 			GL.bindVertexArray( commonVA );
 		}
-
-		AudioEngine.initOpenAL();
 	}
 
 	@:access(haxepunk.Engine)
@@ -179,7 +177,6 @@ class App implements haxepunk.App
 	{
 		while (Sdl.processEvents(onEvent))
 		{
-			AudioEngine.update();
 			engine.onUpdate();
 
 			var color = HXP.screen.color;
@@ -193,7 +190,7 @@ class App implements haxepunk.App
 	function run()
 	{
 		mainLoop();
-		AudioEngine.quit();
+		HXP.audio.quit();
 		Sdl.quit();
 		Sys.exit(0);
 	}

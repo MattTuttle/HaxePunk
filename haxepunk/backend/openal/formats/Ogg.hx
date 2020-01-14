@@ -7,16 +7,11 @@ private typedef OggFile = hl.Abstract<"fmt_ogg">;
 
 class Ogg extends AudioData
 {
-
-	static var OGGFMT_I8:Int = 1;
-	static var OGGFMT_I16:Int = 2;
-
-	static var OGGFMT_BIGENDIAN:Int = 128;
-	static var OGGFMT_UNSIGNED:Int = 256;
-
 	var bytes:Bytes;
 	var reader:OggFile;
 	var currentSample:Int;
+	var channels:Int;
+	var bytesPerSample:Int = 2; // default to 16 bits
 
 	public function new(bytes:Bytes)
 	{
@@ -24,15 +19,17 @@ class Ogg extends AudioData
 		reader = ogg_open(bytes, bytes.length);
 		if( reader == null ) throw "Failed to decode OGG data";
 
-		var bitrate = 0, frequency = 0, samples = 0, channels = 0;
+		// must use local variables
+		var bitrate = 0, samples = 0, frequency = 0, channels = 0;
 		ogg_info(reader, bitrate, frequency, samples, channels);
+		format = getBufferFormat(channels, bytesPerSample * 8);
 		sampleRate = frequency;
-		format = getBufferFormat(channels, 16);
+		this.channels = channels;
 	}
 
 	override public function fillBuffer(buffer:Bytes, start:Int, length:Int):Int
 	{
-		var sampleStart = Std.int(start / 4);
+		var sampleStart = Std.int(start / (bytesPerSample * channels));
 		if (!ogg_seek(reader, sampleStart))
 		{
 			Log.critical("Invalid sample start!");
@@ -42,7 +39,7 @@ class Ogg extends AudioData
 		var bytesNeeded = length;
 		while (bytesNeeded > 0)
 		{
-			var read = ogg_read(reader, bytes, bytesNeeded, OGGFMT_I16);
+			var read = ogg_read(reader, bytes, bytesNeeded, bytesPerSample);
 			if (read < 0)
 			{
 				Log.critical("Failed to decode OGG data");

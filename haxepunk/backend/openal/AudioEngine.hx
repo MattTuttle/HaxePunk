@@ -16,12 +16,12 @@ typedef AudioHandle = {
 	source:Source,
 };
 
-class AudioEngine
+class AudioEngine implements haxepunk.audio.AudioEngine
 {
-	static final BUFFER_SIZE:Int = 4096*8;
-	static final NUM_BUFFERS:Int = 2;
+	final BUFFER_SIZE:Int = 4096*8;
+	final NUM_BUFFERS:Int = 2;
 
-	static function removeHandle(handle:AudioHandle):Void
+	function removeHandle(handle:AudioHandle):Void
 	{
 		if (handle.sfx == null) return;
 
@@ -43,8 +43,8 @@ class AudioEngine
 		handle.position = 0;
 	}
 
-	@:access(haxepunk.backend.openal.Sfx)
-	static function stream(buffer:Buffer, handle:AudioHandle):Bool
+	@:access(haxepunk.Sfx)
+	function stream(buffer:Buffer, handle:AudioHandle):Bool
 	{
 		var data = handle.sfx.data;
 		// TODO: check if this needs to be re-allocated every time we stream
@@ -63,7 +63,7 @@ class AudioEngine
 		}
 	}
 
-	static function createSource(sfx:Sfx):AudioHandle
+	function createSource(sfx:Sfx):AudioHandle
 	{
 		AL.genSources(1, tmpBytes);
 		var source = Source.ofInt(tmpBytes.getI32(0));
@@ -92,7 +92,7 @@ class AudioEngine
 		return handle;
 	}
 
-	static function getHandle(sfx:Sfx):AudioHandle
+	function getHandle(sfx:Sfx):AudioHandle
 	{
 		var handle = handleBySfx.get(sfx);
 		if (handle == null) {
@@ -101,14 +101,14 @@ class AudioEngine
 		return handle;
 	}
 
-	public static function stop(sfx:Sfx)
+	public function stop(sfx:Sfx):Bool
 	{
 		var handle = getHandle(sfx);
 		AL.sourceStop(handle.source);
 		return true;
 	}
 
-	public static function play(sfx:Sfx, loop:Bool=false)
+	public function play(sfx:Sfx, loop:Bool=false):Bool
 	{
 		var handle = getHandle(sfx);
 		AL.sourcei(handle.source, AL.LOOPING, loop ? AL.TRUE : AL.FALSE);
@@ -116,14 +116,14 @@ class AudioEngine
 		return true;
 	}
 
-	public static function resume(sfx:Sfx)
+	public function resume(sfx:Sfx):Bool
 	{
 		var handle = getHandle(sfx);
 		AL.sourcePlay(handle.source);
 		return true;
 	}
 
-	public static function setVolume(sfx:Sfx, volume:Float):Float
+	public function setVolume(sfx:Sfx, volume:Float):Float
 	{
 		var handle = getHandle(sfx);
 		volume = MathUtil.clamp(volume, 0, 1);
@@ -131,7 +131,7 @@ class AudioEngine
 		return volume;
 	}
 
-	static function checkError()
+	function checkError()
 	{
 		#if hxp_debug
 		var error = AL.getError();
@@ -149,7 +149,7 @@ class AudioEngine
 		#end
 	}
 
-	public static function update()
+	public function update()
 	{
 		var toRemove = [];
 		for (handle in handles)
@@ -183,7 +183,7 @@ class AudioEngine
 		}
 	}
 
-	public static function initOpenAL()
+	public function new()
 	{
 		tmpBytes = new hl.Bytes(64);
 
@@ -203,7 +203,7 @@ class AudioEngine
 		}
 	}
 
-	public static function quit()
+	public function quit()
 	{
 		var context = ALC.getCurrentContext();
 		var device = ALC.getContextsDevice(context);
@@ -220,10 +220,10 @@ class AudioEngine
 		return masterVolume = volume;
 	}
 
-	static var tmpBytes:hl.Bytes;
-	static var maxAuxiliarySends:Int;
-	static var handles = new Array<AudioHandle>();
-	static var handleBySfx = new Map<Sfx, AudioHandle>();
+	var tmpBytes:hl.Bytes;
+	var maxAuxiliarySends:Int;
+	var handles = new Array<AudioHandle>();
+	var handleBySfx = new Map<Sfx, AudioHandle>();
 }
 
 #end

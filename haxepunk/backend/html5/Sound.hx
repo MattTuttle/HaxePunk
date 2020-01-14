@@ -3,14 +3,10 @@ package haxepunk.backend.html5;
 import js.lib.Promise;
 import js.html.Audio;
 
-class Sound
+@:forward
+abstract Sound(Audio) to Audio from Audio
 {
-	var audio:Audio;
-
-	function new(audio:Audio)
-	{
-		this.audio = audio;
-	}
+	function new(audio:Audio) this = audio;
 
 	public static function loadFromURL(source:String):Promise<Sound>
 	{

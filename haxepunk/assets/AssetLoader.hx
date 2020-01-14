@@ -1,7 +1,7 @@
 package haxepunk.assets;
 
 import haxepunk.utils.Color;
-import haxepunk.backend.generic.Sound;
+import haxepunk.audio.Sound;
 import haxepunk.backend.generic.render.Texture;
 
 /**

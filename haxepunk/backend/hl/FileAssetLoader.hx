@@ -1,13 +1,10 @@
 package haxepunk.backend.hl;
 
-import haxepunk.backend.openal.Sfx;
-import haxe.ds.StringMap;
 import sys.FileSystem;
 import sys.io.File;
 import haxepunk.assets.AssetLoader;
-import haxepunk.utils.Log;
 import haxepunk.utils.Color;
-import haxepunk.backend.generic.Sound;
+import haxepunk.audio.Sound;
 
 class FileAssetLoader implements AssetLoader
 {

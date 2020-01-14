@@ -3,6 +3,7 @@ package haxepunk;
 import haxepunk.assets.AssetLoader;
 import haxe.Timer;
 import haxepunk.Tween.TweenType;
+import haxepunk.audio.AudioEngine;
 import haxepunk.input.Mouse;
 import haxepunk.math.MathUtil;
 import haxepunk.math.Random;
@@ -497,6 +498,8 @@ class HXP
 		_time = value;
 		return _time;
 	}
+
+	public static var audio:AudioEngine;
 
 	// Time information.
 	static var _time:Float;

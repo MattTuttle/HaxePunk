@@ -1,23 +1,61 @@
 package haxepunk;
 
-#if hl
+import haxepunk.HXP;
+import haxepunk.audio.Sound;
 
-typedef Sfx = haxepunk.backend.openal.Sfx;
+class Sfx
+{
+	public function new(data:SoundSource)
+	{
+		this.data = data;
+	}
 
-#elseif openfl
+	/**
+	 * Alter the volume factor (a value from 0 to 1) of the sound during playback.
+	 */
+	@:isVar public var volume(get, set):Float;
+	function get_volume():Float return volume;
+	function set_volume(value:Float):Float return volume = HXP.audio.setVolume(this, value);
 
-typedef Sfx = haxepunk.backend.flash.Sfx;
+	/**
+	 * Plays the sound once.
+	 * @param	vol	   Volume factor, a value from 0 to 1.
+	 * @param	pan	   Panning factor, a value from -1 to 1.
+	 * @param   loop   If the audio should loop infinitely
+	 */
+	public function play(volume:Float = 1, pan:Float = 0, loop:Bool = false)
+	{
+		this.volume = volume;
+		HXP.audio.play(this, loop);
+	}
 
-#elseif js
+	/**
+	 * Resumes the sound from the position stop() was called on it.
+	 */
+	public function resume()
+	{
+		HXP.audio.resume(this);
+	}
 
-typedef Sfx = haxepunk.backend.html5.Sfx;
+	/**
+	 * Plays the sound looping. Will loop continuously until you call stop(), play(), or loop() again.
+	 * @param	vol		Volume factor, a value from 0 to 1.
+	 * @param	pan		Panning factor, a value from -1 to 1.
+	 */
+	public function loop(vol:Float = 1, pan:Float = 0)
+	{
+		play(vol, pan, true);
+	}
 
-#elseif unit_test
+	/**
+	 * Stops the sound if it is currently playing.
+	 *
+	 * @return If the sound was stopped.
+	 */
+	public function stop():Bool
+	{
+		return HXP.audio.stop(this);
+	}
 
-typedef Sfx = Dynamic;
-
-#else
-
-#error "Sfx type not defined"
-
-#end
+	var data:Sound;
+}

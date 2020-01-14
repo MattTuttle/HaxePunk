@@ -69,72 +69,6 @@ class Sfx
 		this.complete = complete;
 	}
 
-	/**
-	 * Plays the sound once.
-	 * @param	vol	   Volume factor, a value from 0 to 1.
-	 * @param	pan	   Panning factor, a value from -1 to 1.
-	 * @param   loop   If the audio should loop infinitely
-	 */
-	public function play(volume:Float = 1, pan:Float = 0, loop:Bool = false)
-	{
-		if (_sound == null) return;
-		if (playing) stop();
-		_pan = MathUtil.clamp(pan, -1, 1);
-		_volume = volume < 0 ? 0 : volume;
-		_filteredPan = MathUtil.clamp(_pan + getPan(_type), -1, 1);
-		_filteredVol = Math.max(0, _volume * getVolume(_type));
-		_transform.pan = _filteredPan;
-		_transform.volume = _filteredVol;
-		_channel = _sound.play(0, loop ? -1 : 0, _transform);
-		if (playing)
-		{
-			addPlaying();
-			_channel.addEventListener(Event.SOUND_COMPLETE, onComplete);
-		}
-		_looping = loop;
-		_position = 0;
-	}
-
-	/**
-	 * Plays the sound looping. Will loop continuously until you call stop(), play(), or loop() again.
-	 * @param	vol		Volume factor, a value from 0 to 1.
-	 * @param	pan		Panning factor, a value from -1 to 1.
-	 */
-	public function loop(vol:Float = 1, pan:Float = 0)
-	{
-		play(vol, pan, true);
-	}
-
-	/**
-	 * Stops the sound if it is currently playing.
-	 *
-	 * @return If the sound was stopped.
-	 */
-	public function stop():Bool
-	{
-		if (!playing) return false;
-		removePlaying();
-		_position = _channel.position;
-		_channel.removeEventListener(Event.SOUND_COMPLETE, onComplete);
-		_channel.stop();
-		_channel = null;
-		return true;
-	}
-
-	/**
-	 * Resumes the sound from the position stop() was called on it.
-	 */
-	public function resume()
-	{
-		_channel = _sound.play(_position, _looping ? -1 : 0, _transform);
-		if (playing)
-		{
-			addPlaying();
-			_channel.addEventListener(Event.SOUND_COMPLETE, onComplete);
-		}
-		_position = 0;
-	}
-
 	/** @private Event handler for sound completion. */
 	function onComplete(?e:Event)
 	{
@@ -168,24 +102,6 @@ class Sfx
 		{
 			_typePlaying.get(_type).remove(this);
 		}
-	}
-
-	/**
-	 * Alter the volume factor (a value from 0 to 1) of the sound during playback.
-	 */
-	public var volume(get, set):Float;
-	function get_volume():Float return _volume;
-	function set_volume(value:Float):Float
-	{
-		if (value < 0) value = 0;
-		if (_channel == null) return value;
-		_volume = value;
-		var filteredVol:Float = value * getVolume(_type);
-		if (filteredVol < 0) filteredVol = 0;
-		if (_filteredVol == filteredVol) return value;
-		_filteredVol = _transform.volume = filteredVol;
-		_channel.soundTransform = _transform;
-		return _volume;
 	}
 
 	/**
@@ -350,20 +266,7 @@ class Sfx
 	 */
 	public static function onGlobalUpdated(updatePan:Bool)
 	{
-		for (type in _typePlaying.keys())
-		{
-			for (sfx in _typePlaying.get(type))
-			{
-				if (updatePan)
-				{
-					sfx.pan = sfx.pan;
-				}
-				else
-				{
-					sfx.volume = sfx.volume;
-				}
-			}
-		}
+
 	}
 
 	// Sound infromation.

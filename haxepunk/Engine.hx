@@ -119,6 +119,7 @@ class Engine
 	function createApp():App
 	{
 #if (lime || nme)
+		HXP.audio = new haxepunk.backend.flash.AudioEngine();
 		renderer = new haxepunk.backend.opengl.render.GLRenderer();
 		#if lime
 		return new haxepunk.backend.lime.App();
@@ -126,10 +127,12 @@ class Engine
 		return new haxepunk.backend.nme.App();
 		#end
 #elseif hlsdl
+		HXP.audio = new haxepunk.backend.openal.AudioEngine();
 		renderer = new haxepunk.backend.opengl.render.GLRenderer();
 		return new haxepunk.backend.hl.App();
 #elseif js
 		renderer = new haxepunk.backend.opengl.render.GLRenderer();
+		HXP.audio = new haxepunk.backend.html5.AudioEngine();
 		return new haxepunk.backend.html5.App();
 #elseif unit_test
 		return new haxepunk.backend.generic.App();
@@ -262,6 +265,7 @@ class Engine
 
 	function step()
 	{
+		HXP.audio.update();
 		// update input
 		Input.update();
 

@@ -10,7 +10,7 @@ import haxepunk.graphics.atlas.TileAtlas;
 import haxepunk.graphics.text.BitmapFont;
 import haxepunk.graphics.text.BitmapFontAtlas;
 import haxepunk.graphics.text.IBitmapFont;
-import haxepunk.backend.generic.Sound;
+import haxepunk.audio.Sound;
 import haxepunk.backend.generic.render.Texture;
 
 using haxepunk.assets.AssetMacros;
