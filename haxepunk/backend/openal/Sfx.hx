@@ -1,9 +1,5 @@
 package haxepunk.backend.openal;
 
-import openal.AL;
-import haxe.io.Bytes;
-import haxepunk.backend.openal.formats.*;
-import haxepunk.math.MathUtil;
 import haxepunk.backend.generic.Sound;
 
 class Sfx implements haxepunk.backend.generic.Sfx
@@ -11,15 +7,6 @@ class Sfx implements haxepunk.backend.generic.Sfx
 	public function new(data:SoundSource)
 	{
 		this.data = data;
-		AudioEngine.addSfx(this);
-	}
-
-	function clear()
-	{
-		stop();
-		AudioEngine.emptySource(source);
-		buffers = [];
-		data = null;
 	}
 
 	/**
@@ -27,12 +14,7 @@ class Sfx implements haxepunk.backend.generic.Sfx
 	 */
 	@:isVar public var volume(get, set):Float;
 	function get_volume():Float return volume;
-	function set_volume(value:Float):Float
-	{
-		MathUtil.clamp(value, 0, 1);
-		AL.sourcef(source, AL.GAIN, volume);
-		return volume;
-	}
+	function set_volume(value:Float):Float return volume = AudioEngine.setVolume(this, value);
 
 	/**
 	 * Plays the sound once.
@@ -42,13 +24,13 @@ class Sfx implements haxepunk.backend.generic.Sfx
 	 */
 	public function play(volume:Float = 1, pan:Float = 0, loop:Bool = false)
 	{
-		AL.sourcei(source, AL.LOOPING, loop ? AL.TRUE : AL.FALSE);
-		AL.sourcePlay(source);
+		this.volume = volume;
+		AudioEngine.play(this, loop);
 	}
 
 	public function resume()
 	{
-		AL.sourcePlay(source);
+		AudioEngine.resume(this);
 	}
 
 	/**
@@ -68,11 +50,8 @@ class Sfx implements haxepunk.backend.generic.Sfx
 	 */
 	public function stop():Bool
 	{
-		AL.sourceStop(source);
-		return true;
+		return AudioEngine.stop(this);
 	}
 
-	var source:Source;
-	var buffers = new Array<Buffer>();
-	var data:AudioData;
+	var data:Sound;
 }

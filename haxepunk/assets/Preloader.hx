@@ -32,10 +32,12 @@ class Preloader
 		{
 			cache = haxepunk.assets.AssetCache.global;
 		}
+		this.cache = cache;
 	}
 
 	public function addAsset(path:String, ?aliases:Array<String>)
 	{
+		required += 1;
 		assets.set(path, [path].concat(aliases == null ? [] : aliases));
 	}
 
@@ -73,6 +75,7 @@ class Preloader
 		var texture = haxepunk.HXP.assetLoader.getTexture(path);
 		if (texture == null)
 		{
+			Log.critical('Failed to load texture: ${path}');
 			fail();
 		}
 		else
@@ -101,6 +104,7 @@ class Preloader
 		var sound = HXP.assetLoader.getSound(path);
 		if (sound == null)
 		{
+			Log.critical('Failed to load sound: ${path}');
 			fail();
 		}
 		else
@@ -117,7 +121,6 @@ class Preloader
 	{
 		for (path in assets.keys())
 		{
-			required += 1;
 			switch (Path.extension(path))
 			{
 				case "jpg", "jpeg", "png":

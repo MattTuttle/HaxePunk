@@ -37,7 +37,7 @@ class AudioData
 		return 0;
 	}
 
-	public function fillBuffer(buffer:Bytes, length:Int):Int
+	public function fillBuffer(buffer:Bytes, position:Int, length:Int):Int
 	{
 		throw "AudioData is the base class and should not be called directly";
 	}

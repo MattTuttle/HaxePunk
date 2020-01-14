@@ -45,14 +45,14 @@ class Wav extends AudioData
 		return true;
 	}
 
-	override public function fillBuffer(buffer:Bytes, length:Int):Int
+	override public function fillBuffer(buffer:Bytes, position:Int, length:Int):Int
 	{
-		if (dataStart + length > data.length)
+		var start = dataStart + position;
+		if (start + length > data.length)
 		{
-			length = data.length - dataStart;
+			length = data.length - start;
 		}
-		buffer.blit(0, data, dataStart, length);
-		dataStart += length;
+		buffer.blit(0, data, start, length);
 		return length;
 	}
 

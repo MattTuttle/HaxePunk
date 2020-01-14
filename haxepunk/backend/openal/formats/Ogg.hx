@@ -7,6 +7,13 @@ private typedef OggFile = hl.Abstract<"fmt_ogg">;
 
 class Ogg extends AudioData
 {
+
+	static var OGGFMT_I8:Int = 1;
+	static var OGGFMT_I16:Int = 2;
+
+	static var OGGFMT_BIGENDIAN:Int = 128;
+	static var OGGFMT_UNSIGNED:Int = 256;
+
 	var bytes:Bytes;
 	var reader:OggFile;
 	var currentSample:Int;
@@ -19,7 +26,34 @@ class Ogg extends AudioData
 
 		var bitrate = 0, frequency = 0, samples = 0, channels = 0;
 		ogg_info(reader, bitrate, frequency, samples, channels);
-		trace(bitrate, samples, frequency, channels);
+		sampleRate = frequency;
+		format = getBufferFormat(channels, 16);
+	}
+
+	override public function fillBuffer(buffer:Bytes, start:Int, length:Int):Int
+	{
+		var sampleStart = Std.int(start / 4);
+		if (!ogg_seek(reader, sampleStart))
+		{
+			Log.critical("Invalid sample start!");
+			return 0;
+		}
+		var bytes = hl.Bytes.fromBytes(buffer);
+		var bytesNeeded = length;
+		while (bytesNeeded > 0)
+		{
+			var read = ogg_read(reader, bytes, bytesNeeded, OGGFMT_I16);
+			if (read < 0)
+			{
+				Log.critical("Failed to decode OGG data");
+				return 0;
+			}
+			// EOF
+			if (read == 0) break;
+			bytesNeeded -= read;
+			bytes = bytes.offset(read);
+		}
+		return length - bytesNeeded;
 	}
 
 	@:hlNative("fmt", "ogg_open")
