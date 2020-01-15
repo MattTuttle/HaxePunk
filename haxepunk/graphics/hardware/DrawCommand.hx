@@ -94,6 +94,7 @@ private class DrawTriangle
 	var _next:DrawTriangle;
 }
 
+@:dox(hide)
 class TriangleIterator
 {
 	var triangle:DrawTriangle = null;

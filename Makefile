@@ -7,7 +7,7 @@ TEST=openfl4
 all: clean unit docs examples
 
 docs:
-	@echo "Generating documentation"
+	@echo "Generating documentation for openfl"
 	@cd doc && \
 		rm -rf bin && \
 		haxelib run $(COMMAND) build $(TARGET) -xml && \

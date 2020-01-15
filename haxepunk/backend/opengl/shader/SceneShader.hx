@@ -1,5 +1,6 @@
 package haxepunk.backend.opengl.shader;
 
+import haxepunk.backend.opengl.GL;
 import haxepunk.backend.opengl.render.GLRenderer;
 import haxepunk.HXP;
 

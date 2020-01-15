@@ -1,6 +1,9 @@
 package haxepunk.backend.opengl.shader;
 
+#if !doc
+
 import haxepunk.backend.opengl.render.GLRenderer;
+import haxepunk.backend.opengl.GL;
 import haxepunk.graphics.hardware.DrawCommand;
 import haxepunk.backend.opengl.render.BufferData;
 import haxepunk.HXP;
@@ -313,3 +316,5 @@ class Shader implements haxepunk.backend.generic.render.Shader
 		attrib.data = attrib.data.concat(values);
 	}
 }
+
+#end // !doc

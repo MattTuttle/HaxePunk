@@ -1,5 +1,7 @@
 package haxepunk.backend.html5;
 
+#if js
+
 import js.lib.Promise;
 import js.html.Audio;
 
@@ -21,3 +23,5 @@ abstract Sound(Audio) to Audio from Audio
 		});
 	}
 }
+
+#end

@@ -258,11 +258,15 @@ class Graphic
 		smooth = smoothDefault;
 		pixelSnapping = pixelSnappingDefault;
 		color = Color.White;
-		#if (lime || nme || hlsdl || js)
+
+		#if (doc || unit_test)
+		// TODO: create generic shader class
+		#elseif (lime || nme || hlsdl || js)
 		shader = haxepunk.backend.opengl.shader.TextureShader.defaultShader;
-		#elseif !unit_test
+		#else
 		#error "Default texture shader is not defined"
 		#end
+
 		_class = Type.getClassName(Type.getClass(this));
 	}
 

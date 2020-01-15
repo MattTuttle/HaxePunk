@@ -391,9 +391,11 @@ class DrawContext
 	{
 		if (shader == null)
 		{
-			#if (lime || nme || hlsdl || js)
+			#if (doc || unit_test)
+			// TODO: create generic shader class
+			#elseif (lime || nme || hlsdl || js)
 			shader = haxepunk.backend.opengl.shader.ColorShader.defaultShader;
-			#elseif !unit_test
+			#else
 			#error "Default color shader is not defined";
 			#end
 		}

@@ -1,5 +1,7 @@
 package haxepunk.backend.html5;
 
+#if js
+
 import js.html.CanvasRenderingContext2D;
 import js.html.CanvasElement;
 import haxe.ds.StringMap;
@@ -128,6 +130,23 @@ class Text extends Image
 	var bufferMargin(get, null):Float;
 	inline function get_bufferMargin() return 2 + (border == null ? 0 : border.size);
 
+	/**
+	 * Add a style for a subset of the text, for use with the richText property.
+	 *
+	 * Usage:
+	 *
+	 * ```
+	 * text.addStyle("red", {color: 0xFF0000});
+	 * text.addStyle("big", {size: text.size * 2, bold: true});
+	 * text.richText = "<big>Hello</big> <red>world</red>";
+	 * ```
+	 */
+	public function addStyle(tagName:String, params:Dynamic):Void
+	{
+		Log.critical("addStyle not working on js target");
+		if (_richText != null) _needsUpdate = true;
+	}
+
 	override function get_width():Int return Std.int(_width);
 	override function get_height():Int return Std.int(_height);
 
@@ -255,3 +274,5 @@ class Text extends Image
 	var _borderRegion:AtlasRegion;
 	var _borderSource:CanvasElement;
 }
+
+#end

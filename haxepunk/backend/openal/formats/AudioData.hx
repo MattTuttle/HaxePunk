@@ -2,7 +2,6 @@ package haxepunk.backend.openal.formats;
 
 import haxepunk.utils.Log;
 import haxe.io.Bytes;
-import openal.AL;
 
 class AudioData
 {
@@ -22,16 +21,18 @@ class AudioData
 
 	function getBufferFormat(channels:Int, bitsPerSample:Int):Int
 	{
+		#if hlopenal
 		if (bitsPerSample == 8)
 		{
-			if (channels == 1) return AL.FORMAT_MONO8;
-			if (channels == 2) return AL.FORMAT_STEREO8;
+			if (channels == 1) return openal.AL.FORMAT_MONO8;
+			if (channels == 2) return openal.AL.FORMAT_STEREO8;
 		}
 		if (bitsPerSample == 16)
 		{
-			if (channels == 1) return AL.FORMAT_MONO16;
-			if (channels == 2) return AL.FORMAT_STEREO16;
+			if (channels == 1) return openal.AL.FORMAT_MONO16;
+			if (channels == 2) return openal.AL.FORMAT_STEREO16;
 		}
+		#end
 
 		Log.critical("Unsupported buffer format (channels: " + channels + ", bits: " + bitsPerSample + ")");
 		return 0;

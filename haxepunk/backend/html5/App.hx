@@ -1,8 +1,11 @@
 package haxepunk.backend.html5;
 
+#if js
+
 import haxepunk.math.MathUtil;
 import haxepunk.input.Mouse;
 import haxepunk.input.Key;
+import haxepunk.backend.opengl.GL;
 import haxepunk.backend.opengl.render.GLRenderer;
 import js.Browser;
 import js.html.CanvasElement;
@@ -127,3 +130,5 @@ class App implements haxepunk.App
 	public function getMouseX():Float return mouseX;
 	public function getMouseY():Float return mouseY;
 }
+
+#end

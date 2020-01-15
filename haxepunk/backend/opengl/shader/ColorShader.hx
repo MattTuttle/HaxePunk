@@ -1,5 +1,7 @@
 package haxepunk.backend.opengl.shader;
 
+#if !doc
+
 class ColorShader extends Shader
 {
 #if (lime || nme || js)
@@ -67,3 +69,5 @@ void main(void) {
 		return defaultShader;
 	}
 }
+
+#end // !doc

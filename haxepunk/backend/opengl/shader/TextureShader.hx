@@ -1,5 +1,7 @@
 package haxepunk.backend.opengl.shader;
 
+#if !doc
+
 import haxepunk.HXP;
 
 class TextureShader extends Shader
@@ -98,3 +100,5 @@ void main(void) {
 		return defaultShader;
 	}
 }
+
+#end // !doc

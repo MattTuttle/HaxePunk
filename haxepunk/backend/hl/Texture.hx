@@ -5,7 +5,7 @@ import haxepunk.utils.Color;
 import hl.Format;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
-import sdl.GL;
+import haxepunk.backend.opengl.GL;
 
 class Texture implements haxepunk.backend.generic.render.Texture
 {
@@ -15,7 +15,7 @@ class Texture implements haxepunk.backend.generic.render.Texture
 	public var height(default, null):Int;
 
 	final data:hl.Bytes;
-	var texture:sdl.GL.Texture;
+	var texture:GLTexture;
 	var dirty = false;
 
 	public function new(data:hl.Bytes, width:Int, height:Int)

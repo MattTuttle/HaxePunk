@@ -1,5 +1,7 @@
 package haxepunk.backend.opengl.render;
 
+#if !doc
+
 #if js
 #if haxe4
 import js.lib.Uint32Array;
@@ -214,3 +216,5 @@ class BufferData
 		}
 	}
 }
+
+#end // !doc

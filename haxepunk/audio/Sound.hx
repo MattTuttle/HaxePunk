@@ -20,7 +20,7 @@ typedef Sound = flash.media.Sound;
 
 typedef Sound = haxepunk.backend.html5.Sound;
 
-#else
+#elseif hl
 
 typedef Sound = haxepunk.backend.openal.formats.AudioData;
 

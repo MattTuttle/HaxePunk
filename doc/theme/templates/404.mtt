@@ -1,0 +1,5 @@
+::use 'main.mtt'::
+	<div class="header">
+		Not found
+	</div>
+::end::

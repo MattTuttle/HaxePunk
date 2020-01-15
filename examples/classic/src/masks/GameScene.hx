@@ -4,7 +4,6 @@ import haxepunk.HXP;
 import haxepunk.Entity;
 import haxepunk.graphics.Image;
 import haxepunk.graphics.tile.Tilemap;
-import haxepunk.graphics.hardware.Texture;
 import haxepunk.masks.Circle;
 import haxepunk.masks.Grid;
 import haxepunk.masks.Hitbox;
@@ -69,7 +68,7 @@ class GameScene extends DemoScene
 
 		// create a tilemap using a single color
 		var tilemap:Tilemap = new Tilemap(
-				Texture.create(tileWidth, tileHeight, false, color),
+				HXP.assetLoader.createTexture(tileWidth, tileHeight, false, color),
 				width * tileWidth, height * tileHeight,
 				tileWidth, tileHeight);
 		var grid:Grid = new Grid(width * tileWidth, height * tileHeight, tileWidth, tileHeight);

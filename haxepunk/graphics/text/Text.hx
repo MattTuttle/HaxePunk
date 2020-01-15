@@ -8,7 +8,7 @@ typedef Text = haxepunk.backend.flash.graphics.text.Text;
 
 typedef Text = haxepunk.backend.html5.Text;
 
-#else
+#elseif !doc
 
 #error "Text is not supported on this target"
 

@@ -118,7 +118,9 @@ class Engine
 	 */
 	function createApp():App
 	{
-#if (lime || nme)
+#if (doc || unit_test)
+		return new haxepunk.backend.generic.App();
+#elseif (lime || nme)
 		HXP.audio = new haxepunk.backend.flash.AudioEngine();
 		renderer = new haxepunk.backend.opengl.render.GLRenderer();
 		#if lime
@@ -134,8 +136,6 @@ class Engine
 		renderer = new haxepunk.backend.opengl.render.GLRenderer();
 		HXP.audio = new haxepunk.backend.html5.AudioEngine();
 		return new haxepunk.backend.html5.App();
-#elseif unit_test
-		return new haxepunk.backend.generic.App();
 #else
 		#error "Invalid target";
 #end

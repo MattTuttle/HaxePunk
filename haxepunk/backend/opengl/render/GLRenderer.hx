@@ -1,56 +1,18 @@
 package haxepunk.backend.opengl.render;
 
+#if !doc
+
 import haxe.PosInfos;
 import haxepunk.utils.Color;
 import haxepunk.utils.Log;
 import haxepunk.backend.generic.render.Renderer;
 import haxepunk.backend.generic.render.Texture;
 import haxepunk.backend.opengl.shader.SceneShader;
+import haxepunk.backend.opengl.GL;
 import haxepunk.HXP;
 import haxepunk.Scene;
 import haxepunk.graphics.hardware.DrawCommand;
 import haxepunk.utils.BlendMode;
-
-#if hlsdl
-typedef GLBuffer = sdl.GL.Buffer;
-typedef GLFramebuffer = sdl.GL.Framebuffer;
-typedef GLProgram = sdl.GL.Program;
-typedef GLShader = sdl.GL.Shader;
-typedef GLTexture = sdl.GL.Texture;
-typedef GLUniformLocation = sdl.GL.Uniform;
-typedef GL = sdl.GL;
-#elseif lime
-typedef GL = lime.graphics.opengl.GL;
-typedef GLBuffer = lime.graphics.opengl.GLBuffer;
-typedef GLFramebuffer = lime.graphics.opengl.GLFramebuffer;
-typedef GLProgram = lime.graphics.opengl.GLProgram;
-typedef GLShader = lime.graphics.opengl.GLShader;
-typedef GLTexture = lime.graphics.opengl.GLTexture;
-typedef GLUniformLocation = lime.graphics.opengl.GLUniformLocation;
-#elseif nme
-typedef GL = nme.gl.GL;
-typedef GLBuffer = flash.gl.GLBuffer;
-typedef GLFramebuffer = flash.gl.GLFramebuffer;
-typedef GLProgram = nme.gl.GLProgram;
-typedef GLShader = nme.gl.GLShader;
-typedef GLTexture = nme.gl.GLTexture;
-typedef GLUniformLocation = nme.gl.GLUniformLocation;
-#elseif js
-typedef GLBuffer = js.html.webgl.Buffer;
-typedef GLFramebuffer = js.html.webgl.Framebuffer;
-typedef GLProgram = js.html.webgl.Program;
-typedef GLShader = js.html.webgl.Shader;
-typedef GLTexture = js.html.webgl.Texture;
-typedef GLUniformLocation = js.html.webgl.UniformLocation;
-typedef GL = js.html.webgl.GL;
-#else
-typedef GLBuffer = Null<UInt>;
-typedef GLFramebuffer = Null<UInt>;
-typedef GLProgram = Null<UInt>;
-typedef GLShader = Null<UInt>;
-typedef GLTexture = Null<UInt>;
-typedef GLUniformLocation = Null<UInt>;
-#end
 
 #if (lime || !js)
 typedef _GL = GL;
@@ -68,9 +30,9 @@ typedef FrameBuffer = {
  * OpenGL-based renderer. Based on work by @Yanrishatum and @Beeblerox.
  * @since	2.6.0
  */
-@:dox(hide)
 @:access(haxepunk.Scene)
 @:access(haxepunk.Engine)
+@:allow(haxepunk.debug)
 class GLRenderer implements Renderer
 {
 	public static var drawCallLimit:Int = -1;
@@ -365,6 +327,7 @@ class GLRenderer implements Renderer
 	@:access(haxepunk.backend.opengl.render.BufferData)
 	inline function bindRenderbuffer(triangles:Int, floatsPerTriangle:Int)
 	{
+		#if !doc
 		if (GLUtils.invalid(renderBuffer))
 		{
 			renderBufferData.buffer = null;
@@ -375,6 +338,7 @@ class GLRenderer implements Renderer
 		{
 			bufferData(GL.ARRAY_BUFFER, renderBufferData.bufferBytesSize(), renderBufferData.buffer, GL.DYNAMIC_DRAW);
 		}
+		#end
 	}
 
 	static function bindTexture(texture:Texture, smooth:Bool, index:Int=GL.TEXTURE0)
@@ -594,3 +558,5 @@ class GLRenderer implements Renderer
 
 	var renderBuffer:GLBuffer;
 }
+
+#end

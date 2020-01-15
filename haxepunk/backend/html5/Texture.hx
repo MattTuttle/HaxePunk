@@ -19,10 +19,12 @@ class Texture implements haxepunk.backend.generic.render.Texture
 
 	public function new(width:Int=0, height:Int=0)
 	{
+		#if !doc
 		canvas = cast Browser.document.createElement("canvas");
 		setSize(width, height);
 
 		texture = GLRenderer._GL.createTexture();
+		#end
 	}
 
 	function setSize(width:Int, height:Int)
@@ -76,6 +78,7 @@ class Texture implements haxepunk.backend.generic.render.Texture
 
 	public function bind():Void
 	{
+		#if !doc
 		var _GL = GLRenderer._GL;
 		_GL.bindTexture(GL.TEXTURE_2D, texture);
 
@@ -87,12 +90,15 @@ class Texture implements haxepunk.backend.generic.render.Texture
 			_GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER , GL.NEAREST);
 			_GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
 		}
+		#end
 	}
 
 	public function dispose():Void
 	{
+		#if !doc
 		GLRenderer._GL.deleteTexture(texture);
 		texture = null;
 		canvas = null;
+		#end
 	}
 }

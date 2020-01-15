@@ -7,6 +7,7 @@ import haxepunk.utils.Color;
 import haxepunk.math.MathUtil;
 import haxepunk.math.Rectangle;
 
+@:dox(hide)
 class DrawCommandIterator
 {
 	@:allow(haxepunk.graphics.hardware.DrawCommandBatch)

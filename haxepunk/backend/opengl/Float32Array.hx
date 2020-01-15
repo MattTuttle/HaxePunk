@@ -1,6 +1,6 @@
 package haxepunk.backend.opengl;
 
-import haxe.Int32;
+#if !doc
 
 #if hl
 
@@ -75,6 +75,8 @@ typedef Float32Array = js.lib.Float32Array;
 
 #else
 
+import haxe.Int32;
+
 #if cpp
 typedef Float32 = cpp.Float32;
 #else
@@ -100,3 +102,5 @@ abstract Float32Array(Array<Float32>) from Array<Float32> to Array<Float32>
 }
 
 #end
+
+#end // !doc
