@@ -6,6 +6,7 @@ import haxepunk.math.Rectangle;
 import haxepunk.math.Vector2;
 import haxepunk.utils.Color;
 
+@:dox(hide)
 interface IAtlasRegion
 {
 	public var width(get, never):Int;

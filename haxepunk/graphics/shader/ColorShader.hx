@@ -1,5 +1,6 @@
 package haxepunk.graphics.shader;
 
+@:dox(hide)
 class ColorShader extends Shader
 {
 #if (lime || nme || js)

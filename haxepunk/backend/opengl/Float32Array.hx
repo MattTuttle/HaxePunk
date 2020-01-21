@@ -96,8 +96,7 @@ abstract Float32Array(Array<Float32>) from Array<Float32> to Array<Float32>
 
 	public function setInt32(pos:Int, value:Int32)
 	{
-		// TODO: need a better way to set this value so it doesn't have precision loss
-		this[pos] = value;
+		throw "setInt32 is not supported on this target";
 	}
 }
 

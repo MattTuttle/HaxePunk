@@ -1,17 +1,35 @@
 package haxepunk.graphics.shader;
 
+/**
+ * The shader attribute data type. This is the data that will be stored in a shader
+ * attribute. Position, texture coordinates, and vertex colors are automatic but
+ * custom data can also be attached to a shader.
+ */
 enum AttributeType
 {
 	Position;
 	TexCoord;
 	VertexColor;
+	/**
+	 * The floatsPerElement parameter sets the number of floats per vertex.
+	 * This will allow a single float per vertex up to an entire matrix.
+	 * Remember you need to set the data on the Attribute instance.
+	 */
 	Custom(floatsPerElement:Int);
 }
 
+/**
+ * Class to keep track of shader attributes. Do not create an instance of this directly.
+ * Instead, create attributes on shaders by calling the Shader.addAttribute function.
+ */
 class Attribute
 {
 	public final name:String;
 	public final type:AttributeType;
+	/**
+	 * Only used for the Custom attribute type. You must populate this with data
+	 * when using the custom type.
+	 */
 	public final data:Array<Float>;
 
 	function new(name:String, type:AttributeType)
@@ -26,18 +44,40 @@ class Attribute
 	}
 }
 
+/**
+ * Allows the creation of shaders by passing the vertex and fragment source on creation.
+ * There is no cross-compilation so shaders are platform specific.
+ */
 class Shader
 {
-	public var vertexSource:String;
-	public var fragmentSource:String;
+	@:dox(hide)
+	public final vertexSource:String;
 
+	@:dox(hide)
+	public final fragmentSource:String;
+
+	@:dox(hide)
 	public final id:Int;
 	static var idSeq:Int = 0;
 
 	/**
-	 * Override check if triangles are on screen
+	 * Override check if triangles are on screen. This will automatically be set
+	 * if a custom attribute is used.
 	 */
 	public var alwaysDraw:Bool = false;
+
+	/**
+	 * Can be used to turn on and off the shader from being used for post processing.
+	 * Only useful for scene shaders.
+	 */
+	public var active:Bool = true;
+
+	/**
+	 * Changes the filtering method used on the render texture.
+	 * Defaults to pixelated (nearest neighbor).
+	 * Only useful for scene shaders.
+	 */
+	public var smooth:Bool = false;
 
 	public function new(vertexSource:String, fragmentSource:String)
 	{
@@ -72,6 +112,7 @@ class Shader
 
 	/**
 	 * Set or change the value of a named shader uniform.
+	 * Currently only supports single float values.
 	 */
 	public inline function setUniform(name:String, value:Float)
 	{

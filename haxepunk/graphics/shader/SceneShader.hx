@@ -2,9 +2,7 @@ package haxepunk.graphics.shader;
 
 import haxepunk.HXP;
 
-/**
- * Used to create a custom shader.
- */
+@:dox(hide)
 class SceneShader extends Shader
 {
 	static inline var DEFAULT_VERTEX_SHADER:String = "
@@ -35,18 +33,17 @@ void main () {
 }";
 
 	/**
-	 * Create a custom shader from a text asset.
+	 * Create a scene shader from a text asset.
 	 */
 	public static inline function fromAsset(name:String):SceneShader
 	{
 		return new SceneShader(HXP.assetLoader.getText(name));
 	}
 
-	public var active:Bool = true;
-	public var smooth:Bool = false;
-
 	/**
 	 * Create a custom shader from a string.
+	 * Automatically sets `aPosition` to the position attribute and `aTexCoord`
+	 * to the texture coordinate attribute.
 	 */
 	public function new(?fragment:String)
 	{

@@ -7,6 +7,7 @@
 *.build
 *.hash
 *.docset/
+doc/xml/
 build-test/
 libs/
 bin

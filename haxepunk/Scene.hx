@@ -1,6 +1,6 @@
 package haxepunk;
 
-import haxepunk.graphics.shader.SceneShader;
+import haxepunk.graphics.shader.Shader;
 import haxepunk.Signal;
 import haxepunk.assets.AssetCache;
 import haxepunk.graphics.atlas.AtlasData;
@@ -82,7 +82,7 @@ class Scene extends Tweener
 	 *
 	 * @since	4.0.0
 	 */
-	public var shaders = new Array<SceneShader>();
+	public var shaders = new Array<Shader>();
 
 	/**
 	 * Invoked before this Scene's update cycle begins each frame.

@@ -2,6 +2,7 @@ package haxepunk.graphics.shader;
 
 import haxepunk.HXP;
 
+@:dox(hide)
 class TextureShader extends Shader
 {
 #if (lime || nme || js)
