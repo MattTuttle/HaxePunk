@@ -386,7 +386,6 @@ class DrawContext
 	}
 
 	/** @private Helper function to grab a DrawCommand object from the current scene */
-	@:access(haxepunk.graphics.hardware.SceneRenderer)
 	inline function begin()
 	{
 		if (shader == null)

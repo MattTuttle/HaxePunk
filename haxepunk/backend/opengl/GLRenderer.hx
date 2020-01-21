@@ -1,4 +1,4 @@
-package haxepunk.backend.opengl.render;
+package haxepunk.backend.opengl;
 
 #if !doc
 
@@ -10,14 +10,9 @@ import haxepunk.backend.generic.render.Texture;
 import haxepunk.backend.opengl.GL;
 import haxepunk.HXP;
 import haxepunk.Scene;
-import haxepunk.graphics.shader.SceneShader;
 import haxepunk.graphics.shader.Shader;
 import haxepunk.graphics.hardware.DrawCommand;
 import haxepunk.utils.BlendMode;
-
-#if (lime || !js)
-typedef _GL = GL;
-#end
 
 @:dox(hide)
 typedef FrameBuffer = {
@@ -34,6 +29,7 @@ typedef FrameBuffer = {
 @:access(haxepunk.Scene)
 @:access(haxepunk.Engine)
 @:allow(haxepunk.debug)
+@:access(haxepunk.backend.opengl)
 class GLRenderer implements Renderer
 {
 	public static var drawCallLimit:Int = -1;
@@ -72,7 +68,6 @@ class GLRenderer implements Renderer
 		#end
 	}
 
-	@:access(haxepunk.backend.opengl.render.BufferData)
 	public static inline function bufferSubData(buffer:BufferData)
 	{
 		#if hl
@@ -231,15 +226,16 @@ class GLRenderer implements Renderer
 		}
 	}
 
-	function getCompiledShader(shader:Shader):CompiledShader
+	@:generic
+	function getCompiledShader<T:CompiledShader>(shader:Shader, shaderClass:Class<T>):T
 	{
 		var compiled = _shaders.get(shader.id);
 		if (compiled == null)
 		{
-			compiled = new CompiledShader(shader);
+			compiled = Type.createInstance(shaderClass, [shader]);
 			_shaders.set(shader.id, compiled);
 		}
-		return compiled;
+		return cast compiled;
 	}
 
 	@:access(haxepunk.graphics.hardware.DrawCommand)
@@ -272,7 +268,7 @@ class GLRenderer implements Renderer
 
 			if (width > 0 && height > 0)
 			{
-				var shader = getCompiledShader(drawCommand.shader);
+				var shader = getCompiledShader(drawCommand.shader, CompiledShader);
 				shader.bind();
 
 				// expand arrays if necessary
@@ -337,7 +333,6 @@ class GLRenderer implements Renderer
 		_GL.bindBuffer(GL.ARRAY_BUFFER, buffer);
 	}
 
-	@:access(haxepunk.backend.opengl.render.BufferData)
 	inline function bindRenderbuffer(triangles:Int, floatsPerTriangle:Int)
 	{
 		#if !doc
@@ -385,7 +380,6 @@ class GLRenderer implements Renderer
 		#end
 	}
 
-	@:access(haxepunk.Screen)
 	public function startScene(scene:Scene)
 	{
 		checkForErrors();
@@ -405,36 +399,10 @@ class GLRenderer implements Renderer
 		screenScaleX = screen.scaleX;
 		screenScaleY = screen.scaleY;
 
-#if postprocess
-		var postProcess:Array<SceneShader> = scene.shaders;
-		var firstShader:SceneShader = null;
-		if (postProcess != null) for (p in postProcess)
-		{
-			if (p.active)
-			{
-				firstShader = p;
-				break;
-			}
-		}
-		if (firstShader != null)
-		{
-			fb.bindFrameBuffer();
-			var p = firstShader;
-			if (p.width != null || p.height != null)
-			{
-				var w = p.textureWidth,
-					h = p.textureHeight;
-				screen.scaleX *= w / screenWidth;
-				screen.scaleY *= h / screenHeight;
-				screen.width = w;
-				screen.height = h;
-			}
-		}
-		else
+		if (!startPostProcess(scene))
 		{
 			bindDefaultFramebuffer();
 		}
-#end
 
 		x = Std.int(screen.x + Math.max(scene.x, 0));
 		y = Std.int(screen.y + Math.max(scene.y, 0));
@@ -442,6 +410,105 @@ class GLRenderer implements Renderer
 		height = scene.height;
 
 		ortho(-x, screenWidth - x, screenHeight - y, -y);
+	}
+
+	@:access(haxepunk.Screen)
+	function startPostProcess(scene:Scene):Bool
+	{
+		for (p in scene.shaders)
+		{
+			if (!p.active) continue;
+
+			// bind the first scene shader
+			bindFrameBuffer(fb);
+			var shader = getCompiledShader(p, CompiledSceneShader);
+			if (shader.width != null || shader.height != null)
+			{
+				var w = shader.textureWidth,
+					h = shader.textureHeight;
+				var screen = HXP.screen;
+				screen.scaleX *= w / screenWidth;
+				screen.scaleY *= h / screenHeight;
+				screen.width = w;
+				screen.height = h;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	function endPostProcess(scene:Scene)
+	{
+		var activeShaders:Array<CompiledSceneShader> = [];
+		for (shader in scene.shaders)
+		{
+			if (shader.active)
+			{
+				activeShaders.push(getCompiledShader(shader, CompiledSceneShader));
+			}
+		}
+		for (i in 0...activeShaders.length)
+		{
+			var last = i == activeShaders.length - 1;
+			var shader = activeShaders[i];
+			var renderTexture = fb.texture;
+
+			var scaleX:Float, scaleY:Float;
+			if (last)
+			{
+				// scale up to screen size
+				scaleX = screenWidth / shader.textureWidth;
+				scaleY = screenHeight / shader.textureHeight;
+				bindDefaultFramebuffer();
+			}
+			else
+			{
+				// render to texture
+				var next = activeShaders[i+1];
+				scaleX = next.textureWidth / shader.textureWidth;
+				scaleY = next.textureHeight / shader.textureHeight;
+				var oldFb = fb;
+				fb = backFb;
+				backFb = oldFb;
+				bindFrameBuffer(fb);
+				checkForErrors();
+			}
+			shader.setScale(scaleX, scaleY);
+			shader.bind();
+			checkForErrors();
+
+			_GL.activeTexture(GL.TEXTURE0);
+			_GL.bindTexture(GL.TEXTURE_2D, renderTexture);
+
+			#if desktop
+			_GL.enable(GL.TEXTURE_2D);
+			#end
+
+			if (shader.smooth)
+			{
+				_GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
+				_GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
+			}
+			else
+			{
+				_GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
+				_GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
+			}
+
+			_GL.blendEquation(GL.FUNC_ADD);
+			_GL.blendFunc(GL.ONE, GL.ONE_MINUS_SRC_ALPHA);
+			_GL.drawArrays(GL.TRIANGLES, 0, 6);
+
+			_GL.bindTexture(GL.TEXTURE_2D, null);
+
+			#if desktop
+			_GL.disable(GL.TEXTURE_2D);
+			#end
+
+			shader.unbind();
+
+			_GL.bindFramebuffer(GL.FRAMEBUFFER, null);
+		}
 	}
 
 	@:access(haxepunk.Screen)
@@ -453,88 +520,7 @@ class GLRenderer implements Renderer
 		screen.scaleX = screenScaleX;
 		screen.scaleY = screenScaleY;
 
-#if postprocess
-		var hasPostProcess = false;
-		var postProcess:Array<SceneShader> = cast scene.shaders;
-#if (lime || nme)
-		if (postProcess != null) for (p in postProcess)
-		{
-			if (p.active)
-			{
-				hasPostProcess = true;
-				break;
-			}
-		}
-#end
-		if (hasPostProcess)
-		{
-			var l = postProcess.length;
-			while (!postProcess[l - 1].active) --l;
-			for (i in 0 ... l)
-			{
-				var last = i == l - 1;
-				var shader = postProcess[i];
-				if (!shader.active) continue;
-				var renderTexture = fb.texture;
-
-				var scaleX:Float, scaleY:Float;
-				if (last)
-				{
-					// scale up to screen size
-					scaleX = screenWidth / shader.textureWidth;
-					scaleY = screenHeight / shader.textureHeight;
-					bindDefaultFramebuffer();
-				}
-				else
-				{
-					// render to texture
-					var next = postProcess[i + 1];
-					scaleX = next.textureWidth / shader.textureWidth;
-					scaleY = next.textureHeight / shader.textureHeight;
-					var oldFb = fb;
-					fb = backFb;
-					backFb = oldFb;
-					bindFrameBuffer(fb);
-					checkForErrors();
-				}
-				shader.setScale(shader.textureWidth, shader.textureHeight, scaleX, scaleY);
-				shader.bind();
-				checkForErrors();
-
-				_GL.activeTexture(GL.TEXTURE0);
-				_GL.bindTexture(GL.TEXTURE_2D, renderTexture);
-
-				#if desktop
-				_GL.enable(GL.TEXTURE_2D);
-				#end
-
-				if (shader.smooth)
-				{
-					_GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
-					_GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
-				}
-				else
-				{
-					_GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
-					_GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
-				}
-
-				_GL.blendEquation(GL.FUNC_ADD);
-				_GL.blendFunc(GL.ONE, GL.ONE_MINUS_SRC_ALPHA);
-				_GL.drawArrays(GL.TRIANGLES, 0, 6);
-
-				_GL.bindTexture(GL.TEXTURE_2D, null);
-
-				#if desktop
-				_GL.disable(GL.TEXTURE_2D);
-				#end
-
-				shader.unbind();
-
-				_GL.bindFramebuffer(GL.FRAMEBUFFER, null);
-			}
-		}
-#end
+		endPostProcess(scene);
 	}
 
 	public function startFrame()

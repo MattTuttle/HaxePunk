@@ -136,3 +136,7 @@ typedef GL = js.html.webgl.GL;
 #error "Invalid GL target"
 
 #end
+
+#if (lime || !js)
+typedef _GL = GL;
+#end

@@ -29,14 +29,14 @@ class ButtonTray extends EntityList<DebugButton>
 	function resetDrawCallDebug()
 	{
 		#if !doc
-		haxepunk.backend.opengl.render.GLRenderer.drawCallLimit = -1;
+		haxepunk.backend.opengl.GLRenderer.drawCallLimit = -1;
 		#end
 	}
 
 	function incrementDrawCallDebug()
 	{
 		#if !doc
-		haxepunk.backend.opengl.render.GLRenderer.drawCallLimit++;
+		haxepunk.backend.opengl.GLRenderer.drawCallLimit++;
 		#end
 	}
 }

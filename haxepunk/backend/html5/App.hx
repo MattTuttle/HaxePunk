@@ -6,7 +6,7 @@ import haxepunk.math.MathUtil;
 import haxepunk.input.Mouse;
 import haxepunk.input.Key;
 import haxepunk.backend.opengl.GL;
-import haxepunk.backend.opengl.render.GLRenderer;
+import haxepunk.backend.opengl.GLRenderer;
 import js.Browser;
 import js.html.CanvasElement;
 import haxepunk.Engine;

@@ -122,7 +122,7 @@ class Engine
 		return new haxepunk.backend.generic.App();
 #elseif (lime || nme)
 		HXP.audio = new haxepunk.backend.flash.AudioEngine();
-		renderer = new haxepunk.backend.opengl.render.GLRenderer();
+		renderer = new haxepunk.backend.opengl.GLRenderer();
 		#if lime
 		return new haxepunk.backend.lime.App();
 		#else
@@ -130,10 +130,10 @@ class Engine
 		#end
 #elseif hlsdl
 		HXP.audio = new haxepunk.backend.openal.AudioEngine();
-		renderer = new haxepunk.backend.opengl.render.GLRenderer();
+		renderer = new haxepunk.backend.opengl.GLRenderer();
 		return new haxepunk.backend.hl.App();
 #elseif js
-		renderer = new haxepunk.backend.opengl.render.GLRenderer();
+		renderer = new haxepunk.backend.opengl.GLRenderer();
 		HXP.audio = new haxepunk.backend.html5.AudioEngine();
 		return new haxepunk.backend.html5.App();
 #else

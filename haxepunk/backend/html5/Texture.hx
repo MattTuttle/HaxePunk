@@ -5,7 +5,7 @@ import js.lib.Promise;
 import js.html.Image;
 import js.html.webgl.GL;
 import js.html.CanvasElement;
-import haxepunk.backend.opengl.render.GLRenderer;
+import haxepunk.backend.opengl.GLRenderer;
 import haxepunk.utils.Color;
 
 class Texture implements haxepunk.backend.generic.render.Texture

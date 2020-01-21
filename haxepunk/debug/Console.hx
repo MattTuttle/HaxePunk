@@ -14,7 +14,7 @@ import haxepunk.utils.DrawContext;
 
 #if !doc
 // TODO: get rid of this import
-typedef HardwareRenderer = haxepunk.backend.opengl.render.GLRenderer;
+typedef HardwareRenderer = haxepunk.backend.opengl.GLRenderer;
 #end
 
 @:access(haxepunk.Engine)

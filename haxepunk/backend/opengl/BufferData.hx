@@ -1,4 +1,4 @@
-package haxepunk.backend.opengl.render;
+package haxepunk.backend.opengl;
 
 #if !doc
 

@@ -2,7 +2,7 @@ package haxepunk.backend.flash.graphics.hardware;
 
 import haxepunk.utils.Color;
 
-import haxepunk.backend.opengl.render.GLRenderer;
+import haxepunk.backend.opengl.GLRenderer;
 import flash.display.BitmapData;
 import flash.geom.Point;
 

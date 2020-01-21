@@ -2,12 +2,9 @@ package haxepunk.backend.opengl;
 
 #if !doc
 
-import haxepunk.backend.opengl.render.GLRenderer;
 import haxepunk.backend.opengl.GL;
 import haxepunk.graphics.hardware.DrawCommand;
 import haxepunk.graphics.shader.Shader;
-import haxepunk.backend.opengl.render.BufferData;
-import haxepunk.utils.Log;
 
 class CompiledAttribute
 {
