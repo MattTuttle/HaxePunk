@@ -1,6 +1,4 @@
-package haxepunk.backend.opengl.shader;
-
-#if !doc
+package haxepunk.graphics.shader;
 
 import haxepunk.HXP;
 
@@ -88,9 +86,9 @@ void main(void) {
 	public function new(?vertex:String, ?fragment:String)
 	{
 		super(vertex == null ? VERTEX_SHADER : vertex, fragment == null ? FRAGMENT_SHADER : fragment);
-		position.name = "aPosition";
-		texCoord.name = "aTexCoord";
-		color.name = "aColor";
+		addAttribute("aPosition", Position);
+		addAttribute("aTexCoord", TexCoord);
+		addAttribute("aColor", VertexColor);
 	}
 
 	public static var defaultShader(get, null):Shader;
@@ -100,5 +98,3 @@ void main(void) {
 		return defaultShader;
 	}
 }
-
-#end // !doc

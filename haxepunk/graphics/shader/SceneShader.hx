@@ -1,4 +1,6 @@
-package haxepunk.backend.opengl.shader;
+package haxepunk.graphics.shader;
+
+#if postprocess
 
 import haxepunk.backend.opengl.GL;
 import haxepunk.backend.opengl.render.GLRenderer;
@@ -171,3 +173,5 @@ void main () {
 	static var _lastSy:Float = 0;
 	static var buffer:GLBuffer;
 }
+
+#end

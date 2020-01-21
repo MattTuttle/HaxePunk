@@ -1,7 +1,7 @@
 package haxepunk;
 
 import haxe.ds.Either;
-import haxepunk.backend.generic.render.Shader;
+import haxepunk.graphics.shader.Shader;
 import haxepunk.Signal;
 import haxepunk.assets.AssetCache;
 import haxepunk.graphics.atlas.Atlas;
@@ -262,7 +262,7 @@ class Graphic
 		#if (doc || unit_test)
 		// TODO: create generic shader class
 		#elseif (lime || nme || hlsdl || js)
-		shader = haxepunk.backend.opengl.shader.TextureShader.defaultShader;
+		shader = haxepunk.graphics.shader.TextureShader.defaultShader;
 		#else
 		#error "Default texture shader is not defined"
 		#end

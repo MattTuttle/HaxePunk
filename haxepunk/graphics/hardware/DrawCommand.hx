@@ -1,6 +1,6 @@
 package haxepunk.graphics.hardware;
 
-import haxepunk.backend.generic.render.Shader;
+import haxepunk.graphics.shader.Shader;
 import haxepunk.backend.generic.render.Texture;
 import haxepunk.math.MathUtil;
 import haxepunk.math.Rectangle;
@@ -188,7 +188,7 @@ class DrawCommand
 		// to reduce the number of temporary variables created in hxcpp.
 		if (this.smooth != smooth) return false;
 		else if (this.texture != texture) return false;
-		else if (!this.shader.equals(shader)) return false;
+		else if (this.shader.id != shader.id) return false;
 		else if (this.blend != blend) return false;
 		else
 		{
@@ -217,7 +217,7 @@ class DrawCommand
 	{
 		if (alpha > 0)
 		{
-			var onScreen = shader.hasAttributes() || (
+			var onScreen = shader.alwaysDraw || (
 				MathUtil.minOf3(tx1, tx2, tx3) <= visibleArea.right &&
 				MathUtil.maxOf3(tx1, tx2, tx3) >= visibleArea.left &&
 				MathUtil.minOf3(ty1, ty2, ty3) <= visibleArea.bottom &&

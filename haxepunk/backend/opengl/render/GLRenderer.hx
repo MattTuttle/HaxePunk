@@ -3,14 +3,15 @@ package haxepunk.backend.opengl.render;
 #if !doc
 
 import haxe.PosInfos;
+import haxe.ds.IntMap;
 import haxepunk.utils.Color;
-import haxepunk.utils.Log;
 import haxepunk.backend.generic.render.Renderer;
 import haxepunk.backend.generic.render.Texture;
-import haxepunk.backend.opengl.shader.SceneShader;
 import haxepunk.backend.opengl.GL;
 import haxepunk.HXP;
 import haxepunk.Scene;
+import haxepunk.graphics.shader.SceneShader;
+import haxepunk.graphics.shader.Shader;
 import haxepunk.graphics.hardware.DrawCommand;
 import haxepunk.utils.BlendMode;
 
@@ -46,6 +47,7 @@ class GLRenderer implements Renderer
 	static var triangleCount:Int = 0;
 	static var drawCallCount:Int = 0;
 	static var _tracking:Bool = true;
+	static var _shaders = new IntMap<CompiledShader>();
 
 	static inline function ortho(x0:Float, x1:Float, y0:Float, y1:Float)
 	{
@@ -229,6 +231,17 @@ class GLRenderer implements Renderer
 		}
 	}
 
+	function getCompiledShader(shader:Shader):CompiledShader
+	{
+		var compiled = _shaders.get(shader.id);
+		if (compiled == null)
+		{
+			compiled = new CompiledShader(shader);
+			_shaders.set(shader.id, compiled);
+		}
+		return compiled;
+	}
+
 	@:access(haxepunk.graphics.hardware.DrawCommand)
 	public function render(drawCommand:DrawCommand):Void
 	{
@@ -259,7 +272,7 @@ class GLRenderer implements Renderer
 
 			if (width > 0 && height > 0)
 			{
-				var shader = cast(drawCommand.shader, haxepunk.backend.opengl.shader.Shader);
+				var shader = getCompiledShader(drawCommand.shader);
 				shader.bind();
 
 				// expand arrays if necessary

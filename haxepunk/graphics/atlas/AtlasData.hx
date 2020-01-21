@@ -1,6 +1,6 @@
 package haxepunk.graphics.atlas;
 
-import haxepunk.backend.generic.render.Shader;
+import haxepunk.graphics.shader.Shader;
 import haxepunk.assets.AssetCache;
 import haxepunk.graphics.hardware.DrawCommandBatch;
 import haxepunk.backend.generic.render.Texture;

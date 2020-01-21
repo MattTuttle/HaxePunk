@@ -1,6 +1,6 @@
 package haxepunk;
 
-import haxepunk.backend.generic.render.Shader;
+import haxepunk.graphics.shader.Shader;
 import haxe.ds.IntMap;
 import haxepunk.Signal;
 import haxepunk.assets.AssetCache;

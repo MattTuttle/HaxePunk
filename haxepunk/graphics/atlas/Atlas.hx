@@ -1,6 +1,6 @@
 package haxepunk.graphics.atlas;
 
-import haxepunk.backend.generic.render.Shader;
+import haxepunk.graphics.shader.Shader;
 import haxepunk.utils.BlendMode;
 import haxepunk.graphics.atlas.AtlasData;
 import haxepunk.math.Rectangle;

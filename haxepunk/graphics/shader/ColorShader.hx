@@ -1,6 +1,4 @@
-package haxepunk.backend.opengl.shader;
-
-#if !doc
+package haxepunk.graphics.shader;
 
 class ColorShader extends Shader
 {
@@ -58,8 +56,8 @@ void main(void) {
 	public function new(?fragment:String)
 	{
 		super(VERTEX_SHADER, fragment == null ? FRAGMENT_SHADER : fragment);
-		position.name = "aPosition";
-		color.name = "aColor";
+		addAttribute("aPosition", Position);
+		addAttribute("aColor", VertexColor);
 	}
 
 	public static var defaultShader(get, null):ColorShader;
@@ -69,5 +67,3 @@ void main(void) {
 		return defaultShader;
 	}
 }
-
-#end // !doc

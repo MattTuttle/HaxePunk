@@ -1,6 +1,6 @@
 package haxepunk.graphics.hardware;
 
-import haxepunk.backend.generic.render.Shader;
+import haxepunk.graphics.shader.Shader;
 import haxepunk.backend.generic.render.Texture;
 import haxepunk.utils.BlendMode;
 import haxepunk.utils.Color;

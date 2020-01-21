@@ -9,7 +9,6 @@ import js.lib.Uint32Array;
 import js.html.Uint32Array;
 #end
 #end
-import haxepunk.backend.opengl.shader.Shader.Attribute;
 import haxepunk.graphics.hardware.DrawCommand;
 
 class BufferData
@@ -134,21 +133,6 @@ class BufferData
 		buffer.buffer.setInt32(byteOffset * 4, value);
 		byteOffset += 1;
 #end
-	}
-
-	/**
-	 * Add vertex attribute data, at the end of the DrawCommand. While position, texture coords
-	 * and color are interleaved, custom vertex attrib data is at the end of the buffer to speed
-	 * up construction.
-	 */
-	public inline function addVertexAttribData(attribs:Array<Attribute>, nbVertices:Int)
-	{
-		for (attrib in attribs)
-		{
-			var attribData = attrib.data;
-			for (k in 0 ... nbVertices * attrib.valuesPerElement)
-				addFloat(attribData[++attrib.dataPos]);
-		}
 	}
 
 	// Add DrawCommand triangle position only
