@@ -82,6 +82,11 @@ class CompiledShader
 	public function build()
 	{
 		glProgram = GLRenderer.build(shader.vertexSource, shader.fragmentSource);
+		rebindAttributes();
+	}
+
+	function rebindAttributes()
+	{
 		for (attribute in shader.attributes)
 		{
 			var compiled = new CompiledAttribute(attribute, glProgram);
@@ -94,6 +99,7 @@ class CompiledShader
 			}
 			attributes.push(compiled);
 		}
+		shader.dirty = false;
 	}
 
 	public function destroy()
@@ -203,11 +209,12 @@ class CompiledShader
 
 	public function bind()
 	{
-		if (shader.dirty || GLUtils.invalid(glProgram))
+		if (GLUtils.invalid(glProgram))
 		{
 			destroy();
 			build();
 		}
+		if (shader.dirty) rebindAttributes();
 
 		#if (!lime && js) var GL = GLRenderer._GL; #end
 		GL.useProgram(glProgram);
