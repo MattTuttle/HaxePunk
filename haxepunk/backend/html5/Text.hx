@@ -4,6 +4,7 @@ package haxepunk.backend.html5;
 
 import js.html.CanvasRenderingContext2D;
 import js.html.CanvasElement;
+import haxe.io.Path;
 import haxe.ds.StringMap;
 import haxepunk.HXP;
 import haxepunk.utils.Log;
@@ -83,7 +84,7 @@ class Text extends Image
 	function set_font(value:String):String
 	{
 		if (font != value) _needsUpdate = true;
-		return font = value;
+		return font = Path.withoutDirectory(Path.withoutExtension(value));
 	}
 
 	/**
@@ -202,6 +203,7 @@ class Text extends Image
 		this.border = options.border;
 		this.size = options.size;
 		this.color = options.color;
+		this.font = options.font;
 
 		_needsUpdate = true;
 	}
@@ -222,7 +224,6 @@ class Text extends Image
 		setFont(ctx);
 
 		textWidth = Std.int(ctx.measureText(text).width);
-		trace(textWidth);
 
 		var width = Math.ceil(textWidth + bufferMargin * 2);
 		var height = Math.ceil(textHeight + bufferMargin * 2);

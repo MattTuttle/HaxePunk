@@ -119,19 +119,14 @@ class Preloader
 		#end
 	}
 
-	function loadText(path:String)
+	#if js
+	function asyncLoad(path:String, callback:js.html.XMLHttpRequest->Void):js.html.XMLHttpRequest
 	{
-		var aliases = assets.get(path);
-		#if (!lime && js)
 		var http = new js.html.XMLHttpRequest();
 		http.onreadystatechange = function() {
 			if (http.readyState == js.html.XMLHttpRequest.DONE) {
 				if (http.status == 200) {
-					var text = http.responseText;
-					for (alias in aliases) {
-						cache.addText(alias, text);
-					}
-					success();
+					callback(http);
 				} else {
 					fail();
 				}
@@ -139,7 +134,22 @@ class Preloader
 		}
 		http.open('GET', path, true);
 		http.send();
-		#else
+		return http;
+	}
+	#end
+
+	function loadText(path:String)
+	{
+		var aliases = assets.get(path);
+#if (!lime && js)
+		asyncLoad(path, function(http) {
+			var text = http.responseText;
+			for (alias in aliases) {
+				cache.addText(alias, text);
+			}
+			success();
+		});
+#else
 		var text = HXP.assetLoader.getText(path);
 		if (text == null)
 		{
@@ -153,6 +163,28 @@ class Preloader
 			}
 			success();
 		}
+#end
+	}
+
+	function loadFont(path:String)
+	{
+		var aliases = assets.get(path);
+		#if (!lime && js)
+		var http = asyncLoad(path, function(http) {
+			var name = Path.withoutDirectory(Path.withoutExtension(path));
+			var font = new js.html.FontFace(name, http.response);
+			font.load().then(function(face) {
+				js.Browser.document.fonts.add(face);
+				success();
+			}).catchError(function(error) {
+				Log.error('Failed to load font: $path\n$error');
+				fail();
+			});
+		});
+		http.responseType = js.html.XMLHttpRequestResponseType.ARRAYBUFFER;
+		#else
+		// fonts not supported on other targets
+		fail();
 		#end
 	}
 
@@ -162,15 +194,10 @@ class Preloader
 		{
 			switch (Path.extension(path))
 			{
-				case "jpg", "jpeg", "png":
-					loadTexture(path);
-				case "mp3", "ogg", "wav":
-					loadSound(path);
-				case "fnt":
-					loadText(path);
-				default:
-					Log.error("Failed to load " + path);
-					fail();
+				case "jpg", "jpeg", "png": loadTexture(path);
+				case "mp3", "ogg", "wav":  loadSound(path);
+				case "woff", "ttf":        loadFont(path);
+				default: loadText(path);
 			}
 		}
 	}
@@ -277,11 +304,6 @@ class Preloader
 
 	static function findAssetPath(path:String):Null<String>
 	{
-		if (FileSystem.exists(path))
-		{
-			return path;
-		}
-		
 		// try to search the parent directories of the current file for the asset path
 		var posInfos = Context.getPosInfos(Context.currentPos());
 		var dir = Path.directory(Path.normalize(posInfos.file));
