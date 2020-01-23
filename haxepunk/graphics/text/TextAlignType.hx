@@ -6,6 +6,11 @@ typedef TextAlignType = openfl.text.TextFormatAlign;
 
 #else
 
-typedef TextAlignType = String;
+enum abstract TextAlignType(String) from String to String
+{
+	var LEFT = "left";
+	var CENTER = "center";
+	var RIGHT = "right";
+}
 
 #end

@@ -176,7 +176,7 @@ class Text extends Image
 		// defaults
 		if (!Reflect.hasField(options, "font")) options.font = HXP.defaultFont;
 		if (!Reflect.hasField(options, "size")) options.size = 16;
-		if (!Reflect.hasField(options, "align")) options.align = "left";
+		if (!Reflect.hasField(options, "align")) options.align = TextAlignType.LEFT;
 		if (!Reflect.hasField(options, "color")) options.color = 0xFFFFFF;
 		if (!Reflect.hasField(options, "resizable")) options.resizable = true;
 		if (!Reflect.hasField(options, "wordWrap")) options.wordWrap = false;
