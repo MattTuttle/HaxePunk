@@ -122,6 +122,24 @@ class Preloader
 	function loadText(path:String)
 	{
 		var aliases = assets.get(path);
+		#if (!lime && js)
+		var http = new js.html.XMLHttpRequest();
+		http.onreadystatechange = function() {
+			if (http.readyState == js.html.XMLHttpRequest.DONE) {
+				if (http.status == 200) {
+					var text = http.responseText;
+					for (alias in aliases) {
+						cache.addText(alias, text);
+					}
+					success();
+				} else {
+					fail();
+				}
+			}
+		}
+		http.open('GET', path, true);
+		http.send();
+		#else
 		var text = HXP.assetLoader.getText(path);
 		if (text == null)
 		{
@@ -135,6 +153,7 @@ class Preloader
 			}
 			success();
 		}
+		#end
 	}
 
 	public function load()
