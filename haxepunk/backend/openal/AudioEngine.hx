@@ -9,9 +9,18 @@ import openal.ALC;
 import openal.AL;
 import openal.EFX;
 
+enum PlaybackState {
+	Created;
+	Stopped;
+	Playing;
+	Paused;
+}
+
 typedef AudioHandle = {
 	sfx:Sfx,
 	position:Int,
+	loop: Bool,
+	state:PlaybackState,
 	buffers:Array<Buffer>,
 	source:Source,
 };
@@ -70,6 +79,8 @@ class AudioEngine implements haxepunk.audio.AudioEngine
 
 		var handle = {
 			sfx: sfx,
+			loop: false,
+			state: Created,
 			position: 0,
 			source: source,
 			buffers: new Array<Buffer>()
@@ -105,22 +116,23 @@ class AudioEngine implements haxepunk.audio.AudioEngine
 	{
 		var handle = getHandle(sfx);
 		AL.sourceStop(handle.source);
+		handle.state = Stopped;
 		return true;
 	}
 
 	public function play(sfx:Sfx, loop:Bool=false):Bool
 	{
 		var handle = getHandle(sfx);
-		AL.sourcei(handle.source, AL.LOOPING, loop ? AL.TRUE : AL.FALSE);
 		AL.sourcePlay(handle.source);
+		handle.state = Playing;
+		// TODO: handle looping with buffers
+		handle.loop = loop;
 		return true;
 	}
 
 	public function resume(sfx:Sfx):Bool
 	{
-		var handle = getHandle(sfx);
-		AL.sourcePlay(handle.source);
-		return true;
+		return play(sfx, getHandle(sfx).loop);
 	}
 
 	public function setVolume(sfx:Sfx, volume:Float):Float
@@ -155,9 +167,18 @@ class AudioEngine implements haxepunk.audio.AudioEngine
 		for (handle in handles)
 		{
 			var source = handle.source;
-			var processed = AL.getSourcei(source, AL.BUFFERS_PROCESSED);
-			for (_ in 0...processed)
+			
+			// sounds will stop when window is moved, this checks the handle state vs openal's state and makes sure they are in sync
+			var state = AL.getSourcei(source, AL.SOURCE_STATE);
+			if (state == AL.STOPPED && handle.state == Playing)
 			{
+				AL.sourcePlay(source);
+			}
+
+			var processed = AL.getSourcei(source, AL.BUFFERS_PROCESSED);
+			while (processed > 0)
+			{
+				var gain = AL.getSourcei(source, AL.GAIN);
 				// unqueue the buffer
 				var buffer = handle.buffers.shift();
 				tmpBytes.setI32(0, buffer.toInt());
@@ -175,6 +196,7 @@ class AudioEngine implements haxepunk.audio.AudioEngine
 					// remove the handle when all buffers are exhausted
 					toRemove.push(handle);
 				}
+				processed -= 1;
 			}
 		}
 		for (handle in toRemove)
