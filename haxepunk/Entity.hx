@@ -1,14 +1,17 @@
 package haxepunk;
 
-import haxe.ds.Either.Left;
-import haxe.ds.Either.Right;
 import haxepunk.Signal.Signal0;
-import haxepunk.ds.OneOf;
 import haxepunk.graphics.Graphiclist;
 import haxepunk.math.MathUtil;
 import haxepunk.math.Vector2;
 
-typedef SolidType = OneOf<String, Array<String>>;
+@:forward(iterator)
+abstract StringOrArray(Array<String>) to Array<String> from Array<String>
+{
+	@:from static function fromString(str:String):StringOrArray {
+		return [str];
+	}
+}
 
 /**
  * Main game Entity class updated by `Scene`.
@@ -233,61 +236,76 @@ class Entity extends Tweener
 		Mask.drawContext.circle((x - camera.x) * camera.screenScaleX, (y - camera.y) * camera.screenScaleY, 3, 8);
 	}
 
+	function entityIteratorByTypes(types:StringOrArray):Iterator<Entity>
+	{
+		var entities = new Map<Entity, Bool>();
+		for (type in types)
+		{
+			var typeEntities = _scene.entitiesForType(type);
+			if (typeEntities != null)
+			{
+				for (e in typeEntities)
+				{
+					entities.set(e, true);
+				}
+			}
+		}
+		return entities.keys();
+	}
+
+	inline function overlapsWithEntity(other:Entity):Bool
+	{
+		return x - originX + width > other.x - other.originX
+			&& y - originY + height > other.y - other.originY
+			&& x - originX < other.x - other.originX + other.width
+			&& y - originY < other.y - other.originY + other.height;
+	}
+
+	inline function collidesWithEntity(other:Entity):Bool
+	{
+		return if (collidable && other.collidable
+			&& other != this
+			&& overlapsWithEntity(other))
+		{
+			if (_mask == null)
+			{
+				other._mask == null || other._mask.collide(HITBOX);
+			}
+			else
+			{
+				_mask.collide(other._mask != null ? other._mask : other.HITBOX);
+			}
+		}
+		else false;
+	}
+
 	/**
 	 * Checks for a collision against an Entity type.
-	 * @param	type		The Entity type to check for.
+	 * @param	types		The Entity type(s) to check for. A string or string array.
 	 * @param	x			Virtual x position to place this Entity.
 	 * @param	y			Virtual y position to place this Entity.
 	 * @return	The first Entity collided with, or null if none were collided.
 	 */
-	public function collide(type:String, x:Float, y:Float):Entity
+	public function collide(types:StringOrArray, x:Float, y:Float):Entity
 	{
-		if (_scene == null) return null;
+		if (_scene == null || !collidable) return null;
 
-		var entities = _scene.entitiesForType(type);
-		if (!collidable || entities == null) return null;
+		var result = null;
+		var iterator = entityIteratorByTypes(types);
 
 		_x = this.x; _y = this.y;
 		this.x = x; this.y = y;
 
-		if (_mask == null)
+		for (e in iterator)
 		{
-			for (e in entities)
+			if (collidesWithEntity(e))
 			{
-				if (e.collidable && e != this
-					&& x - originX + width > e.x - e.originX
-					&& y - originY + height > e.y - e.originY
-					&& x - originX < e.x - e.originX + e.width
-					&& y - originY < e.y - e.originY + e.height)
-				{
-					if (e._mask == null || e._mask.collide(HITBOX))
-					{
-						this.x = _x; this.y = _y;
-						return e;
-					}
-				}
-			}
-		}
-		else
-		{
-			for (e in entities)
-			{
-				if (e.collidable && e != this
-					&& x - originX + width > e.x - e.originX
-					&& y - originY + height > e.y - e.originY
-					&& x - originX < e.x - e.originX + e.width
-					&& y - originY < e.y - e.originY + e.height)
-				{
-					if (_mask.collide(e._mask != null ? e._mask : e.HITBOX))
-					{
-						this.x = _x; this.y = _y;
-						return e;
-					}
-				}
+				result = e;
+				break;
 			}
 		}
 		this.x = _x; this.y = _y;
-		return null;
+		return result;
 	}
 
 	/**
@@ -297,22 +315,11 @@ class Entity extends Tweener
 	 * @param	y			Virtual y position to place this Entity.
 	 * @return	The first Entity collided with, or null if none were collided.
 	 */
-	public function collideTypes(types:SolidType, x:Float, y:Float):Entity
+	@:deprecated
+	public function collideTypes(types:StringOrArray, x:Float, y:Float):Entity
 	{
-		switch (types)
-		{
-			case Left(s):
-				return collide(s, x, y);
-			case Right(a):
-				var e:Entity;
-				for (type in a)
-				{
-					e = collide(type, x, y);
-					if (e != null) return e;
-				}
-		}
-
-		return null;
+		Log.info("Use collide instead of collideTypes");
+		return collide(types, x, y);
 	}
 
 	/**
@@ -327,30 +334,9 @@ class Entity extends Tweener
 		_x = this.x; _y = this.y;
 		this.x = x; this.y = y;
 
-		if (collidable && e.collidable
-			&& x - originX + width > e.x - e.originX
-			&& y - originY + height > e.y - e.originY
-			&& x - originX < e.x - e.originX + e.width
-			&& y - originY < e.y - e.originY + e.height)
-		{
-			if (_mask == null)
-			{
-				if ((e._mask) == null || (e._mask).collide(HITBOX))
-				{
-					this.x = _x; this.y = _y;
-					return e;
-				}
-				this.x = _x; this.y = _y;
-				return null;
-			}
-			if (_mask.collide((e._mask) != null ? (e._mask) : (e.HITBOX)))
-			{
-				this.x = _x; this.y = _y;
-				return e;
-			}
-		}
+		var result = collidesWithEntity(e) ? e : null;
 		this.x = _x; this.y = _y;
-		return null;
+		return result;
 	}
 
 	/**
@@ -429,45 +415,21 @@ class Entity extends Tweener
 	 * @param	y			Virtual y position to place this Entity.
 	 * @param	array		The Array or Vector object to populate.
 	 */
-	public function collideInto<E:Entity>(type:String, x:Float, y:Float, array:Array<E>):Void
+	public function collideInto<E:Entity>(types:StringOrArray, x:Float, y:Float, array:Array<E>):Void
 	{
-		if (_scene == null) return;
+		if (_scene == null || !collidable) return;
 
-		var entities = _scene.entitiesForType(type);
-		if (!collidable || entities == null) return;
+		var iterator = entityIteratorByTypes(types);
 
 		_x = this.x; _y = this.y;
 		this.x = x; this.y = y;
 		var n:Int = array.length;
 
-		if (_mask == null)
+		for (e in iterator)
 		{
-			for (e in entities)
+			if (collidesWithEntity(e))
 			{
-				e = cast e;
-				if (e.collidable && e != this
-					&& x - originX + width > e.x - e.originX
-					&& y - originY + height > e.y - e.originY
-					&& x - originX < e.x - e.originX + e.width
-					&& y - originY < e.y - e.originY + e.height)
-				{
-					if ((e._mask) == null || (e._mask).collide(HITBOX)) array[n++] = cast e;
-				}
-			}
-		}
-		else
-		{
-			for (e in entities)
-			{
-				e = cast e;
-				if (e.collidable && e != this
-					&& x - originX + width > e.x - e.originX
-					&& y - originY + height > e.y - e.originY
-					&& x - originX < e.x - e.originX + e.width
-					&& y - originY < e.y - e.originY + e.height)
-				{
-					if (_mask.collide((e._mask) != null ? (e._mask) : (e.HITBOX))) array[n++] = cast e;
-				}
+				array[n++] = cast e;
 			}
 		}
 		this.x = _x; this.y = _y;
@@ -481,10 +443,11 @@ class Entity extends Tweener
 	 * @param	y			Virtual y position to place this Entity.
 	 * @param	array		The Array or Vector object to populate.
 	 */
-	public function collideTypesInto<E:Entity>(types:Array<String>, x:Float, y:Float, array:Array<E>)
+	@:deprecated
+	public function collideTypesInto<E:Entity>(types:StringOrArray, x:Float, y:Float, array:Array<E>)
 	{
-		if (_scene == null) return;
-		for (type in types) collideInto(type, x, y, array);
+		Log.info("Use collideInto instead of collideTypesInto");
+		collideInto(types, x, y, array);
 	}
 
 	/**
@@ -778,7 +741,7 @@ class Entity extends Tweener
 	 * @param	solidType	An optional collision type to stop flush against upon collision.
 	 * @param	sweep		If sweeping should be used (prevents fast-moving objects from going through solidType).
 	 */
-	public function moveBy(x:Float, y:Float, ?solidType:SolidType, sweep:Bool = false):Void
+	public function moveBy(x:Float, y:Float, ?solidType:StringOrArray, sweep:Bool = false):Void
 	{
 		_moveX += x;
 		_moveY += y;
@@ -786,17 +749,22 @@ class Entity extends Tweener
 		y = Math.round(_moveY);
 		_moveX -= x;
 		_moveY -= y;
-		if (solidType != null)
+		if (solidType == null)
+		{
+			this.x += x;
+			this.y += y;
+		}
+		else
 		{
 			var sign:Int, e:Entity;
 			if (x != 0)
 			{
-				if (collidable && (sweep || collideTypes(solidType, this.x + x, this.y) != null))
+				if (collidable && (sweep || collide(solidType, this.x + x, this.y) != null))
 				{
 					sign = x > 0 ? 1 : -1;
 					while (x != 0)
 					{
-						if ((e = collideTypes(solidType, this.x + sign, this.y)) != null)
+						if ((e = collide(solidType, this.x + sign, this.y)) != null)
 						{
 							if (moveCollideX(e)) break;
 							else this.x += sign;
@@ -812,12 +780,12 @@ class Entity extends Tweener
 			}
 			if (y != 0)
 			{
-				if (collidable && (sweep || collideTypes(solidType, this.x, this.y + y) != null))
+				if (collidable && (sweep || collide(solidType, this.x, this.y + y) != null))
 				{
 					sign = y > 0 ? 1 : -1;
 					while (y != 0)
 					{
-						if ((e = collideTypes(solidType, this.x, this.y + sign)) != null)
+						if ((e = collide(solidType, this.x, this.y + sign)) != null)
 						{
 							if (moveCollideY(e)) break;
 							else this.y += sign;
@@ -832,11 +800,6 @@ class Entity extends Tweener
 				else this.y += y;
 			}
 		}
-		else
-		{
-			this.x += x;
-			this.y += y;
-		}
 	}
 
 	/**
@@ -846,7 +809,7 @@ class Entity extends Tweener
 	 * @param	solidType	An optional collision type to stop flush against upon collision.
 	 * @param	sweep		If sweeping should be used (prevents fast-moving objects from going through solidType).
 	 */
-	public inline function moveTo(x:Float, y:Float, ?solidType:SolidType, sweep:Bool = false)
+	public inline function moveTo(x:Float, y:Float, ?solidType:StringOrArray, sweep:Bool = false)
 	{
 		moveBy(x - this.x, y - this.y, solidType, sweep);
 	}
@@ -859,7 +822,7 @@ class Entity extends Tweener
 	 * @param	solidType	An optional collision type to stop flush against upon collision.
 	 * @param	sweep		If sweeping should be used (prevents fast-moving objects from going through solidType).
 	 */
-	public inline function moveTowards(x:Float, y:Float, amount:Float, ?solidType:SolidType, sweep:Bool = false)
+	public inline function moveTowards(x:Float, y:Float, amount:Float, ?solidType:StringOrArray, sweep:Bool = false)
 	{
 		_point.x = x - this.x;
 		_point.y = y - this.y;
@@ -877,7 +840,7 @@ class Entity extends Tweener
 	 * @param	solidType	An optional collision type to stop flush against upon collision.
 	 * @param	sweep		If sweeping should be used (prevents fast-moving objects from going through solidType).
 	 */
-	public inline function moveAtAngle(angle:Float, amount:Float, ?solidType:SolidType, sweep:Bool = false):Void
+	public inline function moveAtAngle(angle:Float, amount:Float, ?solidType:StringOrArray, sweep:Bool = false):Void
 	{
 		angle *= MathUtil.RAD;
 		moveBy(Math.cos(angle) * amount, Math.sin(angle) * amount, solidType, sweep);
