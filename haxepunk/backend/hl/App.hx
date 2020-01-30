@@ -1,6 +1,5 @@
 package haxepunk.backend.hl;
 
-import haxepunk.backend.openal.AudioEngine;
 #if hlsdl
 import haxepunk.utils.Log;
 import haxepunk.input.Gamepad;
@@ -30,7 +29,8 @@ class App implements haxepunk.App
 	// Need a vertex array for desktop OpenGL
 	var commonVA:VertexArray;
 
-	public function new() {
+	public function new()
+	{
 		var title = "HaxePunk";
 		initChars();
 		sdl.Sdl.init();
@@ -42,10 +42,13 @@ class App implements haxepunk.App
 		var v = GL.getParameter(GL.VERSION);
 		var glES:Null<Float> = null;
 		var reg = ~/ES ([0-9]+\.[0-9]+)/;
-		if( reg.match(v) )
+		if (reg.match(v))
+		{
 			glES = Std.parseFloat(reg.matched(1));
+		}
 
-		if( glES == null ) {
+		if (glES == null)
+		{
 			commonVA = GL.createVertexArray();
 			GL.bindVertexArray( commonVA );
 		}

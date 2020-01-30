@@ -5,6 +5,7 @@ package haxepunk.backend.opengl;
 import haxepunk.backend.opengl.GL;
 import haxepunk.graphics.shader.SceneShader;
 
+@:build(haxepunk.backend.opengl.GLUtils.replaceGL())
 class CompiledSceneShader extends CompiledShader
 {
 	public var width:Null<Int> = null;
@@ -84,26 +85,25 @@ class CompiledSceneShader extends CompiledShader
 
 	override public function bind()
 	{
-		#if (!lime && js) var _GL = GLRenderer._GL; #end
 		super.bind();
 		if (GLUtils.invalid(buffer))
 		{
 			createBuffer();
 		}
 
-		_GL.vertexAttribPointer(position.index, 2, GL.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 0);
-		_GL.vertexAttribPointer(texCoord.index, 2, GL.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+		gl.vertexAttribPointer(position.index, 2, GL.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 0);
+		gl.vertexAttribPointer(texCoord.index, 2, GL.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
 
-		_GL.uniform1i(image, 0);
+		gl.uniform1i(image, 0);
 		#if hl
 		var b = new hl.Bytes(4);
 		b.setF32(0, HXP.screen.width);
 		b.setF32(4, HXP.screen.height);
 		b.setF32(8, 0);
 		b.setF32(12, 0);
-		_GL.uniform4fv(resolution, b, 0, 1);
+		gl.uniform4fv(resolution, b, 0, 1);
 		#else
-		_GL.uniform2f(resolution, HXP.screen.width, HXP.screen.height);
+		gl.uniform2f(resolution, HXP.screen.width, HXP.screen.height);
 		#end
 	}
 

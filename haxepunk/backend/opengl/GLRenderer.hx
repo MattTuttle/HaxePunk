@@ -30,13 +30,10 @@ typedef FrameBuffer = {
 @:access(haxepunk.Engine)
 @:allow(haxepunk.debug)
 @:access(haxepunk.backend.opengl)
+@:build(haxepunk.backend.opengl.GLUtils.replaceGL())
 class GLRenderer implements Renderer
 {
 	public static var drawCallLimit:Int = -1;
-
-	#if (!lime && js)
-	public static var _GL:GL;
-	#end
 
 	public static inline var UNIFORM_MATRIX:String = "uMatrix";
 
@@ -58,26 +55,26 @@ class GLRenderer implements Renderer
 	public static inline function bufferData(target, size, srcData, usage:Int)
 	{
 		#if hl
-		_GL.bufferData(target, size, srcData, usage);
+		gl.bufferData(target, size, srcData, usage);
 		#elseif (html5 && lime >= "5.0.0")
-		_GL.bufferDataWEBGL(target, srcData, usage);
+		gl.bufferDataWEBGL(target, srcData, usage);
 		#elseif (lime >= "4.0.0")
-		_GL.bufferData(target, size, srcData, usage);
+		gl.bufferData(target, size, srcData, usage);
 		#else
-		_GL.bufferData(target, srcData, usage);
+		gl.bufferData(target, srcData, usage);
 		#end
 	}
 
 	public static inline function bufferSubData(buffer:BufferData)
 	{
 		#if hl
-		_GL.bufferSubData(GL.ARRAY_BUFFER, 0, buffer.buffer, 0, buffer.bufferBytesSize());
+		gl.bufferSubData(GL.ARRAY_BUFFER, 0, buffer.buffer, 0, buffer.bufferBytesSize());
 		#elseif (html5 && lime >= "5.0.0")
-		_GL.bufferSubDataWEBGL(GL.ARRAY_BUFFER, 0, buffer.buffer);
+		gl.bufferSubDataWEBGL(GL.ARRAY_BUFFER, 0, buffer.buffer);
 		#elseif (lime >= "4.0.0")
-		_GL.bufferSubData(GL.ARRAY_BUFFER, 0, buffer.bufferBytesSize(), buffer.buffer);
+		gl.bufferSubData(GL.ARRAY_BUFFER, 0, buffer.bufferBytesSize(), buffer.buffer);
 		#else
-		_GL.bufferSubData(GL.ARRAY_BUFFER, 0, buffer.buffer);
+		gl.bufferSubData(GL.ARRAY_BUFFER, 0, buffer.buffer);
 		#end
 	}
 
@@ -86,12 +83,12 @@ class GLRenderer implements Renderer
 		var vertexShader = compile(GL.VERTEX_SHADER, vertexSource);
 		var fragmentShader = compile(GL.FRAGMENT_SHADER, fragmentSource);
 
-		var glProgram = _GL.createProgram();
-		_GL.attachShader(glProgram, fragmentShader);
-		_GL.attachShader(glProgram, vertexShader);
-		_GL.linkProgram(glProgram);
-		#if hxp_gl_debug
-		if (_GL.getProgramParameter(glProgram, GL.LINK_STATUS) == 0)
+		var glProgram = gl.createProgram();
+		gl.attachShader(glProgram, fragmentShader);
+		gl.attachShader(glProgram, vertexShader);
+		gl.linkProgram(glProgram);
+		#if hxpgl_debug
+		if (gl.getProgramParameter(glProgram, GL.LINK_STATUS) == 0)
 			throw "Unable to initialize the shader program.";
 		#end
 
@@ -100,20 +97,20 @@ class GLRenderer implements Renderer
 
 	static function compile(type:Int, source:String):GLShader
 	{
-		var shader = _GL.createShader(type);
-		_GL.shaderSource(shader, source);
-		_GL.compileShader(shader);
-		#if hxp_gl_debug
-		if (_GL.getShaderParameter(shader, GL.COMPILE_STATUS) == 0)
-			throw "Error compiling vertex shader: " + _GL.getShaderInfoLog(shader);
+		var shader = gl.createShader(type);
+		gl.shaderSource(shader, source);
+		gl.compileShader(shader);
+		#if hxpgl_debug
+		if (gl.getShaderParameter(shader, GL.COMPILE_STATUS) == 0)
+			throw "Error compiling vertex shader: " + gl.getShaderInfoLog(shader);
 		#end
 		return shader;
 	}
 
 	public static inline function clear(color:Color)
 	{
-		_GL.clearColor(color.red, color.green, color.blue, 1);
-		_GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
+		gl.clearColor(color.red, color.green, color.blue, 1);
+		gl.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
 	}
 
 	/**
@@ -121,14 +118,14 @@ class GLRenderer implements Renderer
 	 */
 	public function resizeFramebuffer(fb:FrameBuffer)
 	{
-		_GL.bindFramebuffer(GL.FRAMEBUFFER, fb.framebuffer);
+		gl.bindFramebuffer(GL.FRAMEBUFFER, fb.framebuffer);
 
-		if (fb.texture != null) _GL.deleteTexture(fb.texture);
+		if (fb.texture != null) gl.deleteTexture(fb.texture);
 
 		fb.width = HXP.screen.width;
 		fb.height = HXP.screen.height;
 		fb.texture = GLRenderer.createTexture(fb.width, fb.height);
-		_GL.bindFramebuffer(GL.FRAMEBUFFER, null);
+		gl.bindFramebuffer(GL.FRAMEBUFFER, null);
 	}
 
 	public function bindFrameBuffer(fb:FrameBuffer)
@@ -136,12 +133,12 @@ class GLRenderer implements Renderer
 		if (GLUtils.invalid(fb.texture) || GLUtils.invalid(fb.framebuffer))
 		{
 			// detroy framebuffer
-			_GL.deleteFramebuffer(fb.framebuffer);
+			gl.deleteFramebuffer(fb.framebuffer);
 			fb.texture = null;
 			fb.width = fb.height = 0;
 
 			// recreate
-			fb.framebuffer = _GL.createFramebuffer();
+			fb.framebuffer = gl.createFramebuffer();
 			resizeFramebuffer(fb);
 		}
 		else if (HXP.screen.width != fb.width || HXP.screen.height != fb.height)
@@ -149,28 +146,28 @@ class GLRenderer implements Renderer
 			resizeFramebuffer(fb);
 		}
 
-		_GL.bindFramebuffer(GL.FRAMEBUFFER, fb.framebuffer);
+		gl.bindFramebuffer(GL.FRAMEBUFFER, fb.framebuffer);
 		GLRenderer.clear(0);
 	}
 
 	public static function createTexture(width:Int, height:Int)
 	{
-		var texture = _GL.createTexture();
-		_GL.bindTexture(GL.TEXTURE_2D, texture);
+		var texture = gl.createTexture();
+		gl.bindTexture(GL.TEXTURE_2D, texture);
 		#if (html5 && lime >= "5.0.0")
-		_GL.texImage2DWEBGL(GL.TEXTURE_2D, 0, GL.RGBA, width, height, 0, GL.RGBA, GL.UNSIGNED_BYTE);
+		gl.texImage2DWEBGL(GL.TEXTURE_2D, 0, GL.RGBA, width, height, 0, GL.RGBA, GL.UNSIGNED_BYTE);
 		#else
-		_GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, width, height, 0, GL.RGBA, GL.UNSIGNED_BYTE,
+		gl.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, width, height, 0, GL.RGBA, GL.UNSIGNED_BYTE,
 			#if ((lime >= "4.0.0") && cpp) 0 #else null #end);
 		#end
 
-		_GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
-		_GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
-		_GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER , GL.LINEAR);
-		_GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
+		gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
+		gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
+		gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER , GL.LINEAR);
+		gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
 
 		// specify texture as color attachment
-		_GL.framebufferTexture2D(GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, texture, 0);
+		gl.framebufferTexture2D(GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, texture, 0);
 		return texture;
 	}
 
@@ -179,20 +176,20 @@ class GLRenderer implements Renderer
 		switch (blend)
 		{
 			case BlendMode.Add:
-				_GL.blendEquation(GL.FUNC_ADD);
-				_GL.blendFuncSeparate(GL.ONE, GL.ONE, GL.ZERO, GL.ONE);
+				gl.blendEquation(GL.FUNC_ADD);
+				gl.blendFuncSeparate(GL.ONE, GL.ONE, GL.ZERO, GL.ONE);
 			case BlendMode.Multiply:
-				_GL.blendEquation(GL.FUNC_ADD);
-				_GL.blendFuncSeparate(GL.DST_COLOR, GL.ONE_MINUS_SRC_ALPHA, GL.ZERO, GL.ONE);
+				gl.blendEquation(GL.FUNC_ADD);
+				gl.blendFuncSeparate(GL.DST_COLOR, GL.ONE_MINUS_SRC_ALPHA, GL.ZERO, GL.ONE);
 			case BlendMode.Screen:
-				_GL.blendEquation(GL.FUNC_ADD);
-				_GL.blendFuncSeparate(GL.ONE, GL.ONE_MINUS_SRC_COLOR, GL.ZERO, GL.ONE);
+				gl.blendEquation(GL.FUNC_ADD);
+				gl.blendFuncSeparate(GL.ONE, GL.ONE_MINUS_SRC_COLOR, GL.ZERO, GL.ONE);
 			case BlendMode.Subtract:
-				_GL.blendEquationSeparate(GL.FUNC_REVERSE_SUBTRACT, GL.FUNC_ADD);
-				_GL.blendFuncSeparate(GL.ONE, GL.ONE, GL.ZERO, GL.ONE);
+				gl.blendEquationSeparate(GL.FUNC_REVERSE_SUBTRACT, GL.FUNC_ADD);
+				gl.blendFuncSeparate(GL.ONE, GL.ONE, GL.ZERO, GL.ONE);
 			case BlendMode.Alpha:
-				_GL.blendEquation(GL.FUNC_ADD);
-				_GL.blendFunc(GL.ONE, GL.ONE_MINUS_SRC_ALPHA);
+				gl.blendEquation(GL.FUNC_ADD);
+				gl.blendFunc(GL.ONE, GL.ONE_MINUS_SRC_ALPHA);
 		}
 	}
 
@@ -213,7 +210,7 @@ class GLRenderer implements Renderer
 	public function new()
 	{
 		#if (ios && (lime && lime < 3))
-		defaultFramebuffer = new GLFramebuffer(_GL.version, _GL.getParameter(_GL.FRAMEBUFFER_BINDING));
+		defaultFramebuffer = new GLFramebuffer(gl.version, gl.getParameter(gl.FRAMEBUFFER_BINDING));
 		#end
 		if (_ortho == null)
 		{
@@ -279,13 +276,13 @@ class GLRenderer implements Renderer
 				var matrixUniform = shader.uniformIndex(UNIFORM_MATRIX);
 				if (matrixUniform != null) {
 					#if hl
-					_GL.uniformMatrix4fv(matrixUniform, false, _ortho, 0, 1);
+					gl.uniformMatrix4fv(matrixUniform, false, _ortho, 0, 1);
 					#elseif (html5 && lime >= "5.0.0")
-					_GL.uniformMatrix4fvWEBGL(matrixUniform, false, _ortho);
+					gl.uniformMatrix4fvWEBGL(matrixUniform, false, _ortho);
 					#elseif (lime >= "4.0.0")
-					_GL.uniformMatrix4fv(matrixUniform, 1, false, _ortho);
+					gl.uniformMatrix4fv(matrixUniform, 1, false, _ortho);
 					#else
-					_GL.uniformMatrix4fv(matrixUniform, false, _ortho);
+					gl.uniformMatrix4fv(matrixUniform, false, _ortho);
 					#end
 				}
 
@@ -307,14 +304,14 @@ class GLRenderer implements Renderer
 					y += Std.int(Math.max(clipRect.y, 0));
 				}
 
-				_GL.scissor(x, screenHeight - y - height, width, height);
-				_GL.enable(GL.SCISSOR_TEST);
+				gl.scissor(x, screenHeight - y - height, width, height);
+				gl.enable(GL.SCISSOR_TEST);
 
-				_GL.drawArrays(GL.TRIANGLES, 0, triangles * 3);
+				gl.drawArrays(GL.TRIANGLES, 0, triangles * 3);
 
 				checkForErrors();
 
-				_GL.disable(GL.SCISSOR_TEST);
+				gl.disable(GL.SCISSOR_TEST);
 
 				shader.unbind();
 
@@ -325,12 +322,12 @@ class GLRenderer implements Renderer
 
 	public static inline function createArrayBuffer():GLBuffer
 	{
-		return _GL.createBuffer();
+		return gl.createBuffer();
 	}
 
 	public static inline function bindArrayBuffer(buffer:GLBuffer)
 	{
-		_GL.bindBuffer(GL.ARRAY_BUFFER, buffer);
+		gl.bindBuffer(GL.ARRAY_BUFFER, buffer);
 	}
 
 	inline function bindRenderbuffer(triangles:Int, floatsPerTriangle:Int)
@@ -351,30 +348,30 @@ class GLRenderer implements Renderer
 
 	static function bindTexture(texture:Texture, smooth:Bool, index:Int=GL.TEXTURE0)
 	{
-		_GL.activeTexture(index);
+		gl.activeTexture(index);
 		texture.bind();
 		if (smooth)
 		{
-			_GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
-			_GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
+			gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
+			gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
 		}
 		else
 		{
-			_GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
-			_GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
+			gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
+			gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
 		}
-		_GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
-		_GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
+		gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
+		gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
 	}
 
 	public static inline function checkForErrors(?pos:PosInfos)
 	{
-		#if hxp_gl_debug
-		var error = _GL.getError();
+		#if hxpgl_debug
+		var error = gl.getError();
 		if (error != GL.NO_ERROR)
 			throw "GL Error found at " + pos.fileName + ":" + pos.lineNumber + ": " + error;
 		#else
-		var error = _GL.getError();
+		var error = gl.getError();
 		if (error != GL.NO_ERROR)
 			Log.error("GL Error found at " + pos.fileName + ":" + pos.lineNumber + ": " + error);
 		#end
@@ -477,37 +474,37 @@ class GLRenderer implements Renderer
 			shader.bind();
 			checkForErrors();
 
-			_GL.activeTexture(GL.TEXTURE0);
-			_GL.bindTexture(GL.TEXTURE_2D, renderTexture);
+			gl.activeTexture(GL.TEXTURE0);
+			gl.bindTexture(GL.TEXTURE_2D, renderTexture);
 
 			#if desktop
-			_GL.enable(GL.TEXTURE_2D);
+			gl.enable(GL.TEXTURE_2D);
 			#end
 
 			if (shader.smooth)
 			{
-				_GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
-				_GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
+				gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
+				gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
 			}
 			else
 			{
-				_GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
-				_GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
+				gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
+				gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
 			}
 
-			_GL.blendEquation(GL.FUNC_ADD);
-			_GL.blendFunc(GL.ONE, GL.ONE_MINUS_SRC_ALPHA);
-			_GL.drawArrays(GL.TRIANGLES, 0, 6);
+			gl.blendEquation(GL.FUNC_ADD);
+			gl.blendFunc(GL.ONE, GL.ONE_MINUS_SRC_ALPHA);
+			gl.drawArrays(GL.TRIANGLES, 0, 6);
 
-			_GL.bindTexture(GL.TEXTURE_2D, null);
+			gl.bindTexture(GL.TEXTURE_2D, null);
 
 			#if desktop
-			_GL.disable(GL.TEXTURE_2D);
+			gl.disable(GL.TEXTURE_2D);
 			#end
 
 			shader.unbind();
 
-			_GL.bindFramebuffer(GL.FRAMEBUFFER, null);
+			gl.bindFramebuffer(GL.FRAMEBUFFER, null);
 		}
 	}
 
@@ -545,7 +542,7 @@ class GLRenderer implements Renderer
 
 	inline function bindDefaultFramebuffer()
 	{
-		_GL.bindFramebuffer(GL.FRAMEBUFFER, defaultFramebuffer);
+		gl.bindFramebuffer(GL.FRAMEBUFFER, defaultFramebuffer);
 	}
 
 	inline function destroy() {}

@@ -5,9 +5,9 @@ import js.lib.Promise;
 import js.html.Image;
 import js.html.webgl.GL;
 import js.html.CanvasElement;
-import haxepunk.backend.opengl.GLRenderer;
 import haxepunk.utils.Color;
 
+@:build(haxepunk.backend.opengl.GLUtils.replaceGL())
 class Texture implements haxepunk.backend.generic.render.Texture
 {
 	public var width(default, null):Int;
@@ -23,7 +23,7 @@ class Texture implements haxepunk.backend.generic.render.Texture
 		canvas = cast Browser.document.createElement("canvas");
 		setSize(width, height);
 
-		texture = GLRenderer._GL.createTexture();
+		texture = gl.createTexture();
 		#end
 	}
 
@@ -79,16 +79,15 @@ class Texture implements haxepunk.backend.generic.render.Texture
 	public function bind():Void
 	{
 		#if !doc
-		var _GL = GLRenderer._GL;
-		_GL.bindTexture(GL.TEXTURE_2D, texture);
+		gl.bindTexture(GL.TEXTURE_2D, texture);
 
 		// check if the texture has changed and need to be uploaded to the gpu
 		if (dirty)
 		{
-			_GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, canvas);
+			gl.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, canvas);
 
-			_GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER , GL.NEAREST);
-			_GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
+			gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER , GL.NEAREST);
+			gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
 		}
 		#end
 	}
@@ -96,7 +95,7 @@ class Texture implements haxepunk.backend.generic.render.Texture
 	public function dispose():Void
 	{
 		#if !doc
-		GLRenderer._GL.deleteTexture(texture);
+		gl.deleteTexture(texture);
 		texture = null;
 		canvas = null;
 		#end

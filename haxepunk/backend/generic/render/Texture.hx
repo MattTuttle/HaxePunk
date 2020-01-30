@@ -1,6 +1,5 @@
 package haxepunk.backend.generic.render;
 
-import haxepunk.Signal.Signal0;
 import haxepunk.utils.Color;
 
 interface Texture

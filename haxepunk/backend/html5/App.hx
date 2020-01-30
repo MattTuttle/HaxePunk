@@ -2,83 +2,123 @@ package haxepunk.backend.html5;
 
 #if js
 
+import js.Browser;
+import js.html.TouchEvent;
+import js.html.MouseEvent;
+import js.html.KeyboardEvent;
+import js.html.HTMLDocument;
+import js.html.CanvasElement;
+
 import haxepunk.math.MathUtil;
 import haxepunk.input.Mouse;
 import haxepunk.input.Key;
+import haxepunk.input.Touch;
+import haxepunk.input.Input;
 import haxepunk.backend.opengl.GL;
 import haxepunk.backend.opengl.GLRenderer;
-import js.Browser;
-import js.html.CanvasElement;
 import haxepunk.Engine;
 import haxepunk.HXP;
 
 class App implements haxepunk.App
 {
-	var engine:Engine;
-	var canvas:CanvasElement;
-	var mouseX:Float;
-	var mouseY:Float;
-
-	static var CODEMAP = [for( i in 0...2048 ) i];
-
 	public var fullscreen(get, set):Bool;
 	inline function get_fullscreen():Bool return false;
 	inline function set_fullscreen(value:Bool):Bool return value;
 
+	// used in GLUtils.replaceGL macro
+	public static var gl:GL;
+
 	public function new()
 	{
-		initChars();
 		var el = Browser.document.getElementById("haxepunk");
 		canvas = cast(el, CanvasElement);
 		canvas.width = HXP.width;
 		canvas.height = HXP.height;
-		var gl = canvas.getContextWebGL({ alpha: false });
+		gl = canvas.getContextWebGL({ alpha: false });
 		gl.pixelStorei(GL.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
 		gl.enable(GL.BLEND);
-		GLRenderer._GL = gl;
 
-		listenForEvents();
+		var doc = Browser.document;
+		listenForMouseEvents(doc);
+		listenForKeyEvents(doc);
+		listenForTouchEvents(doc);
 	}
 
-	static function initChars():Void
+	inline function mapKeys(code:Int):Int
 	{
-		// Pulled from heaps for key mapping
-		inline function addKey(web, keyCode) {
-			CODEMAP[web] = keyCode;
+		// any keys that don't map directly to their counterparts in Key are converted here
+		return switch (code) {
+			case 192: Key.TILDE;
+			case 224: Key.COMMAND;
+			default: code;
 		}
-
-		// ASCII
-		for (i in 0...26)
-			addKey(65 + i, Key.A + i);
-		for (i in 0...12)
-			addKey(112 + i, Key.F1 + i);
-
-		addKey(37, Key.LEFT);
-		addKey(38, Key.UP);
-		addKey(39, Key.RIGHT);
-		addKey(40, Key.DOWN);
 	}
 
 	@:access(haxepunk.input.Mouse)
-	@:access(haxepunk.input.Key)
-	function listenForEvents()
+	function listenForMouseEvents(doc:HTMLDocument)
 	{
-		var doc = Browser.document;
-		doc.addEventListener('mousemove', function(e) {
+		doc.addEventListener('mousemove', function(e:MouseEvent) {
 			mouseX = MathUtil.clamp(e.clientX - canvas.offsetLeft, 0, HXP.width);
 			mouseY = MathUtil.clamp(e.clientY - canvas.offsetTop, 0, HXP.height);
 		});
-		doc.addEventListener('mousedown', function(e) {
+		doc.addEventListener('mousedown', function(e:MouseEvent) {
 			Mouse.onMouseDown(e.button);
 		});
-		doc.addEventListener('mouseup', function(e) {
+		doc.addEventListener('mouseup', function(e:MouseEvent) {
 			Mouse.onMouseUp(e.button);
 		});
-		doc.addEventListener('keydown', function(e) {
-			Key.onKeyDown(CODEMAP[e.keyCode], false);
+	}
+
+	@:access(haxepunk.input.Key)
+	function listenForKeyEvents(doc:HTMLDocument)
+	{
+		doc.addEventListener('keydown', function(e:KeyboardEvent) {
+			Key.onKeyDown(mapKeys(e.keyCode), false);
 		});
-		doc.addEventListener('keyup', function(e) {
-			Key.onKeyUp(CODEMAP[e.keyCode]);
+		doc.addEventListener('keyup', function(e:KeyboardEvent) {
+			Key.onKeyUp(mapKeys(e.keyCode));
+		});
+	}
+
+	@:access(haxepunk.input.Touch)
+	function listenForTouchEvents(doc:HTMLDocument)
+	{
+		Input.handlers.push(Touch);
+		doc.addEventListener('touchstart', function(e:TouchEvent) {
+			for (touch in e.targetTouches)
+			{
+				var id = touch.identifier;
+				var touchPoint = new Touch(e.pageX / HXP.screen.scaleX, e.pageY / HXP.screen.scaleY, id);
+				Touch._touches.set(id, touchPoint);
+				Touch._touchOrder.push(id);
+			}
+		});
+		doc.addEventListener('touchmove', function(e:TouchEvent) {
+			// if more than one touch is given, update multi touch as supported
+			if (e.touches.length > 1)
+			{
+				multiTouchSupport = true;
+			}
+			for (touch in e.targetTouches)
+			{
+				var id = touch.identifier;
+				if (Touch._touches.exists(id))
+				{
+					var point = Touch._touches.get(id);
+					point.x = e.pageX / HXP.screen.scaleX;
+					point.y = e.pageY / HXP.screen.scaleY;
+				}
+			}
+		});
+		doc.addEventListener('touchend', function(e:TouchEvent) {
+			for (touch in e.targetTouches)
+			{
+				var id = touch.identifier;
+				if (Touch._touches.exists(id))
+				{
+					Touch._touches.get(id).released = true;
+				}
+			}
 		});
 	}
 
@@ -123,12 +163,22 @@ class App implements haxepunk.App
 		return haxe.Timer.stamp() * 1000;
 	}
 
-	public function getMemoryUse():Float return 0;
+	public function getMemoryUse():Float
+	{
+		// window.performance.memory is only available on Chrome
+		return untyped __js__('(window.performance && window.performance.memory) ? window.performance.memory.usedJSHeapSize : 0');
+	}
 
-	public function multiTouchSupported():Bool return false;
+	public function multiTouchSupported():Bool return multiTouchSupport;
 
 	public function getMouseX():Float return mouseX;
 	public function getMouseY():Float return mouseY;
+
+	var engine:Engine;
+	var canvas:CanvasElement;
+	var mouseX:Float;
+	var mouseY:Float;
+	var multiTouchSupport:Bool = false;
 }
 
 #end

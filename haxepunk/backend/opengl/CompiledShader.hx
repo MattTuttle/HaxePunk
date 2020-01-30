@@ -6,6 +6,7 @@ import haxepunk.backend.opengl.GL;
 import haxepunk.graphics.hardware.DrawCommand;
 import haxepunk.graphics.shader.Shader;
 
+@:build(haxepunk.backend.opengl.GLUtils.replaceGL())
 class CompiledAttribute
 {
 	public final index:Int;
@@ -14,8 +15,7 @@ class CompiledAttribute
 
 	public function new(attribute:Attribute, glProgram:GLProgram)
 	{
-		#if (!lime && js) var _GL = GLRenderer._GL; #end
-		index = _GL.getAttribLocation(glProgram, attribute.name);
+		index = gl.getAttribLocation(glProgram, attribute.name);
 		switch (attribute.type)
 		{
 			case Position:
@@ -48,6 +48,7 @@ class CompiledAttribute
 }
 
 @:access(haxepunk.graphics.shader.Shader)
+@:build(haxepunk.backend.opengl.GLUtils.replaceGL())
 class CompiledShader
 {
 	public var glProgram:GLProgram;
@@ -163,15 +164,6 @@ class CompiledShader
 		setAttributePointers(drawCommand.triangleCount);
 	}
 
-	inline function vertexAttribPointer(index, size, type, normalized, stride, position)
-	{
-#if (!lime && js)
-		GLRenderer._GL.vertexAttribPointer(index, size, type, normalized, stride, position);
-#else
-		GL.vertexAttribPointer(index, size, type, normalized, stride, position);
-#end
-	}
-
 	function setAttributePointers(nbTriangles:Int)
 	{
 		var offset:Int = 0;
@@ -180,18 +172,18 @@ class CompiledShader
 		var useColor = color != null;
 
 		var stride:Int = (2 + (useTexCoord ? 2 : 0) + (useColor ? 1 : 0)) * Float32Array.BYTES_PER_ELEMENT;
-		vertexAttribPointer(position.index, 2, GL.FLOAT, false, stride, offset);
+		gl.vertexAttribPointer(position.index, 2, GL.FLOAT, false, stride, offset);
 		offset += 2 * Float32Array.BYTES_PER_ELEMENT;
 
 		if (useTexCoord)
 		{
-			vertexAttribPointer(texCoord.index, 2, GL.FLOAT, false, stride, offset);
+			gl.vertexAttribPointer(texCoord.index, 2, GL.FLOAT, false, stride, offset);
 			offset += 2 * Float32Array.BYTES_PER_ELEMENT;
 		}
 
 		if (useColor)
 		{
-			vertexAttribPointer(color.index, 4, GL.UNSIGNED_BYTE, true, stride, offset);
+			gl.vertexAttribPointer(color.index, 4, GL.UNSIGNED_BYTE, true, stride, offset);
 			offset += 1 * Float32Array.BYTES_PER_ELEMENT;
 		}
 
@@ -202,7 +194,7 @@ class CompiledShader
 		// Use an array of names to preserve order, since the order of keys in a Map is undefined
 		for (attrib in customAttributes)
 		{
-			vertexAttribPointer(attrib.index, attrib.valuesPerElement, GL.FLOAT, false, 0, offset);
+			gl.vertexAttribPointer(attrib.index, attrib.valuesPerElement, GL.FLOAT, false, 0, offset);
 			offset += nbTriangles * 3 * attrib.valuesPerElement * Float32Array.BYTES_PER_ELEMENT;
 		}
 	}
@@ -216,22 +208,21 @@ class CompiledShader
 		}
 		if (shader.dirty) rebindAttributes();
 
-		#if (!lime && js) var GL = GLRenderer._GL; #end
-		GL.useProgram(glProgram);
+		gl.useProgram(glProgram);
 
 		for (name in shader.uniformNames)
 		{
 			#if hl
 			var length = Float32Array.BYTES_PER_ELEMENT;
-			GL.uniform4fv(uniformIndex(name), hl.Bytes.fromValue(shader.uniformValues[name], length), 0, 4);
+			gl.uniform4fv(uniformIndex(name), hl.Bytes.fromValue(shader.uniformValues[name], length), 0, 4);
 			#else
-			GL.uniform1f(uniformIndex(name), shader.uniformValues[name]);
+			gl.uniform1f(uniformIndex(name), shader.uniformValues[name]);
 			#end
 		}
 
 		for (attribute in attributes)
 		{
-			GL.enableVertexAttribArray(attribute.index);
+			gl.enableVertexAttribArray(attribute.index);
 		}
 
 		GLRenderer.checkForErrors();
@@ -239,11 +230,10 @@ class CompiledShader
 
 	public function unbind()
 	{
-		#if (!lime && js) var GL = GLRenderer._GL; #end
-		GL.useProgram(null);
+		gl.useProgram(null);
 		for (attribute in attributes)
 		{
-			GL.disableVertexAttribArray(attribute.index);
+			gl.disableVertexAttribArray(attribute.index);
 		}
 	}
 
@@ -252,10 +242,9 @@ class CompiledShader
 	 */
 	public inline function uniformIndex(name:String):GLUniformLocation
 	{
-		#if (!lime && js) var GL = GLRenderer._GL; #end
 		if (!uniformIndices.exists(name))
 		{
-			uniformIndices[name] = GL.getUniformLocation(glProgram, name);
+			uniformIndices[name] = gl.getUniformLocation(glProgram, name);
 		}
 		return uniformIndices[name];
 	}
