@@ -15,6 +15,7 @@ import haxepunk.backend.generic.render.Renderer;
  * Your main class **needs** to extends this.
  */
 #if !macro @:autoBuild(haxepunk.assets.Preloader.build()) #end
+@:access(haxepunk.HXP)
 class Engine
 {
 	public var console:Console;
@@ -104,7 +105,7 @@ class Engine
 		if (Random.randomSeed == 0) Random.randomizeSeed();
 
 		HXP.entity = new Entity();
-		HXP.time = app.getTimeMillis();
+		HXP.lastTimeFlag = app.getTimeMillis();
 
 		_frameList = new Array();
 
@@ -201,7 +202,7 @@ class Engine
 		preRender.invoke();
 
 		renderer.startFrame();
-		for (scene in _iterator.reset(this))
+		for (scene in scenes)
 		{
 			renderer.startScene(scene);
 			HXP.renderingScene = scene;
@@ -228,9 +229,7 @@ class Engine
 	/** @private Framerate independent game loop. */
 	public function onUpdate()
 	{
-		_time = _gameTime = app.getTimeMillis();
-		HXP._systemTime = _time - _systemTime;
-		_updateTime = _time;
+		_time = app.getTimeMillis();
 
 		// update timer
 		var elapsed = (_time - _last) / 1000;
@@ -253,14 +252,6 @@ class Engine
 			step();
 		}
 		_last = _time;
-
-		// update timer
-		_time = app.getTimeMillis();
-		HXP._updateTime = _time - _updateTime;
-
-		// update timer
-		_time = _systemTime = app.getTimeMillis();
-		HXP._gameTime = _time - _gameTime;
 	}
 
 	function step()
@@ -317,35 +308,41 @@ class Engine
 	 * Pop a scene from the stack. The current scene will remain active until the next update.
 	 * @since	2.5.3
 	 */
-	public function popScene():Scene
+	public function popScene():Null<Scene>
 	{
-		Log.debug("popped scene: " + Type.getClassName(Type.getClass(_scene)));
-		var scene = _scenes.pop();
-		if (scene.assetCache.enabled)
+		if (_scenes.length > 0)
 		{
-			scene.assetCache.dispose();
+			Log.debug("popped scene: " + Type.getClassName(Type.getClass(_scene)));
+			var scene = _scenes.pop();
+			if (scene.assetCache.enabled)
+			{
+				scene.assetCache.dispose();
+			}
+			return scene;
 		}
-		return scene;
+		return null;
 	}
 
 	/**
 	 * The currently active Scene object. When you set this, the Scene is flagged
 	 * to switch, but won't actually do so until the end of the current frame.
+	 * The returned scene is the currently active scene, NOT the value you set it to.
 	 */
 	public var scene(get, set):Scene;
 	inline function get_scene():Scene return _scene;
 	function set_scene(value:Scene):Scene
 	{
-		if (_scene == value) return value;
-		if (_scenes.length > 0)
+		if (_scene != value)
 		{
 			popScene();
+			pushScene(value);
 		}
-		_scenes.push(value);
 		return _scene;
 	}
 
-	public function iterator() return _iterator.reset(this);
+	/** An iterator for all visible scenes */
+	public var scenes(get, never):Iterator<Scene>;
+	inline function get_scenes() return _iterator.reset(this);
 
 	var app:App;
 
@@ -361,11 +358,6 @@ class Engine
 	var _skip:Float = 0;
 	var _prev:Float = 0;
 	var _elapsed:Float = 0;
-
-	// Debug timing information.
-	var _updateTime:Float = 0;
-	var _gameTime:Float = 0;
-	var _systemTime:Float = 0;
 
 	// FrameRate tracking.
 	var _frameLast:Float = 0;

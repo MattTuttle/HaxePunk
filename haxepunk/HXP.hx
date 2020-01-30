@@ -192,7 +192,7 @@ class HXP
 		HXP.halfHeight = HXP.height / 2;
 		HXP.bounds.width = width;
 		HXP.bounds.height = height;
-		for (scene in HXP.engine) scene._resize();
+		for (scene in HXP.engine.scenes) scene._resize();
 		HXP.needsResize = false;
 	}
 
@@ -378,8 +378,8 @@ class HXP
 	public static inline function timeFlag():Float
 	{
 		var t:Float = Timer.stamp(),
-			e:Float = t - _time;
-		_time = t;
+			e:Float = t - lastTimeFlag;
+		lastTimeFlag = t;
 		return e;
 	}
 
@@ -492,20 +492,10 @@ class HXP
 		}
 	}
 
-	public static var time(null, set):Float;
-	static inline function set_time(value:Float):Float
-	{
-		_time = value;
-		return _time;
-	}
-
 	public static var audio:AudioEngine;
 
 	// Time information.
-	static var _time:Float;
-	@:dox(hide) public static var _updateTime:Float;
-	@:dox(hide) public static var _gameTime:Float;
-	@:dox(hide) public static var _systemTime:Float;
+	static var lastTimeFlag:Float = 0;
 
 	@:dox(hide) public static var drawCallLimit:Int = -1;
 	@:dox(hide) public static var triangleCount:Int = 0;
