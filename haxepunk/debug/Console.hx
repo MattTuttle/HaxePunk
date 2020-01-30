@@ -12,11 +12,6 @@ import haxepunk.input.MouseManager;
 import haxepunk.utils.CircularBuffer;
 import haxepunk.utils.DrawContext;
 
-#if !doc
-// TODO: get rid of this import
-typedef HardwareRenderer = haxepunk.backend.opengl.GLRenderer;
-#end
-
 @:access(haxepunk.Engine)
 class Console extends Scene
 {
@@ -319,10 +314,8 @@ class Console extends Scene
 		_fps += 1 / HXP.elapsed * s;
 		_mem += HXP.app.getMemoryUse() / 1024 / 1024 * s;
 		_ent += HXP.scene.count * s;
-		#if !doc
-		_tri += HardwareRenderer.triangleCount * s;
-		_dc += HardwareRenderer.drawCallCount * s;
-		#end
+		_tri += HXP.triangleCount * s;
+		_dc += HXP.drawCallCount * s;
 		_t += s;
 		if (_t >= 1)
 		{

@@ -507,6 +507,10 @@ class HXP
 	@:dox(hide) public static var _gameTime:Float;
 	@:dox(hide) public static var _systemTime:Float;
 
+	@:dox(hide) public static var drawCallLimit:Int = -1;
+	@:dox(hide) public static var triangleCount:Int = 0;
+	@:dox(hide) public static var drawCallCount:Int = 0;
+
 	// Volume control.
 	static var _pan:Float = 0;
 

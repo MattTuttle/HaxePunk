@@ -33,12 +33,8 @@ typedef FrameBuffer = {
 @:build(haxepunk.backend.opengl.GLUtils.replaceGL())
 class GLRenderer implements Renderer
 {
-	public static var drawCallLimit:Int = -1;
-
 	public static inline var UNIFORM_MATRIX:String = "uMatrix";
 
-	static var triangleCount:Int = 0;
-	static var drawCallCount:Int = 0;
 	static var _tracking:Bool = true;
 	static var _shaders = new IntMap<CompiledShader>();
 
@@ -249,9 +245,9 @@ class GLRenderer implements Renderer
 		{
 			if (_tracking)
 			{
-				triangleCount += drawCommand.triangleCount;
-				++drawCallCount;
-				if (drawCallLimit > -1 && drawCallCount > drawCallLimit) return;
+				HXP.triangleCount += drawCommand.triangleCount;
+				++HXP.drawCallCount;
+				if (HXP.drawCallLimit > -1 && HXP.drawCallCount > HXP.drawCallLimit) return;
 			}
 
 			var clipRect = drawCommand.clipRect;
@@ -522,8 +518,8 @@ class GLRenderer implements Renderer
 
 	public function startFrame()
 	{
-		triangleCount = 0;
-		drawCallCount = 0;
+		HXP.triangleCount = 0;
+		HXP.drawCallCount = 0;
 	}
 	public function endFrame() {}
 
