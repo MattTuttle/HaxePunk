@@ -117,6 +117,7 @@ class Engine
 	/**
 	 * @private This should be the only place an App instance is created
 	 */
+	@:access(haxepunk.utils.Data)
 	function createApp():App
 	{
 #if (doc || unit_test)

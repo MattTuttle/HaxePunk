@@ -1,11 +1,13 @@
 package haxepunk.backend.flash.utils;
 
+import haxe.ds.StringMap;
 import flash.net.SharedObject;
+import haxepunk.utils.DataProvider;
 
 /**
  * Static helper class used for saving and loading data from stored cookies.
  */
-class Data
+class Data implements DataProvider
 {
 	public static var PREFIX:Null<String> = "HaxePunk";
 
@@ -47,47 +49,14 @@ class Data
 	}
 
 	/**
-	 * Reads an int from the current data.
-	 * @param	name			Property to read.
-	 * @param	defaultValue	Default value.
-	 * @return	The property value, or defaultValue if the property is not assigned.
-	 */
-	public static function readInt(name:String, defaultValue:Int = 0):Int
-	{
-		return Std.int(read(name, defaultValue));
-	}
-
-	/**
-	 * Reads a Boolean from the current data.
-	 * @param	name			Property to read.
-	 * @param	defaultValue	Default value.
-	 * @return	The property value, or defaultValue if the property is not assigned.
-	 */
-	public static function readBool(name:String, defaultValue:Bool = true):Bool
-	{
-		return read(name, defaultValue);
-	}
-
-	/**
-	 * Reads a String from the current data.
-	 * @param	name			Property to read.
-	 * @param	defaultValue	Default value.
-	 * @return	The property value, or defaultValue if the property is not assigned.
-	 */
-	public static function readString(name:String, defaultValue:String = ""):String
-	{
-		return Std.string(read(name, defaultValue));
-	}
-
-	/**
 	 * Reads a property from the data object.
 	 * @param	name			Property to read.
 	 * @param	defaultValue	Default value.
 	 * @return	The property value, or defaultValue if the property is not assigned.
 	 */
-	public static function read(name:String, ?defaultValue:Dynamic):Dynamic
+	public static function read(name:String, ?defaultValue:String):String
 	{
-		if (_data.get(name) != null) return _data.get(name);
+		if (_data.has(name)) return _data.get(name);
 		return defaultValue;
 	}
 
@@ -96,7 +65,7 @@ class Data
 	 * @param	name		Property to write.
 	 * @param	value		Value to write.
 	 */
-	public static function write(name:String, value:Dynamic)
+	public static function write(name:String, value:String)
 	{
 		_data.set(name, value);
 	}
@@ -114,7 +83,7 @@ class Data
 	// Data information.
 	static var _shared:SharedObject;
 	static var _dir:String;
-	static var _data:Map<String, Dynamic> = new Map<String, Dynamic>();
+	static var _data:StringMap<String> = new StringMap<String>();
 	static inline var DEFAULT_FILE:String = "_file";
 	static inline var SIZE:Int = 10000;
 }
