@@ -40,8 +40,8 @@ class GameScene extends DemoScene
 	{
 		haxepunk.pixel.PixelArtScaler.activate();
 
-		atlas = TextureAtlas.loadTexturePacker("atlas/assets.xml");
-		backdrop = new Backdrop("gfx/tile.png", true, true);
+		atlas = TextureAtlas.loadTexturePacker("atlas/classic_assets.xml");
+		backdrop = new Backdrop("tile.png", true, true);
 		addGraphic(backdrop, 20);
 
 		player = new Player(11 * 32, 12 * 32);
@@ -53,7 +53,7 @@ class GameScene extends DemoScene
 		var mapHeight:Int = map.length;
 
 		// Create tilemap
-		var tilemap:Tilemap = new Tilemap("gfx/block.png", mapWidth * 32, mapHeight * 32, 32, 32);
+		var tilemap:Tilemap = new Tilemap("block.png", mapWidth * 32, mapHeight * 32, 32, 32);
 		// Create grid mask
 		var grid:Grid = new Grid(tilemap.columns * tilemap.tileWidth, tilemap.rows * tilemap.tileHeight, tilemap.tileWidth, tilemap.tileHeight);
 

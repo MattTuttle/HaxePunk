@@ -20,7 +20,7 @@ class Console extends Scene
 	static inline var CAMERA_PAN_PER_SECOND:Float = 256;
 	static inline var MIN_DRAG:Int = 8;
 
-	@:preload(["assets/graphics/debug", "graphics/debug"], ["assets/font", "font"])
+	@:preload(["assets/haxepunk/graphics/debug", "graphics/debug"])
 	public static function enable():Void enabled = true;
 
 	public static var enabled(get, set):Bool;

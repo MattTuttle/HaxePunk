@@ -5,6 +5,7 @@ import haxepunk.pixel.PixelArtScaler;
 
 class Main extends Engine
 {
+	@:preload(["assets/graphics", "graphics"])
 	override public function init()
 	{
 		PixelArtScaler.baseWidth = Std.int(HXP.width / 2);
@@ -12,4 +13,6 @@ class Main extends Engine
 		Console.enable();
 		HXP.scene = new asteroids.scenes.MainScene();
 	}
+
+	static function main() new Main();
 }

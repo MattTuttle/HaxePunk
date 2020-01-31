@@ -11,8 +11,7 @@ class AssetLoader implements haxepunk.assets.AssetLoader
 
 	public function getText(id:String):String
 	{
-		trace("getText Unimplemented");
-		return "";
+		throw "Text needs to be preloaded before calling getText for " + id;
 	}
 
 	public function getSound(id:String):Null<Sound>

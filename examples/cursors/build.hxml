@@ -2,4 +2,4 @@
 -cp src
 -cp ../..
 -main Main
--js ../out/classic.js
+-js ../out/cursors.js

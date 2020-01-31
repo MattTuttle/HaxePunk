@@ -14,7 +14,10 @@ import haxepunk.backend.generic.render.Renderer;
  *
  * Your main class **needs** to extends this.
  */
-#if !macro @:autoBuild(haxepunk.assets.Preloader.build()) #end
+#if !macro
+@:autoBuild(haxepunk.assets.Preloader.build())
+@:build(haxepunk.assets.Preloader.build())
+#end
 @:access(haxepunk.HXP)
 class Engine
 {
@@ -111,6 +114,7 @@ class Engine
 
 		_iterator = new VisibleSceneIterator();
 
+		loadDefaultAssets();
 		app.init(this);
 	}
 
@@ -140,6 +144,11 @@ class Engine
 #else
 		#error "Invalid target";
 #end
+	}
+
+	@:preload(["assets/haxepunk/fonts", "font"])
+	function loadDefaultAssets() {
+		Log.debug("Default HaxePunk assets are loaded");
 	}
 
 	/**

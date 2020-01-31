@@ -31,9 +31,12 @@ class PixelArtScaler extends Entity
 	function new()
 	{
 		super();
+		Log.debug("PixelArtScaler is no longer implemented");
 		visible = collidable = false;
 	}
 
+	#if 0
+	// TODO: fix and enable
 	override public function update()
 	{
 		if (HXP.screen.width <= s1.width || HXP.screen.height <= s1.height)
@@ -74,6 +77,7 @@ class PixelArtScaler extends Entity
 		if (scene.shaders.indexOf(s2) == -1) scene.shaders.push(s2);
 		Log.info("pixel art shaders activated");
 	}
+	#end
 
 	override public function removed()
 	{

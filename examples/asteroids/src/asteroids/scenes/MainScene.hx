@@ -39,7 +39,7 @@ class MainScene extends Scene
 
 	var shader:PixelArtScaler;
 
-	function new()
+	public function new()
 	{
 		super();
 

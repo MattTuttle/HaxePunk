@@ -20,13 +20,13 @@ class GameScene extends DemoScene
 
 	override public function begin()
 	{
-		atlas = TextureAtlas.loadTexturePacker("atlas/assets.xml");
+		atlas = TextureAtlas.loadTexturePacker("atlas/classic_assets.xml");
 
-		backdrop = new Backdrop("gfx/tile.png", true, true);
+		backdrop = new Backdrop("tile.png", true, true);
 		backdrop.color = 0x555555;
 		addGraphic(backdrop);
 
-		smoke = new Emitter("gfx/smoke.png", 16, 16);
+		smoke = new Emitter("smoke.png", 16, 16);
 		smoke.newType("exhaust", [0]);
 		smoke.setMotion("exhaust", 90, 30, 0.5, 360, 10, 0.5);
 		smoke.setAlpha("exhaust");

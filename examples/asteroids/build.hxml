@@ -1,0 +1,5 @@
+-cp src
+-cp ../..
+-main Main
+-debug
+-js ../out/asteroids.js

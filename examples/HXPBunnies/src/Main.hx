@@ -4,6 +4,7 @@ import haxepunk.HXP;
 class Main extends Engine
 {
 
+	@:preload(["assets/graphics", "gfx"], ["assets/atlas", "atlas"])
 	override public function init()
 	{
 		HXP.scene = new scenes.GameScene();

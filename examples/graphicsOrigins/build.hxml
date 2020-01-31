@@ -1,0 +1,5 @@
+-debug
+-cp source
+-cp ../..
+-main Main
+-js ../out/origins.js

@@ -7,14 +7,14 @@
 	<haxedef name="hxp_gl_debug" if="gl_debug"/>
 
 	<section unless="hxp_no_assets">
-		<assets path="assets/graphics" rename="graphics" include="*.png"/>
-		<assets path="assets/font" rename="font" include="*.ttf"/>
-		<assets path="assets/font" rename="font" include="*.fnt" type="text"/>
-		<assets path="assets/font" rename="font" include="*.png" type="image"/>
+		<assets path="assets/haxepunk/graphics" rename="graphics" include="*.png"/>
+		<assets path="assets/haxepunk/fonts" rename="font" include="*.ttf"/>
+		<assets path="assets/haxepunk/fonts" rename="font" include="*.fnt" type="text"/>
+		<assets path="assets/haxepunk/fonts" rename="font" include="*.png" type="image"/>
 	</section>
 	<section if="hxp_debug_console">
-		<assets path="assets/font" rename="font" include="*.fnt" type="text"/>
-		<assets path="assets/font" rename="font" include="*.png" type="image"/>
+		<assets path="assets/haxepunk/fonts" rename="font" include="*.fnt" type="text"/>
+		<assets path="assets/haxepunk/fonts" rename="font" include="*.png" type="image"/>
 	</section>
 
 	<haxedef name="source-header" value="haxe"/>

@@ -1,5 +1,5 @@
-COMMAND=openfl
-TARGET=neko
+COMMAND=haxe
+TARGET=hl
 TEST=openfl4
 
 .PHONY: all doc docs haxelib examples unit test build clean
@@ -47,8 +47,10 @@ checkstyle:
 	haxelib run checkstyle -c checkstyle.json -s haxepunk
 
 examples: tool.n
-	@echo "Building examples with" ${TARGET} "using" ${COMMAND}
-	@(for path in `find examples -mindepth 1 -maxdepth 1 -type d`; do echo "Building" $$path"..."; (cd $$path; haxelib run ${COMMAND} build ${TARGET} -Dhxp_debug) || exit; done)
+	@(for path in `find examples -name "*.hxml"`; \
+		do echo "Building" $$path"..."; \
+		(cd $$(dirname $$path); haxe $$(basename $$path)) || exit; \
+		done)
 
 clean:
 	@echo "Cleaning up old files"

@@ -7,6 +7,7 @@
 *.build
 *.hash
 *.docset/
+examples/out/
 doc/xml/
 build-test/
 libs/
