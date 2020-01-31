@@ -58,8 +58,8 @@ class App implements haxepunk.App
 	function listenForMouseEvents(doc:HTMLDocument)
 	{
 		doc.addEventListener('mousemove', function(e:MouseEvent) {
-			mouseX = MathUtil.clamp(e.clientX - canvas.offsetLeft, 0, HXP.width);
-			mouseY = MathUtil.clamp(e.clientY - canvas.offsetTop, 0, HXP.height);
+			mouseX = MathUtil.clamp(e.pageX - canvas.offsetLeft, 0, HXP.width);
+			mouseY = MathUtil.clamp(e.pageY - canvas.offsetTop, 0, HXP.height);
 		});
 		doc.addEventListener('mousedown', function(e:MouseEvent) {
 			Mouse.onMouseDown(e.button);
