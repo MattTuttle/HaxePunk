@@ -39,7 +39,7 @@ class Texture implements haxepunk.backend.generic.render.Texture
 			var image = new js.html.Image();
 			image.onload = function() {
 				var texture = new Texture(image.width, image.height);
-				texture.canvas.getContext("2d").drawImage(image, 0, 0);
+				texture.canvas.getContext2d().drawImage(image, 0, 0);
 				texture.dirty = true;
 				resolve(texture);
 			};
@@ -88,6 +88,7 @@ class Texture implements haxepunk.backend.generic.render.Texture
 
 			gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER , GL.NEAREST);
 			gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
+			dirty = false;
 		}
 		#end
 	}
