@@ -315,10 +315,9 @@ class Entity extends Tweener
 	 * @param	y			Virtual y position to place this Entity.
 	 * @return	The first Entity collided with, or null if none were collided.
 	 */
-	@:deprecated
+	@:deprecated("Use collide instead of collideTypes")
 	public function collideTypes(types:StringOrArray, x:Float, y:Float):Entity
 	{
-		Log.info("Use collide instead of collideTypes");
 		return collide(types, x, y);
 	}
 
@@ -443,10 +442,9 @@ class Entity extends Tweener
 	 * @param	y			Virtual y position to place this Entity.
 	 * @param	array		The Array or Vector object to populate.
 	 */
-	@:deprecated
+	@:deprecated("Use collideInto instead of collideTypesInto")
 	public function collideTypesInto<E:Entity>(types:StringOrArray, x:Float, y:Float, array:Array<E>)
 	{
-		Log.info("Use collideInto instead of collideTypesInto");
 		collideInto(types, x, y, array);
 	}
 
