@@ -191,6 +191,7 @@ class Image extends Graphic
 	/**
 	 * Centers the Image's originX/Y to its center, and negates the offset by the same amount.
 	 */
+	@:deprecated("Use centerOrigin instead of centerOO")
 	public function centerOO()
 	{
 		x += originX;
