@@ -5,6 +5,7 @@ import haxepunk.graphics.Graphiclist;
 import haxepunk.math.MathUtil;
 import haxepunk.math.Vector2;
 
+@:dox(hide)
 @:forward(iterator)
 abstract StringOrArray(Array<String>) to Array<String> from Array<String>
 {

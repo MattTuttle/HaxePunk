@@ -3,6 +3,8 @@ package haxepunk;
 import haxepunk.math.Vector2;
 
 /**
+ * A class to help manage camera movement.
+ *
  * @since 4.0.0
  */
 class Camera
@@ -79,6 +81,9 @@ class Camera
 		this.anchorY = anchorY;
 	}
 
+	/**
+	 * Tests if an entity's bounding box is visible on camera.
+	 */
 	public function onCamera(entity:Entity):Bool
 	{
 		return entity.collideRect(entity.x, entity.y, x, y, HXP.width, HXP.height);
@@ -105,6 +110,7 @@ class Camera
 		_shakeTime = 0;
 	}
 
+	@:dox(hide)
 	public function update()
 	{
 		if (anchorTarget != null)

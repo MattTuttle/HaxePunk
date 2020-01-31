@@ -4,7 +4,7 @@ package haxepunk;
  * A Signal binds one or more callback functions that will be called when
  * something interesting happens. Signals call their callbacks with no
  * arguments and expect no return value.
- * @:since 4.0.0
+ * @since 4.0.0
  */
 class Signal<T>
 {
@@ -95,7 +95,7 @@ abstract Signals(Map<String, Signal0>) from Map<String, Signal0> {
 	}
 
 	public inline function exists(field:String) return this.exists(field);
-	
+
 	public inline function invoke(field:String)
 	{
 		if (exists(field)) this[field].invoke();

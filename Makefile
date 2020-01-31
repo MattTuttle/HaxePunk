@@ -7,13 +7,13 @@ TEST=openfl4
 all: clean unit docs examples
 
 docs:
-	@echo "Generating documentation for openfl"
-	@cd doc && \
-		rm -rf bin && \
-		haxelib run $(COMMAND) build $(TARGET) -xml && \
-		haxelib run dox -i `find bin -name 'types.xml'` -o pages/ -theme theme/ \
-			-in haxepunk --title "HaxePunk" \
-			-D source-path "https://github.com/HaxePunk/HaxePunk/tree/master" > log.txt || cat log.txt
+	@echo "Generating documentation"
+	@haxe docs.hxml
+	@lix run dox -i doc/xml -o doc/pages/ \
+		--include "haxepunk" \
+		--exclude "haxepunk.backend" \
+		--title "HaxePunk" \
+		-D source-path "https://github.com/HaxePunk/HaxePunk/tree/master"
 
 tools: tool.n run.n
 

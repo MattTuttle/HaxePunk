@@ -115,12 +115,14 @@ class Data
 	@:generic public static function read<T>(name:String, ?defaultValue:T):T
 	{
 		var value:T;
-		try {
-			value = Unserializer.run(data.get(name));
-			if (value == null) value = defaultValue;
-		} catch(e:Dynamic) {
+		if (data.exists(name))
+			try {
+				value = Unserializer.run(data.get(name));
+			} catch(e:Dynamic) {
+				value = defaultValue;
+			}
+		else
 			value = defaultValue;
-		}
 		return value;
 	}
 

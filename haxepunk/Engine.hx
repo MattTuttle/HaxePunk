@@ -117,7 +117,6 @@ class Engine
 	/**
 	 * @private This should be the only place an App instance is created
 	 */
-	@:access(haxepunk.utils.Data)
 	function createApp():App
 	{
 #if (doc || unit_test)
@@ -189,6 +188,7 @@ class Engine
 	/**
 	 * Called from backend renderer. Any visible scene will have its draw commands rendered to OpenGL.
 	 */
+	@:dox(hide)
 	public function onRender()
 	{
 		// timing stuff
@@ -228,6 +228,7 @@ class Engine
 	}
 
 	/** @private Framerate independent game loop. */
+	@:dox(hide)
 	public function onUpdate()
 	{
 		_time = app.getTimeMillis();

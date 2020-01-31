@@ -1,16 +1,15 @@
 -D doc
 -D doc-gen
--cp ..
 --no-output
 # include the entire haxepunk package except the backend code
 --macro include('haxepunk', true, ['haxepunk.backend'])
 
 --each
 
--xml xml/hl.xml
+-xml doc/xml/hl.xml
 -hl na.hl
 
 --next
 
--xml xml/js.xml
+-xml doc/xml/js.xml
 -js na.js
