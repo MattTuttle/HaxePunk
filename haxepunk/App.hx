@@ -24,6 +24,11 @@ interface App
 	/** The current memory usage in bytes. Used by console but could be left unimplemented. */
 	public function getMemoryUse():Float;
 
+	/** Show the mouse cursor */
+	public function showCursor():Void;
+	/** Hide the mouse cursor */
+	public function hideCursor():Void;
+
 	/** Returns the state of multi-touch support */
 	public function multiTouchSupported():Bool;
 

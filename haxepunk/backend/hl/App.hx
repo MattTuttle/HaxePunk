@@ -130,6 +130,16 @@ class App implements haxepunk.App
 		return true;
 	}
 
+	public function showCursor()
+	{
+		sdl.Cursor.show(true);
+	}
+
+	public function hideCursor()
+	{
+		sdl.Cursor.show(false);
+	}
+
 	static function initChars():Void
 	{
 		// Pulled from heaps for key mapping

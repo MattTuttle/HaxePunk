@@ -12,6 +12,9 @@ class App implements haxepunk.App
 
 	public function init(engine:Engine) {}
 
+	public function showCursor() {}
+	public function hideCursor() {}
+
 	public function getTimeMillis():Float return 0;
 	public function getMemoryUse():Float return 0;
 

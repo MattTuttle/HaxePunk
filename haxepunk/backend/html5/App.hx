@@ -54,6 +54,16 @@ class App implements haxepunk.App
 		}
 	}
 
+	public function showCursor():Void
+	{
+		canvas.style.cursor = 'default';
+	}
+
+	public function hideCursor():Void
+	{
+		canvas.style.cursor = 'none';
+	}
+
 	@:access(haxepunk.input.Mouse)
 	function listenForMouseEvents(doc:HTMLDocument)
 	{

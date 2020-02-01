@@ -112,11 +112,7 @@ class Mouse
 	 */
 	public static function showCursor()
 	{
-		#if (lime || nme)
-		flash.ui.Mouse.show();
-		#else
-		throw "Unimplemented";
-		#end
+		HXP.app.showCursor();
 	}
 
 	/**
@@ -124,11 +120,7 @@ class Mouse
 	 */
 	public static function hideCursor()
 	{
-		#if (lime || nme)
-		flash.ui.Mouse.hide();
-		#else
-		throw "Unimplemented";
-		#end
+		HXP.app.hideCursor();
 	}
 
 	public static inline function define(input:InputType, button:MouseButton)

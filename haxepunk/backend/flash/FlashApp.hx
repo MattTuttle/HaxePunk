@@ -41,6 +41,16 @@ class FlashApp extends Sprite implements haxepunk.App
 		Lib.current.addChild(this);
 	}
 
+	public function showCursor()
+	{
+		flash.ui.Mouse.show();
+	}
+
+	public function hideCursor()
+	{
+		flash.ui.Mouse.hide();
+	}
+
 	public function getTimeMillis():Float
 	{
 		return Lib.getTimer();
