@@ -1,5 +1,6 @@
 package haxepunk.backend.hl;
 
+import haxe.io.Path;
 import sys.FileSystem;
 import sys.io.File;
 import haxepunk.assets.AssetLoader;
@@ -12,9 +13,17 @@ class FileAssetLoader implements AssetLoader
 
 	function resolvePath(path:String):String
 	{
+		// check current working directory first
 		if (FileSystem.exists(path))
 		{
 			return path;
+		}
+		// then check the program path
+		var programPath = Path.directory(Sys.programPath());
+		var assetPath = Path.join([programPath, path]);
+		if (FileSystem.exists(assetPath))
+		{
+			return assetPath;
 		}
 		throw 'Invalid asset path $path';
 	}
