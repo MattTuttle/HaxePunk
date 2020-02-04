@@ -76,9 +76,9 @@ class Log
 		#end
 	}
 
-	public static inline function debug(s:Dynamic, ?pos:haxe.PosInfos) write(s, LogLevel.Debug, pos);
-	public static inline function info(s:Dynamic, ?pos:haxe.PosInfos) write(s, LogLevel.Info, pos);
-	public static inline function warning(s:Dynamic, ?pos:haxe.PosInfos) write(s, LogLevel.Warning, pos);
-	public static inline function error(s:Dynamic, ?pos:haxe.PosInfos) write(s, LogLevel.Error, pos);
-	public static inline function critical(s:Dynamic, ?pos:haxe.PosInfos) write(s, LogLevel.Critical, pos);
+	public static function debug(s:Dynamic, ?pos:haxe.PosInfos) write(s, LogLevel.Debug, pos);
+	public static function info(s:Dynamic, ?pos:haxe.PosInfos) write(s, LogLevel.Info, pos);
+	public static function warning(s:Dynamic, ?pos:haxe.PosInfos) write(s, LogLevel.Warning, pos);
+	public static function error(s:Dynamic, ?pos:haxe.PosInfos) write(s, LogLevel.Error, pos);
+	public static function critical(s:Dynamic, ?pos:haxe.PosInfos) write(s, LogLevel.Critical, pos);
 }
