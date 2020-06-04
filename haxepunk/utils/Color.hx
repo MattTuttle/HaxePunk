@@ -64,20 +64,26 @@ abstract Color(UInt) from UInt to UInt
 	 * @param	B		The blue value of the color, from 0 to 255.
 	 * @return	The color.
 	 */
-	public static inline function getColorRGB(r:Int=0, g:Int=0, b:Int=0):Color
+	public static inline function fromRGB(r:Int=0, g:Int=0, b:Int=0):Color
 	{
 		return (r & 0xff) << 16 | (g & 0xff) << 8 | (b & 0xff);
 	}
 
-	public static inline function getColorRGBFloat(r:Float, g:Float, b:Float):Color
+	public static inline function fromRGBFloat(r:Float, g:Float, b:Float):Color
 	{
 		inline function intColor(v:Float):Color
 		{
 			var c = Std.int(v * 0x100);
 			return MathUtil.iclamp(c, 0, 0xff);
 		}
-		return getColorRGB(intColor(r), intColor(g), intColor(b));
+		return fromRGB(intColor(r), intColor(g), intColor(b));
 	}
+
+	@:deprecated("Renamed to fromRGB")
+	public static inline function getColorRGB(r:Int=0, g:Int=0, b:Int=0):Color return fromRGB(r, g, b);
+
+	@:deprecated("Renamed to fromRGBFloat")
+	public static inline function getColorRGBFloat(r:Float, g:Float, b:Float):Color return fromRGBFloat(r, g, b);
 
 	/**
 	 * Creates a color value with the chosen HSV values.
@@ -233,7 +239,7 @@ abstract Color(UInt) from UInt to UInt
 
 	public inline function multiply(other:Color):Color
 	{
-		return getColorRGBFloat(red * other.red, green * other.green, blue * other.blue);
+		return fromRGBFloat(red * other.red, green * other.green, blue * other.blue);
 	}
 
 	public inline function toARGB(alpha:Float):UInt
