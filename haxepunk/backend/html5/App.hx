@@ -176,7 +176,7 @@ class App implements haxepunk.App
 	public function getMemoryUse():Float
 	{
 		// window.performance.memory is only available on Chrome
-		return untyped __js__('(window.performance && window.performance.memory) ? window.performance.memory.usedJSHeapSize : 0');
+		return js.Syntax.code('(window.performance && window.performance.memory) ? window.performance.memory.usedJSHeapSize : 0');
 	}
 
 	public function multiTouchSupported():Bool return multiTouchSupport;

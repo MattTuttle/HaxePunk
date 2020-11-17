@@ -1,5 +1,6 @@
 package haxepunk.assets;
 
+import haxe.io.Bytes;
 import haxepunk.utils.Color;
 import haxepunk.audio.Sound;
 import haxepunk.backend.generic.render.Texture;
@@ -12,6 +13,8 @@ interface AssetLoader
 	public function createTexture(width:Int, height:Int, transparent:Bool=false, color:Color=0):Texture;
 
 	public function getText(id:String):Null<String>;
+
+	public function getBytes(id:String):Null<Bytes>;
 
 	public function getSound(id:String):Sound;
 

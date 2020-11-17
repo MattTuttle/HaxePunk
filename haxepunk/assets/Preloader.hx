@@ -120,9 +120,10 @@ class Preloader
 	}
 
 	#if js
-	function asyncLoad(path:String, callback:js.html.XMLHttpRequest->Void):js.html.XMLHttpRequest
+	function asyncLoad(path:String, callback:js.html.XMLHttpRequest->Void, responseType=js.html.XMLHttpRequestResponseType.TEXT):js.html.XMLHttpRequest
 	{
 		var http = new js.html.XMLHttpRequest();
+		http.responseType = responseType;
 		http.onreadystatechange = function() {
 			if (http.readyState == js.html.XMLHttpRequest.DONE) {
 				if (http.status == 200) {
@@ -137,6 +138,22 @@ class Preloader
 		return http;
 	}
 	#end
+
+	function loadBytes(path:String)
+	{
+		var aliases = assets.get(path);
+#if (!lime && js)
+		asyncLoad(path, function(http) {
+			var bytes = haxe.io.Bytes.ofData(http.response);
+			for (alias in aliases) {
+				cache.addBytes(alias, bytes);
+			}
+			success();
+		}, js.html.XMLHttpRequestResponseType.ARRAYBUFFER);
+#else
+		throw "Unimplemented";
+#end
+	}
 
 	function loadText(path:String)
 	{
@@ -190,6 +207,7 @@ class Preloader
 
 	public function load()
 	{
+		// TODO: allow for custom extensions
 		for (path in assets.keys())
 		{
 			switch (Path.extension(path))
@@ -197,6 +215,7 @@ class Preloader
 				case "jpg", "jpeg", "png": loadTexture(path);
 				case "mp3", "ogg", "wav":  loadSound(path);
 				case "woff", "ttf":        loadFont(path);
+				case "xm":                 loadBytes(path);
 				default: loadText(path);
 			}
 		}

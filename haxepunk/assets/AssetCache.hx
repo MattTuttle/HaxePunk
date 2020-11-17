@@ -1,5 +1,6 @@
 package haxepunk.assets;
 
+import haxe.io.Bytes;
 import haxepunk.graphics.atlas.Atlas;
 import haxepunk.graphics.atlas.AtlasData;
 import haxepunk.graphics.atlas.AtlasRegion;
@@ -38,6 +39,7 @@ class AssetCache
 
 	var textures:Map<String, Texture> = new Map();
 	var text:Map<String, String> = new Map();
+	var bytes:Map<String, Bytes> = new Map();
 	var sounds:Map<String, Sound> = new Map();
 	var regions:Map<String, IAtlasRegion> = new Map();
 	var bitmapFonts:Map<String, IBitmapFont> = new Map();
@@ -92,6 +94,21 @@ class AssetCache
 			Log.info('disposing texture $id');
 			texture.dispose();
 		}
+	}
+
+	public function addBytes(id:String, value:Bytes)
+	{
+		bytes[id] = value;
+	}
+
+	public function getBytes(id:String, addRef:Bool=true):Bytes
+	{
+		return AssetMacros.findAsset(this, bytes, otherCache.bytes, id, addRef, HXP.assetLoader.getBytes(id));
+	}
+
+	public function removeBytes(id:String)
+	{
+		bytes.remove(id);
 	}
 
 	public function addText(id:String, value:String)

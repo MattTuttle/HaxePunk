@@ -38,11 +38,9 @@ class Data
 
 	static var storage = new DataStorageNative();
 
-	static function resolveName(file:String)
+	static function resolveName(file:Null<String>)
 	{
-		if (file == null) file = DEFAULT_FILE;
-		var pre = (PREFIX == null ? "" : PREFIX + "-");
-		return id == "" ? '$pre$file' : '$pre$id-$file';
+		return (PREFIX == null ? "" : PREFIX) + id + "-" + (file == null ? DEFAULT_FILE : file);
 	}
 
 	/**
@@ -115,7 +113,7 @@ class Data
 	@:generic public static function read<T>(name:String, ?defaultValue:T):T
 	{
 		var value:T;
-		if (data.exists(name))
+		if (data != null && data.exists(name))
 			try {
 				value = Unserializer.run(data.get(name));
 			} catch(e:Dynamic) {
@@ -133,6 +131,7 @@ class Data
 	 */
 	public static function write(name:String, value:Dynamic):Void
 	{
+		if (data == null) data = new StringMap<String>();
 		data.set(name, Serializer.run(value));
 	}
 
