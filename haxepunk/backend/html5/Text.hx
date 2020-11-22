@@ -204,6 +204,7 @@ class Text extends Image
 		this.size = options.size;
 		this.color = options.color;
 		this.font = options.font;
+		this._wordWrap = options.wordWrap;
 
 		_needsUpdate = true;
 	}
@@ -212,52 +213,76 @@ class Text extends Image
 	{
 		ctx.font = '${size}px ${font}';
 		ctx.textAlign = align;
-		ctx.textBaseline = "middle";
-	}
-
-	function updateTextBuffer()
-	{
-		_needsUpdate = false;
-
-		var canvas = _source.canvas;
-		var ctx = canvas.getContext2d();
-		setFont(ctx);
-
-		textWidth = Std.int(ctx.measureText(text).width);
-
-		var width = Math.ceil(textWidth + bufferMargin * 2);
-		var height = Math.ceil(textHeight + bufferMargin * 2);
-
-		if (resizable && (textWidth > _width || textHeight > _height))
-		{
-			if (_width < textWidth) _width = width;
-			if (_height < textHeight) _height = width;
-		}
-
-		canvas.width = width;
-		canvas.height = height;
-		canvas.style.width = width + "px";
-		canvas.style.height = height + "px";
-
-		// have to set the font again after changing the width/height
-		setFont(ctx);
-
-		ctx.fillStyle = "transparent";
-		ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-		ctx.fillStyle = "#FF00FF";
-		ctx.fillText(text, 0, height / 2);
-
-		// reset the source texture
-		_source.width = width;
-		_source.height = height;
-		_source.dirty = true;
-		_region = Atlas.loadImageAsRegion(_source);
+		ctx.textBaseline = "top";
 	}
 
 	override public function render(point:Vector2, camera:Camera)
 	{
-		if (_needsUpdate) updateTextBuffer();
+		if (_needsUpdate)
+		{
+			_needsUpdate = false;
+
+			var canvas = _source.canvas;
+			var ctx = canvas.getContext2d();
+			setFont(ctx);
+
+			var width = _width;
+			var height = _height;
+			var lines = [];
+
+			if (_wordWrap)
+			{
+				for (words in text.split("\n")) {
+					var line = "";
+					for (word in words.split(" "))
+					{
+						var lineLength = ctx.measureText(line + " " + word).width;
+						if (lineLength > width) {
+							lines.push(line);
+							line = "";
+						}
+						line += word + " ";
+					}
+					lines.push(line);
+				}
+			}
+			else
+			{
+				lines.push(text);
+				textWidth = Std.int(ctx.measureText(text).width);
+
+				width = Math.ceil(textWidth + bufferMargin * 2);
+				height = Math.ceil(textHeight + bufferMargin * 2);
+
+				if (resizable && (textWidth > _width || textHeight > _height))
+				{
+					if (_width < textWidth) _width = width;
+					if (_height < textHeight) _height = width;
+				}
+			}
+
+			canvas.width = width;
+			canvas.height = height;
+			canvas.style.width = width + "px";
+			canvas.style.height = height + "px";
+
+			// have to set the font again after changing the width/height
+			setFont(ctx);
+
+			ctx.fillStyle = "transparent";
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+			ctx.fillStyle = "#FF00FF";
+			for (i in 0...lines.length) {
+				ctx.fillText(lines[i], 0, i * textHeight);
+			}
+
+			// reset the source texture
+			_source.width = width;
+			_source.height = height;
+			_source.dirty = true;
+			_region = Atlas.loadImageAsRegion(_source);
+		}
 		super.render(point, camera);
 	}
 
@@ -267,6 +292,7 @@ class Text extends Image
 	var _richText:String;
 	var _source:Texture;
 	var _buffer:CanvasElement;
+	var _wordWrap:Bool = false;
 
 	var _needsUpdate:Bool = true;
 
@@ -274,6 +300,7 @@ class Text extends Image
 	var _borderBackBuffer:CanvasElement;
 	var _borderRegion:AtlasRegion;
 	var _borderSource:CanvasElement;
+
 }
 
 #end
