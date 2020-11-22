@@ -260,11 +260,13 @@ class Tilemap extends Graphic
 			col:Array<String>, cols:Int, x:Int, y:Int;
 		for (y in 0...rows)
 		{
+			if (y >= _rows) break;
 			if (row[y] == '') continue;
 			col = row[y].split(columnSep);
 			cols = col.length;
 			for (x in 0...cols)
 			{
+				if (x >= _columns) break;
 				if (col[x] != '')
 				{
 					setTile(x, y, Std.parseInt(col[x]));
