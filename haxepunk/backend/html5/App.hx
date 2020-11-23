@@ -42,6 +42,16 @@ class App implements haxepunk.App
 		listenForMouseEvents(doc);
 		listenForKeyEvents(doc);
 		listenForTouchEvents(doc);
+		doc.addEventListener('visibilitychange', function() {
+			HXP.focused = !doc.hidden;
+			if (HXP.focused) {
+				engine.focusGained();
+				engine.scene.focusGained();
+			} else {
+				engine.focusLost();
+				engine.scene.focusLost();
+			}
+		});
 	}
 
 	inline function mapKeys(code:Int):Int
@@ -84,6 +94,11 @@ class App implements haxepunk.App
 	function listenForKeyEvents(doc:HTMLDocument)
 	{
 		doc.addEventListener('keydown', function(e:KeyboardEvent) {
+			// prevent arrow key and spacebar scrolling
+			switch (e.keyCode) {
+				case 37, 39, 38, 40, 32:
+					e.preventDefault();
+			}
 			Key.onKeyDown(mapKeys(e.keyCode), false);
 		});
 		doc.addEventListener('keyup', function(e:KeyboardEvent) {
