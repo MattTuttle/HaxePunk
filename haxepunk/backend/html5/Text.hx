@@ -204,6 +204,7 @@ class Text extends Image
 		this.size = options.size;
 		this.color = options.color;
 		this.font = options.font;
+		this.align = options.align;
 		this._wordWrap = options.wordWrap;
 
 		_needsUpdate = true;
@@ -226,8 +227,6 @@ class Text extends Image
 			var ctx = canvas.getContext2d();
 			setFont(ctx);
 
-			var width = _width;
-			var height = _height;
 			var lines = [];
 
 			if (_wordWrap)
@@ -237,7 +236,7 @@ class Text extends Image
 					for (word in words.split(" "))
 					{
 						var lineLength = ctx.measureText(line + " " + word).width;
-						if (lineLength > width) {
+						if (lineLength > _width) {
 							lines.push(line);
 							line = "";
 						}
@@ -251,20 +250,20 @@ class Text extends Image
 				lines.push(text);
 				textWidth = Std.int(ctx.measureText(text).width);
 
-				width = Math.ceil(textWidth + bufferMargin * 2);
-				height = Math.ceil(textHeight + bufferMargin * 2);
-
-				if (resizable && (textWidth > _width || textHeight > _height))
+				if (resizable)
 				{
-					if (_width < textWidth) _width = width;
-					if (_height < textHeight) _height = width;
+					var width = Math.ceil(textWidth + (bufferMargin * 2));
+					if (_width < width) _width = width;
+
+					var height = Math.ceil(textHeight + (bufferMargin * 2));
+					if (_height < height) _height = height;
 				}
 			}
 
-			canvas.width = width;
-			canvas.height = height;
-			canvas.style.width = width + "px";
-			canvas.style.height = height + "px";
+			canvas.width = _width;
+			canvas.height = _height;
+			canvas.style.width = _width + "px";
+			canvas.style.height = _height + "px";
 
 			// have to set the font again after changing the width/height
 			setFont(ctx);
@@ -274,12 +273,21 @@ class Text extends Image
 
 			ctx.fillStyle = "#FF00FF";
 			for (i in 0...lines.length) {
-				ctx.fillText(lines[i], 0, i * textHeight);
+				var lineWidth = ctx.measureText(lines[i]).width;
+				var x = switch (align) {
+					case LEFT:
+						0;
+					case RIGHT:
+						_width - (lineWidth / 2);
+					case CENTER:
+						_width / 2;
+				}
+				ctx.fillText(lines[i], x, i * textHeight + bufferMargin);
 			}
 
 			// reset the source texture
-			_source.width = width;
-			_source.height = height;
+			_source.width = _width;
+			_source.height = _height;
 			_source.dirty = true;
 			_region = Atlas.loadImageAsRegion(_source);
 		}
