@@ -44,8 +44,15 @@ class AssetLoader implements haxepunk.assets.AssetLoader
 		#end
 	}
 
+	@:access(haxepunk.backend.html5.Texture)
 	public function createTexture(width:Int, height:Int, transparent:Bool=false, color:Color=0):Texture
 	{
-		return new Texture(width, height);
+		var texture = new Texture(width, height);
+		var ctx = texture.canvas.getContext2d();
+		ctx.fillStyle = "rgba(" + color.r + ", " + color.g + ", " + color.b + ", " + (transparent ? "1" : "0") + ")";
+		ctx.rect(0, 0, width, height);
+		ctx.fill();
+		texture.dirty = true;
+		return texture;
 	}
 }
