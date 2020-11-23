@@ -1,6 +1,6 @@
 package haxepunk.graphics.shader;
 
-import haxepunk.HXP;
+import haxepunk.assets.AssetCache;
 
 @:dox(hide)
 class SceneShader extends Shader
@@ -37,7 +37,7 @@ void main () {
 	 */
 	public static inline function fromAsset(name:String):SceneShader
 	{
-		return new SceneShader(HXP.assetLoader.getText(name));
+		return new SceneShader(AssetCache.global.getText(name));
 	}
 
 	/**

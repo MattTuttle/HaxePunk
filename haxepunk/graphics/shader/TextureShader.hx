@@ -1,6 +1,6 @@
 package haxepunk.graphics.shader;
 
-import haxepunk.HXP;
+import haxepunk.assets.AssetCache;
 
 @:dox(hide)
 class TextureShader extends Shader
@@ -81,7 +81,7 @@ void main(void) {
 	 */
 	public static inline function fromAsset(name:String):TextureShader
 	{
-		return new TextureShader(null, HXP.assetLoader.getText(name));
+		return new TextureShader(null, AssetCache.global.getText(name));
 	}
 
 	public function new(?vertex:String, ?fragment:String)
