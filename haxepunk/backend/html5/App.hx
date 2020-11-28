@@ -79,8 +79,8 @@ class App implements haxepunk.App
 	{
 		var rect = canvas.getBoundingClientRect();
 		doc.addEventListener('mousemove', function(e:MouseEvent) {
-			mouseX = MathUtil.clamp(e.pageX - rect.left, 0, HXP.width);
-			mouseY = MathUtil.clamp(e.pageY - rect.top, 0, HXP.height);
+			mouseX = MathUtil.clamp(e.pageX - rect.left, 0, HXP.windowWidth);
+			mouseY = MathUtil.clamp(e.pageY - rect.top, 0, HXP.windowHeight);
 		});
 		doc.addEventListener('mousedown', function(e:MouseEvent) {
 			Mouse.onMouseDown(e.button);
