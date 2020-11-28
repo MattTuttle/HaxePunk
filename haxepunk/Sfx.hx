@@ -10,6 +10,8 @@ class Sfx
 		this.data = data;
 	}
 
+	public var playing(default, null):Bool = false;
+
 	/**
 	 * Alter the volume factor (a value from 0 to 1) of the sound during playback.
 	 */
@@ -26,6 +28,7 @@ class Sfx
 	public function play(volume:Float = 1, pan:Float = 0, loop:Bool = false)
 	{
 		this.volume = volume;
+		this.playing = true;
 		HXP.audio.play(this, loop);
 	}
 
@@ -34,6 +37,7 @@ class Sfx
 	 */
 	public function resume()
 	{
+		this.playing = true;
 		HXP.audio.resume(this);
 	}
 
@@ -54,6 +58,7 @@ class Sfx
 	 */
 	public function stop():Bool
 	{
+		this.playing = false;
 		return HXP.audio.stop(this);
 	}
 
