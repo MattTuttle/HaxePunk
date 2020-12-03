@@ -37,7 +37,7 @@ class Sfx
 
 		if (Std.is(source, String))
 		{
-			_sound = HXP.assetLoader.getSound(source);
+			_sound = AssetCache.global.getSound(source);
 			_sounds.set(source, _sound);
 		}
 		else

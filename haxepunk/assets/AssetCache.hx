@@ -53,6 +53,25 @@ class AssetCache
 		this.name = name;
 	}
 
+	/**
+	 * The default asset loader (for text, sound, and graphics)
+	 */
+	public static var assetLoader(get, null):AssetLoader;
+	static function get_assetLoader():AssetLoader {
+		if (assetLoader == null) {
+		#if (lime || nme)
+			assetLoader = new haxepunk.backend.flash.assets.AssetLoader();
+		#elseif hl
+			assetLoader = new haxepunk.backend.hl.FileAssetLoader();
+		#elseif js
+			assetLoader = new haxepunk.backend.html5.AssetLoader();
+		#elseif !unit_test
+			#error "Asset loader is not implemented on this target"
+		#end
+		}
+		return assetLoader;
+	}
+
 	public function addTexture(id:String, texture:Texture)
 	{
 		textures[id] = texture;
@@ -62,7 +81,7 @@ class AssetCache
 	{
 		return AssetMacros.findAsset(this, textures, otherCache.textures, id, addRef, {
 			Log.info('loading texture $id into cache $name');
-			var texture = HXP.assetLoader.getTexture(id);
+			var texture = assetLoader.getTexture(id);
 			if (!atlasData.exists(id))
 			{
 				var data = new AtlasData(texture, id);
@@ -103,7 +122,7 @@ class AssetCache
 
 	public function getBytes(id:String, addRef:Bool=true):Bytes
 	{
-		return AssetMacros.findAsset(this, bytes, otherCache.bytes, id, addRef, HXP.assetLoader.getBytes(id));
+		return AssetMacros.findAsset(this, bytes, otherCache.bytes, id, addRef, assetLoader.getBytes(id));
 	}
 
 	public function removeBytes(id:String)
@@ -118,7 +137,7 @@ class AssetCache
 
 	public function getText(id:String, addRef:Bool=true):String
 	{
-		return AssetMacros.findAsset(this, text, otherCache.text, id, addRef, HXP.assetLoader.getText(id));
+		return AssetMacros.findAsset(this, text, otherCache.text, id, addRef, assetLoader.getText(id));
 	}
 
 	public function removeText(id:String)
@@ -133,7 +152,7 @@ class AssetCache
 
 	public function getSound(id:String, addRef:Bool=true):Sound
 	{
-		return AssetMacros.findAsset(this, sounds, otherCache.sounds, id, addRef, HXP.assetLoader.getSound(id));
+		return AssetMacros.findAsset(this, sounds, otherCache.sounds, id, addRef, assetLoader.getSound(id));
 	}
 
 	public function removeSound(id:String)

@@ -2,6 +2,7 @@ package haxepunk.graphics;
 
 import haxepunk.Camera;
 import haxepunk.Graphic;
+import haxepunk.assets.AssetCache;
 import haxepunk.graphics.atlas.Atlas;
 import haxepunk.graphics.atlas.IAtlasRegion;
 import haxepunk.utils.Color;
@@ -147,7 +148,7 @@ class Image extends Graphic
 		if (width == 0 || height == 0)
 			throw "Illegal rect, sizes cannot be 0.";
 
-		var source = HXP.assetLoader.createTexture(width, height, true, 0xFFFFFFFF);
+		var source = AssetCache.assetLoader.createTexture(width, height, true, 0xFFFFFFFF);
 		var image = new Image(Atlas.loadImageAsRegion(source));
 
 		image.color = color;
@@ -168,7 +169,7 @@ class Image extends Graphic
 		if (radius == 0)
 			throw "Illegal circle, radius cannot be 0.";
 
-		var texture = HXP.assetLoader.createTexture(radius * 2, radius * 2, true, 0);
+		var texture = AssetCache.assetLoader.createTexture(radius * 2, radius * 2, true, 0);
 		texture.drawCircle(radius, radius, radius);
 
 		var image = new Image(Atlas.loadImageAsRegion(texture));

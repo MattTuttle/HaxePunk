@@ -4,6 +4,7 @@ package haxepunk.assets;
 import sys.FileSystem;
 import sys.io.File;
 import haxe.macro.Expr;
+import haxe.macro.ExprTools;
 import haxe.macro.Context;
 import haxe.macro.Compiler;
 #end
@@ -13,7 +14,8 @@ import haxe.ds.StringMap;
 
 typedef PreloadPath = {
 	path:String,
-	?alias:String
+	?alias:String,
+	?extensions:Array<String>
 }
 
 class Preloader
@@ -74,7 +76,7 @@ class Preloader
 			fail();
 		});
 		#else
-		var texture = haxepunk.HXP.assetLoader.getTexture(path);
+		var texture = AssetCache.assetLoader.getTexture(path);
 		if (texture == null)
 		{
 			Log.critical('Failed to load texture: ${path}');
@@ -103,7 +105,7 @@ class Preloader
 			fail();
 		});
 		#else
-		var sound = HXP.assetLoader.getSound(path);
+		var sound = AssetCache.assetLoader.getSound(path);
 		if (sound == null)
 		{
 			Log.critical('Failed to load sound: ${path}');
@@ -167,7 +169,7 @@ class Preloader
 			success();
 		});
 #else
-		var text = HXP.assetLoader.getText(path);
+		var text = AssetCache.assetLoader.getText(path);
 		if (text == null)
 		{
 			Log.critical('Failed to load text: ${path}');
@@ -291,6 +293,11 @@ class Preloader
 				{
 					{ path: str };
 				}
+			case EObjectDecl(fields):
+				var v = ExprTools.getValue(expr);
+				var ext:Array<String> = cast v.ext;
+				if (Type.getClass(v.ext) == String) { ext = [v.ext]; }
+				{ path: v.path, alias: v.alias, extensions: ext };
 			case EArrayDecl(v):
 				if (v.length == 2) {
 					{ path: getString(v[0]), alias: getString(v[1]) };
@@ -335,6 +342,17 @@ class Preloader
 		return null;
 	}
 
+	static function checkValidExtension(preloadPath:PreloadPath, path:String):Bool {
+		if (preloadPath.extensions == null) return true;
+
+		for (ext in preloadPath.extensions)
+		{
+			if (path.indexOf(ext) >= 0)
+				return true;
+		}
+		return false;
+	}
+
 	static function findAndCopyAssets(preloadPath:PreloadPath, ?outPath:String):Expr {
 		var search = [preloadPath.path];
 		var iterations = 0;
@@ -353,7 +371,7 @@ class Preloader
 						search.push(Path.join([originalPath, item]));
 					}
 				}
-				else
+				else if (checkValidExtension(preloadPath, path))
 				{
 					var aliases = [];
 					if (preloadPath.alias != null)
