@@ -115,7 +115,6 @@ class Engine
 		_iterator = new VisibleSceneIterator();
 
 		loadDefaultAssets();
-		app.init(this);
 	}
 
 	/**
@@ -149,6 +148,7 @@ class Engine
 	@:preload(["assets/haxepunk/fonts", "font"])
 	function loadDefaultAssets() {
 		Log.debug("Default HaxePunk assets are loaded");
+		app.init(this);
 	}
 
 	/**
