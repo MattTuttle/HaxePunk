@@ -274,7 +274,7 @@ class Scene extends Tweener
 			if (!layerVisible(layer)) continue;
 			for (e in _layers.get(layer))
 			{
-				if (e.visible) e.render(e.camera == null ? camera : e.camera);
+				if (e.visible) e.render(e.camera.or(camera));
 			}
 		}
 
@@ -777,10 +777,11 @@ class Scene extends Tweener
 		{
 			if (e.collidable)
 			{
-				if (cameraAdjust && e.camera != null)
+				if (cameraAdjust && e.camera.exists())
 				{
-					var px = (pX + e.camera.x - camera.x) * camera.fullScaleX / e.camera.fullScaleX,
-						py = (pY + e.camera.y - camera.y) * camera.fullScaleY / e.camera.fullScaleY;
+					var ecam = e.camera.unsafe(); // we check for existence above
+					var px = (pX + ecam.x - camera.x) * camera.fullScaleX / ecam.fullScaleX,
+						py = (pY + ecam.y - camera.y) * camera.fullScaleY / ecam.fullScaleY;
 					if (e.collidePoint(e.x, e.y, px, py)) into[n++] = cast e;
 				}
 				else

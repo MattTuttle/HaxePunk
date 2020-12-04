@@ -1,5 +1,7 @@
 package haxepunk;
 
+import haxepunk.ds.Maybe;
+
 /**
  * A group of entities which can be added to or removed from the Scene and
  * moved together. Also supports object pooling.
@@ -119,7 +121,7 @@ class EntityList<T:Entity> extends Entity
 		return value;
 	}
 
-	override function set_camera(value:Camera):Camera
+	override function set_camera(value:Maybe<Camera>):Maybe<Camera>
 	{
 		for (entity in entities) entity.camera = value;
 		return camera = value;
@@ -134,7 +136,7 @@ class EntityList<T:Entity> extends Entity
 	public function create(cls:Class<T>, ?constructorArgs:Array<Dynamic>):T
 	{
 		var entity:T = _recycled.pop();
-		if (entity == null || entity.scene != null)
+		if (entity == null || entity.scene.exists())
 		{
 			if (entity != null)
 			{

@@ -29,8 +29,8 @@ class Entity extends Tweener
 	 */
 	public var parent:Maybe<Entity>;
 
-	public var camera(default, set):Null<Camera> = null;
-	function set_camera(v:Camera) return camera = v;
+	public var camera(default, set):Maybe<Camera> = null;
+	function set_camera(v:Maybe<Camera>):Maybe<Camera> return camera = v;
 
 	/**
 	 * If set, skip every N update frames.

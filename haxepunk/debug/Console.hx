@@ -338,7 +338,7 @@ class Console extends Scene
 				if (!scene.layerVisible(layer)) continue;
 				for (e in scene._layers.get(layer))
 				{
-					e.debugDraw(e.camera == null ? scene.camera : e.camera, selected.indexOf(e) > -1);
+					e.debugDraw(e.camera.or(scene.camera), selected.indexOf(e) > -1);
 				}
 			}
 		}
