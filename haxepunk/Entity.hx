@@ -1,6 +1,7 @@
 package haxepunk;
 
 import haxepunk.Signal.Signal0;
+import haxepunk.ds.Maybe;
 import haxepunk.graphics.Graphiclist;
 import haxepunk.math.MathUtil;
 import haxepunk.math.Vector2;
@@ -287,7 +288,7 @@ class Entity extends Tweener
 	 * @param	y			Virtual y position to place this Entity.
 	 * @return	The first Entity collided with, or null if none were collided.
 	 */
-	public function collide(types:StringOrArray, x:Float, y:Float):Entity
+	public function collide(types:StringOrArray, x:Float, y:Float):Maybe<Entity>
 	{
 		if (_scene == null || !collidable) return null;
 
@@ -317,7 +318,7 @@ class Entity extends Tweener
 	 * @return	The first Entity collided with, or null if none were collided.
 	 */
 	@:deprecated("Use collide instead of collideTypes")
-	public function collideTypes(types:StringOrArray, x:Float, y:Float):Entity
+	public function collideTypes(types:StringOrArray, x:Float, y:Float):Maybe<Entity>
 	{
 		return collide(types, x, y);
 	}
@@ -329,7 +330,7 @@ class Entity extends Tweener
 	 * @param	y		Virtual y position to place this Entity.
 	 * @return	The Entity if they overlap, or null if they don't.
 	 */
-	public function collideWith<E:Entity>(e:E, x:Float, y:Float):E
+	public function collideWith<E:Entity>(e:E, x:Float, y:Float):Maybe<E>
 	{
 		_x = this.x; _y = this.y;
 		this.x = x; this.y = y;
@@ -755,7 +756,7 @@ class Entity extends Tweener
 		}
 		else
 		{
-			var sign:Int, e:Entity;
+			var sign:Int, e:Maybe<Entity>;
 			if (x != 0)
 			{
 				if (collidable && (sweep || collide(solidType, this.x + x, this.y) != null))
@@ -763,9 +764,10 @@ class Entity extends Tweener
 					sign = x > 0 ? 1 : -1;
 					while (x != 0)
 					{
-						if ((e = collide(solidType, this.x + sign, this.y)) != null)
+						e = collide(solidType, this.x + sign, this.y);
+						if (e.exists())
 						{
-							if (moveCollideX(e)) break;
+							if (moveCollideX(e.unsafe())) break;
 							else this.x += sign;
 						}
 						else
@@ -784,9 +786,10 @@ class Entity extends Tweener
 					sign = y > 0 ? 1 : -1;
 					while (y != 0)
 					{
-						if ((e = collide(solidType, this.x, this.y + sign)) != null)
+						e = collide(solidType, this.x, this.y + sign);
+						if (e.exists())
 						{
-							if (moveCollideY(e)) break;
+							if (moveCollideY(e.unsafe())) break;
 							else this.y += sign;
 						}
 						else

@@ -287,7 +287,7 @@ class Spritemap extends Image
 	{
 		if (reset)
 		{
-			frame = _index = currentAnimation.map(function(a) return a.getLastFrame(reverse), 0);
+			frame = _index = currentAnimation.exists() ? currentAnimation.unsafe().getLastFrame(reverse) : 0;
 		}
 
 		currentAnimation = null;
@@ -365,12 +365,16 @@ class Spritemap extends Image
 	function get_index():Int return currentAnimation.exists() ? _index : 0;
 	function set_index(value:Int):Int
 	{
-		return currentAnimation.map(function(anim) {
-			value %= anim.frameCount;
+		if (currentAnimation.exists()) {
+			value %= currentAnimation.unsafe().frameCount;
 			if (_index == value) return _index;
-			frame = anim.frames[value];
+			frame = currentAnimation.unsafe().frames[value];
 			return _index = value;
-		}, 0);
+		}
+		else
+		{
+			return 0;
+		}
 	}
 
 	// Spritemap information.
