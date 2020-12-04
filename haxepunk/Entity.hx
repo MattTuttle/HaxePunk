@@ -27,7 +27,7 @@ class Entity extends Tweener
 	 * the parent's position.
 	 * @since 4.0.0
 	 */
-	public var parent:Null<Entity>;
+	public var parent:Maybe<Entity>;
 
 	public var camera(default, set):Null<Camera> = null;
 	function set_camera(v:Camera) return camera = v;
@@ -41,16 +41,16 @@ class Entity extends Tweener
 	 * If the Entity should render.
 	 */
 	@:isVar public var visible(get, set):Bool = true;
-	function get_visible() return visible && (parent == null || parent.visible);
+	function get_visible() return visible && parent.map((p) -> p.visible, false);
 	function set_visible(v:Bool) return visible = v;
 
-	override function get_active() return active && (parent == null || parent.active);
+	override function get_active() return active && parent.map((p) -> p.active, false);
 
 	/**
 	 * If the Entity should respond to collision checks.
 	 */
 	@:isVar public var collidable(get, set):Bool = true;
-	function get_collidable() return collidable && (parent == null || parent.collidable);
+	function get_collidable() return collidable && parent.map((p) -> p.collidable, false);
 	function set_collidable(v:Bool) return collidable = v;
 
 	public var enabled(get, set):Bool;
@@ -63,12 +63,12 @@ class Entity extends Tweener
 	@:isVar public var x(get, set):Float = 0;
 	function get_x():Float
 	{
-		var parentX:Float = (parent == null) ? 0 : parent.x;
+		var parentX:Float = parent.map((p) -> p.x, 0);
 		return parentX + x + (followCamera == null ? 0 : followCamera.x);
 	}
 	function set_x(v:Float):Float
 	{
-		var parentX:Float = (parent == null) ? 0 : parent.x;
+		var parentX:Float = parent.map((p) -> p.x, 0);
 		return x = (v - parentX);
 	}
 
@@ -78,12 +78,12 @@ class Entity extends Tweener
 	@:isVar public var y(get, set):Float = 0;
 	function get_y():Float
 	{
-		var parentY:Float = (parent == null) ? 0 : parent.y;
+		var parentY:Float = parent.map((p) -> p.y, 0);
 		return parentY + y + (followCamera == null ? 0 : followCamera.y);
 	}
 	function set_y(v:Float):Float
 	{
-		var parentY:Float = (parent == null) ? 0 : parent.y;
+		var parentY:Float = parent.map((p) -> p.y, 0);
 		return y = (v - parentY);
 	}
 
@@ -93,8 +93,8 @@ class Entity extends Tweener
 	 * @since 4.0.0
 	 */
 	public var localX(get, set):Float;
-	function get_localX() return x - (parent == null ? 0 : parent.x);
-	function set_localX(v:Float) return x = (parent == null ? 0 : parent.x) + v;
+	function get_localX() return x - parent.map((p) -> p.x, 0);
+	function set_localX(v:Float) return x = parent.map((p) -> p.x, 0) + v;
 
 	/**
 	 * Local Y position. If this entity has a parent, this value is relative
@@ -102,8 +102,8 @@ class Entity extends Tweener
 	 * @since 4.0.0
 	 */
 	public var localY(get, set):Float;
-	function get_localY() return y - (parent == null ? 0 : parent.y);
-	function set_localY(v:Float) return y = (parent == null ? 0 : parent.y) + v;
+	function get_localY() return y - parent.map((p) -> p.y, 0);
+	function set_localY(v:Float) return y = parent.map((p) -> p.y, 0) + v;
 
 	/**
 	 * Set to the camera the entity should follow. If null it won't follow any camera.
