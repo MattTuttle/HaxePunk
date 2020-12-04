@@ -1,6 +1,7 @@
 package haxepunk;
 
 import haxepunk.Tween;
+import haxepunk.ds.Maybe;
 
 /**
  * Abstract class used to add the ability to add tweens.
@@ -36,15 +37,14 @@ class Tweener
 		t._parent = this;
 		t._next = _tween;
 
-		if (_tween != null)
-			_tween._prev = t;
+		_tween.may((tween) -> tween._prev = t);
 
 		_tween = t;
 
 		if (start)
-			_tween.start();
+			t.start();
 		else
-			_tween.active = false;
+			t.active = false;
 
 		return t;
 	}
@@ -61,16 +61,12 @@ class Tweener
 		if (t._parent != this)
 			throw "Core object does not contain Tween.";
 
-		if (t._next != null)
-			t._next._prev = t._prev;
+		t._next.may((n) -> n._prev = t._prev);
+		t._prev.may((p) -> p._next = t._next);
 
-		if (t._prev != null)
+		if (_tween == t)
 		{
-			t._prev._next = t._next;
-		}
-		else
-		{
-			_tween = (t._next == null) ? null : cast(t._next, Tween);
+			_tween = t._next;
 		}
 		t._next = t._prev = null;
 		t._parent = null;
@@ -83,12 +79,9 @@ class Tweener
 	 */
 	public function clearTweens()
 	{
-		var t:Tween = _tween;
-		while (t != null)
+		while (_tween.exists())
 		{
-			var next = t._next;
-			removeTween(t);
-			t = next;
+			removeTween(_tween.unsafe());
 		}
 	}
 
@@ -97,20 +90,20 @@ class Tweener
 	 */
 	public function updateTweens(elapsed:Float)
 	{
-		var t:Tween = _tween;
+		var t:Null<Tween> = _tween.unsafe();
 		while (t != null)
 		{
 			if (t.active)
 			{
 				t.update(elapsed);
 			}
-			t = t._next;
+			t = t._next.unsafe();
 		}
 	}
 
 	/** If there is at least a tween. */
 	public var hasTween(get, never):Bool;
-	function get_hasTween():Bool return (_tween != null);
+	function get_hasTween():Bool return _tween.exists();
 
-	var _tween:Tween;
+	var _tween:Maybe<Tween>;
 }

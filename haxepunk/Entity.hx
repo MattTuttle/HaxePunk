@@ -155,7 +155,7 @@ class Entity extends Tweener
 		layer = 0;
 
 		this.graphic = graphic;
-		if (mask != null) this.mask = mask;
+		this.mask = mask;
 		HITBOX.parent = this;
 		_class = Type.getClassName(Type.getClass(this));
 	}

@@ -174,6 +174,6 @@ class Tween
 	var _target:Float;
 
 	var _parent:Tweener;
-	var _prev:Tween;
-	var _next:Tween;
+	var _prev:Maybe<Tween>;
+	var _next:Maybe<Tween>;
 }
