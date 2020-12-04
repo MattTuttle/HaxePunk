@@ -96,12 +96,14 @@ class CompiledSceneShader extends CompiledShader
 
 		gl.uniform1i(image, 0);
 		#if hl
-		var b = new hl.Bytes(4);
-		b.setF32(0, HXP.screen.width);
-		b.setF32(4, HXP.screen.height);
-		b.setF32(8, 0);
-		b.setF32(12, 0);
-		gl.uniform4fv(resolution, b, 0, 1);
+		if (resolution != null) {
+			var b = new hl.Bytes(4*4);
+			b.setF32(0, HXP.screen.width);
+			b.setF32(4, HXP.screen.height);
+			b.setF32(8, 0);
+			b.setF32(12, 0);
+			gl.uniform4fv(resolution, b, 0, 1);
+		}
 		#else
 		gl.uniform2f(resolution, HXP.screen.width, HXP.screen.height);
 		#end

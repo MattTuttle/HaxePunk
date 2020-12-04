@@ -1,5 +1,6 @@
 package haxepunk.backend.hl;
 
+import haxe.io.Bytes;
 import haxe.io.Path;
 import sys.FileSystem;
 import sys.io.File;
@@ -31,6 +32,11 @@ class FileAssetLoader implements AssetLoader
 	public function getText(id:String):String
 	{
 		return File.getContent(resolvePath(id));
+	}
+
+	public function getBytes(id:String):Bytes
+	{
+		return File.getBytes(resolvePath(id));
 	}
 
 	public function getSound(id:String):Sound

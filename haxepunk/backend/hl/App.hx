@@ -1,13 +1,14 @@
 package haxepunk.backend.hl;
 
 #if hlsdl
-import haxepunk.utils.Log;
+import haxepunk.HXP;
+import haxepunk.Engine;
+import haxepunk.backend.opengl.GLRenderer;
 import haxepunk.input.Gamepad;
 import haxepunk.input.Key;
 import haxepunk.input.Mouse;
 import haxepunk.input.Input;
-import haxepunk.HXP;
-import haxepunk.Engine;
+import haxepunk.utils.Log;
 import sdl.Sdl;
 import sdl.GL;
 
@@ -192,9 +193,6 @@ class App implements haxepunk.App
 		{
 			engine.onUpdate();
 
-			var color = HXP.screen.color;
-			GL.clearColor(color.red, color.green, color.blue, 1);
-			GL.clear(GL.COLOR_BUFFER_BIT);
 			engine.onRender();
 			window.present();
 		}

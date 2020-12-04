@@ -113,7 +113,7 @@ class Engine
 
 		_frameList = new Array();
 
-		_iterator = new VisibleSceneIterator();
+		_sceneIterator = new VisibleSceneIterator();
 
 		loadDefaultAssets();
 	}
@@ -213,7 +213,7 @@ class Engine
 		preRender.invoke();
 
 		renderer.startFrame();
-		for (scene in scenes)
+		for (scene in _sceneIterator.reset(this))
 		{
 			renderer.startScene(scene);
 			HXP.renderingScene = scene;
@@ -354,7 +354,7 @@ class Engine
 
 	/** An iterator for all visible scenes */
 	public var scenes(get, never):Iterator<Scene>;
-	inline function get_scenes() return _iterator.reset(this);
+	inline function get_scenes() return _sceneIterator.reset(this);
 
 	var app:App;
 
@@ -376,7 +376,7 @@ class Engine
 	var _frameListSum:Int = 0;
 	var _frameList:Array<Int>;
 
-	var _iterator:VisibleSceneIterator;
+	var _sceneIterator:VisibleSceneIterator;
 }
 
 private class VisibleSceneIterator

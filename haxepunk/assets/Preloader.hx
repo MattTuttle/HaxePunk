@@ -153,7 +153,19 @@ class Preloader
 			success();
 		}, js.html.XMLHttpRequestResponseType.ARRAYBUFFER);
 #else
-		throw "Unimplemented";
+		var bytes = AssetCache.assetLoader.getBytes(path);
+		if (bytes == null)
+		{
+			Log.critical('Failed to load bytes: ${path}');
+			fail();
+		}
+		else
+		{
+			for (alias in aliases) {
+				cache.addBytes(alias, bytes);
+			}
+		}
+		success();
 #end
 	}
 

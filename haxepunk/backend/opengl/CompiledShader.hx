@@ -199,6 +199,10 @@ class CompiledShader
 		}
 	}
 
+	#if hl
+	var streamBytes:hl.Bytes;
+	#end
+
 	public function bind()
 	{
 		if (GLUtils.invalid(glProgram))
@@ -210,11 +214,20 @@ class CompiledShader
 
 		gl.useProgram(glProgram);
 
+		#if hl
+		var offset = 0;
+		streamBytes = new hl.Bytes(shader.uniformNames.length * 16);
+		#end
+
 		for (name in shader.uniformNames)
 		{
 			#if hl
-			var length = Float32Array.BYTES_PER_ELEMENT;
-			gl.uniform4fv(uniformIndex(name), hl.Bytes.fromValue(shader.uniformValues[name], length), 0, 4);
+			streamBytes.setF32(offset, cast shader.uniformValues[name]);
+			streamBytes.setF32(offset+4, 0);
+			streamBytes.setF32(offset+8, 0);
+			streamBytes.setF32(offset+12, 0);
+			gl.uniform4fv(uniformIndex(name), streamBytes, offset, 1);
+			offset += 16;
 			#else
 			gl.uniform1f(uniformIndex(name), shader.uniformValues[name]);
 			#end

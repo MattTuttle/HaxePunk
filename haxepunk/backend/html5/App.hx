@@ -180,7 +180,6 @@ class App implements haxepunk.App
 		Browser.window.requestAnimationFrame(loop);
 		engine.onUpdate();
 
-		GLRenderer.clear(HXP.screen.color);
 		engine.onRender();
 	}
 

@@ -129,7 +129,7 @@ class GLRenderer implements Renderer
 		if (GLUtils.invalid(fb.texture) || GLUtils.invalid(fb.framebuffer))
 		{
 			// detroy framebuffer
-			gl.deleteFramebuffer(fb.framebuffer);
+			if (fb.framebuffer != null) gl.deleteFramebuffer(fb.framebuffer);
 			fb.texture = null;
 			fb.width = fb.height = 0;
 
@@ -143,7 +143,7 @@ class GLRenderer implements Renderer
 		}
 
 		gl.bindFramebuffer(GL.FRAMEBUFFER, fb.framebuffer);
-		GLRenderer.clear(0);
+		GLRenderer.clear(HXP.screen.color);
 	}
 
 	public static function createTexture(width:Int, height:Int)
@@ -185,7 +185,7 @@ class GLRenderer implements Renderer
 				gl.blendFuncSeparate(GL.ONE, GL.ONE, GL.ZERO, GL.ONE);
 			case BlendMode.Alpha:
 				gl.blendEquation(GL.FUNC_ADD);
-				gl.blendFunc(GL.ONE, GL.ONE_MINUS_SRC_ALPHA);
+				gl.blendFunc(#if hl GL.SRC_ALPHA #else GL.ONE #end, GL.ONE_MINUS_SRC_ALPHA);
 		}
 	}
 
@@ -488,8 +488,7 @@ class GLRenderer implements Renderer
 				gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
 			}
 
-			gl.blendEquation(GL.FUNC_ADD);
-			gl.blendFunc(GL.ONE, GL.ONE_MINUS_SRC_ALPHA);
+			setBlendMode(Alpha);
 			gl.drawArrays(GL.TRIANGLES, 0, 6);
 
 			gl.bindTexture(GL.TEXTURE_2D, null);
