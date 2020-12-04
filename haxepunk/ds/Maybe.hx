@@ -26,4 +26,9 @@ abstract Maybe<T>(Null<T>) from Null<T>
 	 * Only call the provided function if the value exists.
 	 */
 	public inline function may(fn:T->Void):Void if (exists()) fn(this);
+
+	/**
+	 * If the value exists, call a function and return a value. Otherwise return the default value.
+	 */
+	public inline function map<S>(fn:T->S, defaultValue:S) return exists() ? fn(this) : defaultValue;
 }

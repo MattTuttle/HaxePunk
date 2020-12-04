@@ -201,13 +201,14 @@ class Scene extends Tweener
 					}
 				}
 			}
-			var g = e.graphic;
-			if (g != null && g.active)
-			{
-				g.preUpdate.invoke();
-				g.update();
-				g.postUpdate.invoke();
-			}
+			e.graphic.may(function(g) {
+				if (g.active)
+				{
+					g.preUpdate.invoke();
+					g.update();
+					g.postUpdate.invoke();
+				}
+			});
 		}
 
 		// update the camera again, in case it's following an entity

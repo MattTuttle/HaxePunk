@@ -2,6 +2,7 @@ package haxepunk;
 
 import haxepunk.Signal;
 import haxepunk.debug.Console;
+import haxepunk.ds.Maybe;
 import haxepunk.input.Input;
 import haxepunk.math.Random;
 import haxepunk.math.Rectangle;
@@ -21,7 +22,7 @@ import haxepunk.backend.generic.render.Renderer;
 @:access(haxepunk.HXP)
 class Engine
 {
-	public var console:Console;
+	public var console:Maybe<Console> = null;
 
 	/**
 	 * If the game should stop updating/rendering.
@@ -275,7 +276,7 @@ class Engine
 		if (!paused) update();
 
 		// update console
-		if (console != null) console.update();
+		console.may(function(c) c.update());
 
 		Input.postUpdate();
 	}
@@ -319,7 +320,7 @@ class Engine
 	 * Pop a scene from the stack. The current scene will remain active until the next update.
 	 * @since	2.5.3
 	 */
-	public function popScene():Null<Scene>
+	public function popScene():Maybe<Scene>
 	{
 		if (_scenes.length > 0)
 		{
@@ -397,10 +398,9 @@ private class VisibleSceneIterator
 	{
 		HXP.clear(scenes);
 
-		if (engine.console != null)
-		{
-			scenes.push(engine.console);
-		}
+		engine.console.may(function(console) {
+			scenes.push(console);
+		});
 
 		var scene:Scene;
 		var i = engine._scenes.length - 1;

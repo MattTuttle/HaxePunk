@@ -162,7 +162,7 @@ class Entity extends Tweener
 
 		layer = 0;
 
-		if (graphic != null) this.graphic = graphic;
+		this.graphic = graphic;
 		if (mask != null) this.mask = mask;
 		HITBOX.parent = this;
 		_class = Type.getClassName(Type.getClass(this));
@@ -205,24 +205,26 @@ class Entity extends Tweener
 	 */
 	public function render(camera:Camera):Void
 	{
-		if (graphic != null && graphic.visible)
-		{
-			if (graphic.relative)
+		graphic.may(function(g) {
+			if (g.visible)
 			{
-				_point.x = x;
-				_point.y = y;
+				if (g.relative)
+				{
+					_point.x = x;
+					_point.y = y;
+				}
+				else
+				{
+					_point.x = _point.y = 0;
+				}
+				g.doRender(_point, camera);
 			}
-			else
-			{
-				_point.x = _point.y = 0;
-			}
-			graphic.doRender(_point, camera);
-		}
+		});
 	}
 
 	public function debugDraw(camera:Camera, selected:Bool=false)
 	{
-		if (mask == null && width > 0 && height > 0 && collidable)
+		if (!mask.exists() && width > 0 && height > 0 && collidable)
 		{
 			Mask.drawContext.lineThickness = 2;
 			Mask.drawContext.setColor(0xff0000, 0.065);
@@ -230,9 +232,11 @@ class Entity extends Tweener
 			Mask.drawContext.setColor(0xff0000, 0.25);
 			Mask.drawContext.rect((x - camera.x - originX) * camera.screenScaleX, (y - camera.y - originY) * camera.screenScaleY, width * camera.screenScaleX, height * camera.screenScaleY);
 		}
-		else if (mask != null)
+		else
 		{
-			mask.debugDraw(camera);
+			mask.may(function(m) {
+				m.debugDraw(camera);
+			});
 		}
 		Mask.drawContext.setColor(selected ? 0x00ff00 : 0xffffff, 1);
 		Mask.drawContext.circle((x - camera.x) * camera.screenScaleX, (y - camera.y) * camera.screenScaleY, 3, 8);
@@ -269,13 +273,13 @@ class Entity extends Tweener
 			&& other != this
 			&& overlapsWithEntity(other))
 		{
-			if (_mask == null)
+			if (mask.exists())
 			{
-				other._mask == null || other._mask.collide(HITBOX);
+				mask.unsafe().collide(other.mask.or(other.HITBOX));
 			}
 			else
 			{
-				_mask.collide(other._mask != null ? other._mask : other.HITBOX);
+				other.mask.map(function(m) return m.collide(HITBOX), false);
 			}
 		}
 		else false;
@@ -357,14 +361,15 @@ class Entity extends Tweener
 			x - originX <= rX + rWidth &&
 			y - originY <= rY + rHeight)
 		{
-			if (_mask == null) return true;
+			if (!mask.exists()) return true;
 			_x = this.x; _y = this.y;
 			this.x = x; this.y = y;
 			HXP.entity.x = rX;
 			HXP.entity.y = rY;
 			HXP.entity.width = Std.int(rWidth);
 			HXP.entity.height = Std.int(rHeight);
-			if (_mask.collide(HXP.entity.HITBOX))
+			// already checked for existence
+			if (mask.unsafe().collide(HXP.entity.HITBOX))
 			{
 				this.x = _x; this.y = _y;
 				return true;
@@ -390,14 +395,15 @@ class Entity extends Tweener
 			pX < x - originX + width &&
 			pY < y - originY + height)
 		{
-			if (_mask == null) return true;
+			if (!mask.exists()) return true;
 			_x = this.x; _y = this.y;
 			this.x = x; this.y = y;
 			HXP.entity.x = pX;
 			HXP.entity.y = pY;
 			HXP.entity.width = 1;
 			HXP.entity.height = 1;
-			if (_mask.collide(HXP.entity.HITBOX))
+			// already check for existence
+			if (mask.unsafe().collide(HXP.entity.HITBOX))
 			{
 				this.x = _x; this.y = _y;
 				return true;
@@ -549,21 +555,20 @@ class Entity extends Tweener
 	 * An optional Mask component, used for specialized collision. If this is
 	 * not assigned, collision checks will use the Entity's hitbox by default.
 	 */
-	public var mask(get, set):Mask;
-	inline function get_mask():Mask return _mask;
-	function set_mask(value:Mask):Mask
+	public var mask(default, set):Maybe<Mask>;
+	function set_mask(value:Maybe<Mask>):Maybe<Mask>
 	{
-		if (_mask == value) return value;
-		if (_mask != null) _mask.parent = null;
-		_mask = value;
-		if (value != null) _mask.parent = this;
-		return _mask;
+		if (mask == value) return value;
+		mask.may(function(m) m.parent = null);
+		mask = value;
+		value.may(function(m) m.parent = this);
+		return mask;
 	}
 
 	/**
 	 * Graphical component to render to the screen.
 	 */
-	public var graphic:Graphic;
+	public var graphic:Maybe<Graphic>;
 
 	/**
 	 * An optional name for the entity.
@@ -591,7 +596,7 @@ class Entity extends Tweener
 	 */
 	public function addGraphic(g:Graphic):Graphic
 	{
-		if (graphic == null)
+		if (!graphic.exists())
 		{
 			graphic = g;
 		}
@@ -602,7 +607,7 @@ class Entity extends Tweener
 		else
 		{
 			var list:Graphiclist = new Graphiclist();
-			list.add(graphic);
+			list.add(graphic.unsafe()); // checked for existence above
 			list.add(g);
 			graphic = list;
 		}
@@ -905,11 +910,10 @@ class Entity extends Tweener
 	 */
 	public function centerGraphicInRect():Void
 	{
-		if (graphic != null)
-		{
-			graphic.x = halfWidth;
-			graphic.y = halfHeight;
-		}
+		graphic.may(function(g) {
+			g.x = halfWidth;
+			g.y = halfHeight;
+		});
 	}
 
 	// Entity information.
@@ -924,7 +928,6 @@ class Entity extends Tweener
 
 	// Collision information.
 	var HITBOX:Mask;
-	var _mask:Mask;
 	var _x:Float = 0;
 	var _y:Float = 0;
 	var _moveX:Float = 0;
