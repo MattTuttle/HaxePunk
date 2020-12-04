@@ -35,10 +35,7 @@ class EntityList<T:Entity> extends Entity
 		else
 			entities.insert(index, entity);
 		if (type != "") entity.type = type;
-		if (scene != null)
-		{
-			scene.add(entity);
-		}
+		scene.may((s) -> s.add(entity));
 		entity.parent = this;
 		entity.layer = layer;
 		entity.camera = camera;
@@ -53,10 +50,7 @@ class EntityList<T:Entity> extends Entity
 	public function remove(entity:T):T
 	{
 		entities.remove(entity);
-		if (scene != null)
-		{
-			scene.remove(entity);
-		}
+		scene.may((s) -> s.remove(entity));
 		entity.parent = null;
 		return entity;
 	}
@@ -66,10 +60,7 @@ class EntityList<T:Entity> extends Entity
 		var entity = entities.pop();
 		if (entity != null)
 		{
-			if (scene != null)
-			{
-				scene.remove(entity);
-			}
+			scene.may((s) -> s.remove(entity));
 			entity.parent = null;
 		}
 		return entity;
@@ -94,24 +85,22 @@ class EntityList<T:Entity> extends Entity
 	override public function added()
 	{
 		super.added();
-		if (scene != null)
-		{
+		scene.may((s) -> {
 			for (entity in entities)
 			{
-				scene.add(entity);
+				s.add(entity);
 			}
-		}
+		});
 	}
 
 	override public function removed()
 	{
-		if (scene != null)
-		{
+		scene.may((s) -> {
 			for (entity in entities)
 			{
-				scene.remove(entity);
+				s.remove(entity);
 			}
-		}
+		});
 		super.removed();
 	}
 

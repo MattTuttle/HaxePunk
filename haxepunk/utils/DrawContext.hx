@@ -2,7 +2,7 @@ package haxepunk.utils;
 
 import haxepunk.graphics.shader.Shader;
 import haxepunk.utils.BlendMode;
-import haxepunk.Entity;
+import haxepunk.ds.Maybe;
 import haxepunk.HXP;
 import haxepunk.Graphic;
 import haxepunk.graphics.hardware.DrawCommand;
@@ -14,7 +14,7 @@ class DrawContext
 	/**
 	 * The Scene to draw to. If null, will draw to the current active scene.
 	 */
-	public var scene:Scene;
+	public var scene:Maybe<Scene>;
 
 	/**
 	 * The blending mode used by Draw functions. This will not
@@ -398,7 +398,7 @@ class DrawContext
 			#error "Default color shader is not defined";
 			#end
 		}
-		var scene = (this.scene == null) ? (HXP.renderingScene == null ? HXP.scene : HXP.renderingScene) : this.scene;
+		var scene = this.scene.or(HXP.renderingScene == null ? HXP.scene : HXP.renderingScene);
 		command = scene.batch.getDrawCommand(null, shader, smooth, blend, null);
 	}
 

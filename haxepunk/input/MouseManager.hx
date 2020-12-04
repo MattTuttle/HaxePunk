@@ -119,14 +119,16 @@ class MouseManager extends Entity
 
 		var collisions:Array<Entity> = _collisions;
 		// make sure the mouse is onscreen before checking for collisions
-		if (Mouse.mouseOnScreen &&
-			mouseX >= scene.x &&
-			mouseY >= scene.y &&
-			mouseX <= scene.x + scene.width &&
-			mouseY <= scene.y + scene.height)
-		{
-			scene.collidePointInto(type, scene.mouseX, scene.mouseY, collisions, true);
-		}
+		scene.may((scene) -> {
+			if (Mouse.mouseOnScreen &&
+				mouseX >= scene.x &&
+				mouseY >= scene.y &&
+				mouseX <= scene.x + scene.width &&
+				mouseY <= scene.y + scene.height)
+			{
+				scene.collidePointInto(type, scene.mouseX, scene.mouseY, collisions, true);
+			}
+		});
 
 		var fallthrough:Bool = true;
 		for (i in 0 ... collisions.length)

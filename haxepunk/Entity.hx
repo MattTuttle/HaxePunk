@@ -245,17 +245,19 @@ class Entity extends Tweener
 	function entityIteratorByTypes(types:StringOrArray):Iterator<Entity>
 	{
 		var entities = new Map<Entity, Bool>();
-		for (type in types)
-		{
-			var typeEntities = _scene.entitiesForType(type);
-			if (typeEntities != null)
+		scene.may((s) -> {
+			for (type in types)
 			{
-				for (e in typeEntities)
+				var typeEntities = s.entitiesForType(type);
+				if (typeEntities != null)
 				{
-					entities.set(e, true);
+					for (e in typeEntities)
+					{
+						entities.set(e, true);
+					}
 				}
 			}
-		}
+		});
 		return entities.keys();
 	}
 
@@ -294,15 +296,14 @@ class Entity extends Tweener
 	 */
 	public function collide(types:StringOrArray, x:Float, y:Float):Maybe<Entity>
 	{
-		if (_scene == null || !collidable) return null;
+		if (!collidable) return null;
 
 		var result = null;
-		var iterator = entityIteratorByTypes(types);
 
 		_x = this.x; _y = this.y;
 		this.x = x; this.y = y;
 
-		for (e in iterator)
+		for (e in entityIteratorByTypes(types))
 		{
 			if (collidesWithEntity(e))
 			{
@@ -424,15 +425,13 @@ class Entity extends Tweener
 	 */
 	public function collideInto<E:Entity>(types:StringOrArray, x:Float, y:Float, array:Array<E>):Void
 	{
-		if (_scene == null || !collidable) return;
-
-		var iterator = entityIteratorByTypes(types);
+		if (!collidable) return;
 
 		_x = this.x; _y = this.y;
 		this.x = x; this.y = y;
 		var n:Int = array.length;
 
-		for (e in iterator)
+		for (e in entityIteratorByTypes(types))
 		{
 			if (collidesWithEntity(e))
 			{
@@ -457,13 +456,17 @@ class Entity extends Tweener
 	}
 
 	/**
+	 * Remove the entity from the current scene
+	 */
+	public function removeFromScene():Void
+	{
+		scene.may((s) -> s.remove(this));
+	}
+
+	/**
 	 * The Scene object this Entity has been added to.
 	 */
-	public var scene(get, never):Scene;
-	inline function get_scene():Scene
-	{
-		return _scene;
-	}
+	public var scene(default, null):Maybe<Scene>;
 
 	/**
 	 * Half the Entity's width.
@@ -523,14 +526,12 @@ class Entity extends Tweener
 	function set_layer(value:Int):Int
 	{
 		if (_layer == value) return _layer;
-		if (_scene == null)
-		{
-			return _layer = value;
-		}
-		_scene.removeRender(this);
-		_layer = value;
-		_scene.addRender(this);
-		return _layer;
+		scene.may((s) -> {
+			s.removeRender(this);
+			_layer = value;
+			s.addRender(this);
+		});
+		return _layer = value;
 	}
 
 	/**
@@ -541,14 +542,12 @@ class Entity extends Tweener
 	function set_type(value:String):String
 	{
 		if (_type == value) return _type;
-		if (_scene == null)
-		{
-			return _type = value;
-		}
-		if (_type != "") _scene.removeType(this);
-		_type = value;
-		if (value != "") _scene.addType(this);
-		return _type;
+		scene.may((s) -> {
+			if (_type != "") s.removeType(this);
+			_type = value;
+			if (value != "") s.addType(this);
+		});
+		return _type = value;
 	}
 
 	/**
@@ -578,14 +577,12 @@ class Entity extends Tweener
 	function set_name(value:String):String
 	{
 		if (_name == value) return _name;
-		if (_scene == null)
-		{
-			return _name = value;
-		}
-		if (_name != "") _scene.unregisterName(this);
-		_name = value;
-		if (value != "") _scene.registerName(this);
-		return _name;
+		scene.may((s) -> {
+			if (_name != "") s.unregisterName(this);
+			_name = value;
+			if (value != "") s.registerName(this);
+		});
+		return _name = value;
 	}
 
 	/**
@@ -918,7 +915,6 @@ class Entity extends Tweener
 
 	// Entity information.
 	var _class:String;
-	var _scene:Scene;
 	var _type:String;
 	var _layer:Int = 0;
 	var _name:String;

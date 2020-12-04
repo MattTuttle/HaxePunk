@@ -469,7 +469,7 @@ class Scene extends Tweener
 	 */
 	public function bringToFront(e:Entity):Bool
 	{
-		if (e._scene != this) return false;
+		if (e.scene != this) return false;
 		var list = _layers.get(e._layer);
 		list.remove(e);
 		list.push(e);
@@ -483,7 +483,7 @@ class Scene extends Tweener
 	 */
 	public function sendToBack(e:Entity):Bool
 	{
-		if (e._scene != this) return false;
+		if (e.scene != this) return false;
 		var list = _layers.get(e._layer);
 		list.remove(e);
 		list.add(e);
@@ -497,7 +497,7 @@ class Scene extends Tweener
 	 */
 	public function bringForward(e:Entity):Bool
 	{
-		if (e._scene != this) return false;
+		if (e.scene != this) return false;
 		// TODO: implement bringForward
 		return true;
 	}
@@ -509,7 +509,7 @@ class Scene extends Tweener
 	 */
 	public function sendBackward(e:Entity):Bool
 	{
-		if (e._scene != this) return false;
+		if (e.scene != this) return false;
 		// TODO: implement sendBackward
 		return true;
 	}
@@ -1140,7 +1140,7 @@ class Scene extends Tweener
 
 		if (HXP.cursor != null)
 		{
-			HXP.cursor._scene = this;
+			HXP.cursor.scene = this;
 		}
 
 		// remove entities
@@ -1148,17 +1148,17 @@ class Scene extends Tweener
 		{
 			for (e in _remove)
 			{
-				if (e._scene == null)
+				if (!e.scene.exists())
 				{
 					var idx = HXP.indexOf(_add, e);
 					if (idx >= 0) _add.splice(idx, 1);
 					continue;
 				}
-				if (e._scene != this)
+				if (e.scene != this)
 					continue;
 				e.removed();
 				e.onRemove.invoke();
-				e._scene = null;
+				e.scene = null;
 				removeUpdate(e);
 				removeRender(e);
 				if (e._type != "") removeType(e);
@@ -1173,8 +1173,8 @@ class Scene extends Tweener
 		{
 			for (e in _add)
 			{
-				if (e._scene != null) continue;
-				e._scene = this;
+				if (e.scene.exists()) continue;
+				e.scene = this;
 				addUpdate(e);
 				addRender(e);
 				if (e._type != "") addType(e);
@@ -1190,7 +1190,7 @@ class Scene extends Tweener
 		{
 			for (e in _recycle)
 			{
-				if (e._scene != null || e._recycleNext != null)
+				if (e.scene.exists() || e._recycleNext != null)
 					continue;
 
 				e._recycleNext = _recycled.get(e._class);
