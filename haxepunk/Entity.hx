@@ -41,16 +41,16 @@ class Entity extends Tweener
 	 * If the Entity should render.
 	 */
 	@:isVar public var visible(get, set):Bool = true;
-	function get_visible() return visible && parent.map((p) -> p.visible, false);
+	function get_visible() return visible && parent.map((p) -> p.visible, true);
 	function set_visible(v:Bool) return visible = v;
 
-	override function get_active() return active && parent.map((p) -> p.active, false);
+	override function get_active() return active && parent.map((p) -> p.active, true);
 
 	/**
 	 * If the Entity should respond to collision checks.
 	 */
 	@:isVar public var collidable(get, set):Bool = true;
-	function get_collidable() return collidable && parent.map((p) -> p.collidable, false);
+	function get_collidable() return collidable && parent.map((p) -> p.collidable, true);
 	function set_collidable(v:Bool) return collidable = v;
 
 	public var enabled(get, set):Bool;
@@ -63,13 +63,11 @@ class Entity extends Tweener
 	@:isVar public var x(get, set):Float = 0;
 	function get_x():Float
 	{
-		var parentX:Float = parent.map((p) -> p.x, 0);
-		return parentX + x + (followCamera == null ? 0 : followCamera.x);
+		return parent.map((p) -> p.x, 0) + x + followCamera.map((cam) -> cam.x, 0);
 	}
 	function set_x(v:Float):Float
 	{
-		var parentX:Float = parent.map((p) -> p.x, 0);
-		return x = (v - parentX);
+		return x = (v - parent.map((p) -> p.x, 0));
 	}
 
 	/**
@@ -78,13 +76,11 @@ class Entity extends Tweener
 	@:isVar public var y(get, set):Float = 0;
 	function get_y():Float
 	{
-		var parentY:Float = parent.map((p) -> p.y, 0);
-		return parentY + y + (followCamera == null ? 0 : followCamera.y);
+		return parent.map((p) -> p.y, 0) + y + followCamera.map((cam) -> cam.y, 0);
 	}
 	function set_y(v:Float):Float
 	{
-		var parentY:Float = parent.map((p) -> p.y, 0);
-		return y = (v - parentY);
+		return y = (v - parent.map((p) -> p.y, 0));
 	}
 
 	/**
@@ -108,21 +104,17 @@ class Entity extends Tweener
 	/**
 	 * Set to the camera the entity should follow. If null it won't follow any camera.
 	 */
-	public var followCamera:Null<Camera> = null;
+	public var followCamera:Maybe<Camera> = null;
 
 	/**
 	 * Width of the Entity's hitbox.
 	 */
-	@:isVar public var width(get, set):Int = 0;
-	function get_width() return width;
-	function set_width(w:Int) return width = w;
+	public var width:Int = 0;
 
 	/**
 	 * Height of the Entity's hitbox.
 	 */
-	@:isVar public var height(get, set):Int = 0;
-	function get_height() return height;
-	function set_height(h:Int) return height = h;
+	public var height:Int = 0;
 
 	/**
 	 * X origin of the Entity's hitbox.
@@ -300,7 +292,7 @@ class Entity extends Tweener
 
 		var result = null;
 
-		_x = this.x; _y = this.y;
+		var _x = this.x, _y = this.y;
 		this.x = x; this.y = y;
 
 		for (e in entityIteratorByTypes(types))
@@ -337,7 +329,7 @@ class Entity extends Tweener
 	 */
 	public function collideWith<E:Entity>(e:E, x:Float, y:Float):Maybe<E>
 	{
-		_x = this.x; _y = this.y;
+		var _x = this.x, _y = this.y;
 		this.x = x; this.y = y;
 
 		var result = collidesWithEntity(e) ? e : null;
@@ -363,7 +355,7 @@ class Entity extends Tweener
 			y - originY <= rY + rHeight)
 		{
 			if (!mask.exists()) return true;
-			_x = this.x; _y = this.y;
+			var _x = this.x, _y = this.y;
 			this.x = x; this.y = y;
 			HXP.entity.x = rX;
 			HXP.entity.y = rY;
@@ -397,7 +389,7 @@ class Entity extends Tweener
 			pY < y - originY + height)
 		{
 			if (!mask.exists()) return true;
-			_x = this.x; _y = this.y;
+			var _x = this.x, _y = this.y;
 			this.x = x; this.y = y;
 			HXP.entity.x = pX;
 			HXP.entity.y = pY;
@@ -427,7 +419,7 @@ class Entity extends Tweener
 	{
 		if (!collidable) return;
 
-		_x = this.x; _y = this.y;
+		var _x = this.x, _y = this.y;
 		this.x = x; this.y = y;
 		var n:Int = array.length;
 
@@ -924,8 +916,6 @@ class Entity extends Tweener
 
 	// Collision information.
 	var HITBOX:Mask;
-	var _x:Float = 0;
-	var _y:Float = 0;
 	var _moveX:Float = 0;
 	var _moveY:Float = 0;
 
