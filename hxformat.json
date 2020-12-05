@@ -1,0 +1,21 @@
+{
+    "indentation": {
+        "character": "tab"
+    },
+    "sameLine": {
+        "ifBody": "same",
+        "ifElse": "next",
+        "caseBody": "keep"
+    },
+    "whitespace": {
+    },
+    "lineEnds": {
+        "blockCurly": {
+            "leftCurly": "both",
+            "rightCurly": "both"
+        },
+        "anonFunctionCurly": {
+            "leftCurly": "after"
+        }
+    }
+}
