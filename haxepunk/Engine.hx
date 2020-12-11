@@ -100,8 +100,8 @@ class Engine
 		HXP.engine = this;
 
 		// set width/height or default them to 1280x720
-		HXP.width = width == 0 ? 1280 : width;
-		HXP.height = height == 0 ? 720 : height;
+		HXP.width = width;
+		HXP.height = height;
 
 		HXP.screen = new Screen();
 		HXP.app = app = createApp();
