@@ -54,7 +54,7 @@ class GLRenderer implements Renderer
 		gl.bufferData(target, size, srcData, usage);
 		#elseif (html5 && lime >= "5.0.0")
 		gl.bufferDataWEBGL(target, srcData, usage);
-		#elseif (lime >= "4.0.0")
+		#elseif (java || lime >= "4.0.0")
 		gl.bufferData(target, size, srcData, usage);
 		#else
 		gl.bufferData(target, srcData, usage);
@@ -67,7 +67,7 @@ class GLRenderer implements Renderer
 		gl.bufferSubData(GL.ARRAY_BUFFER, 0, buffer.buffer, 0, buffer.bufferBytesSize());
 		#elseif (html5 && lime >= "5.0.0")
 		gl.bufferSubDataWEBGL(GL.ARRAY_BUFFER, 0, buffer.buffer);
-		#elseif (lime >= "4.0.0")
+		#elseif (java || lime >= "4.0.0")
 		gl.bufferSubData(GL.ARRAY_BUFFER, 0, buffer.bufferBytesSize(), buffer.buffer);
 		#else
 		gl.bufferSubData(GL.ARRAY_BUFFER, 0, buffer.buffer);
@@ -103,8 +103,9 @@ class GLRenderer implements Renderer
 		return shader;
 	}
 
-	public static inline function clear(color:Color)
+	public static inline function clear()
 	{
+		var color = HXP.screen.color;
 		gl.clearColor(color.red, color.green, color.blue, 1);
 		gl.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
 	}
@@ -121,7 +122,9 @@ class GLRenderer implements Renderer
 		fb.width = HXP.screen.width;
 		fb.height = HXP.screen.height;
 		fb.texture = GLRenderer.createTexture(fb.width, fb.height);
+		#if !java
 		gl.bindFramebuffer(GL.FRAMEBUFFER, null);
+		#end
 	}
 
 	public function bindFrameBuffer(fb:FrameBuffer)
@@ -143,7 +146,7 @@ class GLRenderer implements Renderer
 		}
 
 		gl.bindFramebuffer(GL.FRAMEBUFFER, fb.framebuffer);
-		GLRenderer.clear(HXP.screen.color);
+		GLRenderer.clear();
 	}
 
 	public static function createTexture(width:Int, height:Int)
@@ -270,12 +273,12 @@ class GLRenderer implements Renderer
 				bindRenderbuffer(triangles, shader.floatsPerVertex * 3);
 
 				var matrixUniform = shader.uniformIndex(UNIFORM_MATRIX);
-				if (matrixUniform != null) {
+				if (matrixUniform != #if java -1 #else null #end) {
 					#if hl
 					gl.uniformMatrix4fv(matrixUniform, false, _ortho, 0, 1);
 					#elseif (html5 && lime >= "5.0.0")
 					gl.uniformMatrix4fvWEBGL(matrixUniform, false, _ortho);
-					#elseif (lime >= "4.0.0")
+					#elseif (java || lime >= "4.0.0")
 					gl.uniformMatrix4fv(matrixUniform, 1, false, _ortho);
 					#else
 					gl.uniformMatrix4fv(matrixUniform, false, _ortho);
@@ -342,8 +345,9 @@ class GLRenderer implements Renderer
 		#end
 	}
 
-	static function bindTexture(texture:Texture, smooth:Bool, index:Int=GL.TEXTURE0)
+	static function bindTexture(texture:Texture, smooth:Bool, ?index:Null<Int>)
 	{
+		if (index == null) index = GL.TEXTURE0;
 		gl.activeTexture(index);
 		texture.bind();
 		if (smooth)
@@ -490,17 +494,23 @@ class GLRenderer implements Renderer
 
 			setBlendMode(Alpha);
 			gl.drawArrays(GL.TRIANGLES, 0, 6);
-
-			gl.bindTexture(GL.TEXTURE_2D, null);
-
-			#if desktop
-			gl.disable(GL.TEXTURE_2D);
-			#end
-
-			shader.unbind();
-
-			gl.bindFramebuffer(GL.FRAMEBUFFER, null);
+			unbind();
 		}
+	}
+
+	public function unbind()
+	{
+#if false
+		gl.bindTexture(GL.TEXTURE_2D, null);
+
+		#if desktop
+		gl.disable(GL.TEXTURE_2D);
+		#end
+
+		shader.unbind();
+
+		gl.bindFramebuffer(GL.FRAMEBUFFER, null);
+#end
 	}
 
 	@:access(haxepunk.Screen)
@@ -519,6 +529,7 @@ class GLRenderer implements Renderer
 	{
 		HXP.triangleCount = 0;
 		HXP.drawCallCount = 0;
+		GLRenderer.clear();
 	}
 	public function endFrame() {}
 

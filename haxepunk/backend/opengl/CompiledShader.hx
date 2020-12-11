@@ -243,7 +243,9 @@ class CompiledShader
 
 	public function unbind()
 	{
+		#if !java
 		gl.useProgram(null);
+		#end
 		for (attribute in attributes)
 		{
 			gl.disableVertexAttribArray(attribute.index);

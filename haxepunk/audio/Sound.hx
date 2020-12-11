@@ -24,6 +24,10 @@ typedef Sound = haxepunk.backend.html5.Sound;
 
 typedef Sound = haxepunk.backend.openal.formats.AudioData;
 
+#elseif java
+
+typedef Sound = haxepunk.backend.android.Sound;
+
 #else
 
 #error "No Sound class is defined"

@@ -387,8 +387,8 @@ class Tilemap extends Graphic
 		// determine start and end tiles to draw (optimization)
 		var startx = Math.floor(-_point.x / tw),
 			starty = Math.floor(-_point.y / th),
-			destx = startx + 1 + Math.ceil(HXP.width / camera.scale / camera.scaleX / tw),
-			desty = starty + 1 + Math.ceil(HXP.height / camera.scale / camera.scaleY / th);
+			destx = startx + 1 + Math.ceil(HXP.width / camera.fullScaleX / tw),
+			desty = starty + 1 + Math.ceil(HXP.height / camera.fullScaleY / th);
 
 		// nothing will render if we're completely off screen
 		if (startx > _columns || starty > _rows || destx < 0 || desty < 0)
@@ -441,8 +441,8 @@ class Tilemap extends Graphic
 		// determine start and end tiles to draw (optimization)
 		var startx = Math.floor(-_point.x / tw),
 			starty = Math.floor(-_point.y / th),
-			destx = startx + 1 + Math.ceil(HXP.width / camera.scale / camera.scaleX / tw),
-			desty = starty + 1 + Math.ceil(HXP.height / camera.scale / camera.scaleY / th);
+			destx = startx + 1 + Math.ceil(HXP.width / camera.fullScaleX / tw),
+			desty = starty + 1 + Math.ceil(HXP.height / camera.fullScaleY / th);
 
 		// nothing will render if we're completely off screen
 		if (startx > _columns || starty > _rows || destx < 0 || desty < 0)

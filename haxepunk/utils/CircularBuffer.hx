@@ -6,12 +6,12 @@ class CircularBuffer<T>
 {
 	var pos:Int = 0;
 	var len:Int = 0;
-	var data:Vector<T>;
+	var data:Array<T>;
 	var _iterator:CircularBufferIterator<T>;
 
 	public function new(len:Int)
 	{
-		data = new Vector(len);
+		data = new Array();
 		_iterator = new CircularBufferIterator(this);
 	}
 

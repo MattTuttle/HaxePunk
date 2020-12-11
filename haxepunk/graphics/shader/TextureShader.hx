@@ -5,7 +5,7 @@ import haxepunk.assets.AssetCache;
 @:dox(hide)
 class TextureShader extends Shader
 {
-#if (lime || nme || js)
+#if (lime || nme || js || android)
 	static var VERTEX_SHADER =
 "#ifdef GL_ES
 precision mediump float;

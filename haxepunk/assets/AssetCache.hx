@@ -65,6 +65,8 @@ class AssetCache
 			assetLoader = new haxepunk.backend.hl.FileAssetLoader();
 		#elseif js
 			assetLoader = new haxepunk.backend.html5.AssetLoader();
+		#elseif java
+			assetLoader = new haxepunk.backend.android.AssetLoader();
 		#elseif !unit_test
 			#error "Asset loader is not implemented on this target"
 		#end

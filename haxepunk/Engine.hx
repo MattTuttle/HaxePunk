@@ -6,11 +6,9 @@ import haxepunk.ds.Maybe;
 import haxepunk.input.Input;
 import haxepunk.math.Random;
 import haxepunk.math.Rectangle;
-import haxepunk.utils.Draw;
 import haxepunk.backend.generic.render.Renderer;
 
 /**
- * Main game Sprite class, added to the Stage.
  * Manages the game loop.
  *
  * Your main class **needs** to extends this.
@@ -18,6 +16,9 @@ import haxepunk.backend.generic.render.Renderer;
 #if !macro
 @:autoBuild(haxepunk.assets.Preloader.build())
 @:build(haxepunk.assets.Preloader.build())
+#if android
+@:autoBuild(haxepunk.backend.android.BuildMacros.build())
+#end
 #end
 @:access(haxepunk.HXP)
 class Engine
@@ -133,6 +134,8 @@ class Engine
 		#else
 		return new haxepunk.backend.nme.App();
 		#end
+#elseif java
+		return new haxepunk.backend.android.App();
 #elseif hlsdl
 		HXP.audio = new haxepunk.backend.openal.AudioEngine();
 		renderer = new haxepunk.backend.opengl.GLRenderer();
@@ -213,7 +216,7 @@ class Engine
 		preRender.invoke();
 
 		renderer.startFrame();
-		for (scene in _sceneIterator.reset(this))
+		for (scene in scenes)
 		{
 			renderer.startScene(scene);
 			HXP.renderingScene = scene;
@@ -268,7 +271,7 @@ class Engine
 
 	function step()
 	{
-		HXP.audio.update();
+		if (HXP.audio != null) HXP.audio.update();
 		// update input
 		Input.update();
 
@@ -383,18 +386,8 @@ private class VisibleSceneIterator
 {
 	public function new() {}
 
-	public inline function hasNext():Bool
-	{
-		return scenes.length > 0;
-	}
-
-	public inline function next():Scene
-	{
-		return scenes.pop();
-	}
-
 	@:access(haxepunk.Engine)
-	public function reset(engine:Engine):VisibleSceneIterator
+	public function reset(engine:Engine):Iterator<Scene>
 	{
 		HXP.clear(scenes);
 
@@ -415,7 +408,7 @@ private class VisibleSceneIterator
 			if (scene.bgAlpha == 1) break;
 			--i;
 		}
-		return this;
+		return scenes.iterator();
 	}
 
 	var scenes:Array<Scene> = [];

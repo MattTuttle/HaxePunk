@@ -73,6 +73,10 @@ abstract Float32Array(F32Array) from F32Array to F32Array
 
 typedef Float32Array = js.lib.Float32Array;
 
+#elseif java
+
+typedef Float32Array = haxepunk.backend.android.Float32Array;
+
 #else
 
 import haxe.Int32;
@@ -85,13 +89,13 @@ typedef Float32 = Float;
 
 @:forward
 @:arrayAccess
-abstract Float32Array(Array<Float32>) from Array<Float32> to Array<Float32>
+abstract Float32Array(Array<Float32>) to Array<Float32>
 {
 	public static inline var BYTES_PER_ELEMENT = 4;
 
 	public function new(inBufferOrArray:Dynamic, inStart:Int = 0, ?inElements:Null<Int>)
 	{
-		return new Array<Float32>();
+		this = new Array<Float32>();
 	}
 
 	public function setInt32(pos:Int, value:Int32)

@@ -131,6 +131,16 @@ typedef GLTexture = js.html.webgl.Texture;
 typedef GLUniformLocation = js.html.webgl.UniformLocation;
 typedef GL = js.html.webgl.GL;
 
+#elseif android
+
+typedef GLBuffer = Int;
+typedef GLFramebuffer = Null<Int>;
+typedef GLProgram = Int;
+typedef GLShader = Int;
+typedef GLTexture = Int;
+typedef GLUniformLocation = Int;
+typedef GL = haxepunk.backend.android.GL;
+
 #else
 
 #error "Invalid GL target"
