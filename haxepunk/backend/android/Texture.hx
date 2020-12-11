@@ -1,7 +1,5 @@
 package haxepunk.backend.android;
 
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
 import haxepunk.utils.Color;
 
 @:native("android.graphics.Bitmap$Config")
@@ -19,7 +17,12 @@ extern class Bitmap
 	public function eraseColor(color:Int):Void;
 	public function getWidth():Int;
 	public function getHeight():Int;
-	public function copyPixelsToBuffer(buffer:Buffer):Void;
+}
+
+@:native("android.opengl.GLUtils")
+extern class GLUtils
+{
+	public static function texImage2D(target:Int, level:Int, internalformat:Int, bitmap:Bitmap, border:Int):Void;
 }
 
 class Texture implements haxepunk.backend.generic.render.Texture
@@ -28,7 +31,6 @@ class Texture implements haxepunk.backend.generic.render.Texture
 	public var height(default, null):Int;
 	var texture:Int;
     var bitmap:Bitmap;
-	var pixels:ByteBuffer;
     var dirty:Bool = false;
 
     public function new(bitmap:Bitmap)
@@ -38,7 +40,6 @@ class Texture implements haxepunk.backend.generic.render.Texture
         this.height = bitmap.getHeight();
 
         texture = GL.createTexture();
-		pixels = ByteBuffer.allocateDirect(width * height * 4);
         dirty = true;
     }
 
@@ -57,9 +58,7 @@ class Texture implements haxepunk.backend.generic.render.Texture
 		// check if the texture has changed and need to be uploaded to the gpu
 		if (dirty)
 		{
-			pixels.clear();
-			bitmap.copyPixelsToBuffer(pixels);
-			GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, width, height, 0, GL.RGBA, GL.UNSIGNED_BYTE, pixels);
+			GLUtils.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, bitmap, 0);
 
 			GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER , GL.NEAREST);
 			GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);

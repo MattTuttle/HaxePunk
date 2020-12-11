@@ -14,7 +14,8 @@ class BuildMacros
                 case FFun(f):
                     if (field.name == "main") {
                         var c = macro class HaxePunkMain {
-                            public static function start():haxepunk.backend.android.App.GLSurfaceRenderer {
+                            public static function start(assets:AssetLoader.AssetManager):App.GLSurfaceRenderer {
+                                AssetLoader.assets = assets;
                                 ${f.expr};
                                 return cast HXP.app;
                             }

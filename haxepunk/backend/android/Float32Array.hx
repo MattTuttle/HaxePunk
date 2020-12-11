@@ -27,12 +27,16 @@ abstract Float32Array(ByteBuffer)
 	}
 
 	@:arrayAccess public inline function get(index:Int):Single {
-		return this.getFloat(index);
+		return this.getFloat(index * BYTES_PER_ELEMENT);
 	}
 
 	@:arrayAccess public inline function set(index:Int, value:Single):Single {
-		this.putFloat(index, value);
+		this.putFloat(index * BYTES_PER_ELEMENT, value);
 		return value;
+	}
+
+	public inline function putInt(index:Int, value:Int):Void {
+		this.putInt(index * BYTES_PER_ELEMENT, value);
 	}
 
 	public var length(get, never):Int;

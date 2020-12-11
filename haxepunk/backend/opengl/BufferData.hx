@@ -130,8 +130,8 @@ class BufferData
 		buffer.setI32(byteOffset, value);
 		byteOffset += 4;
 #elseif java
-		cast(buffer, java.nio.ByteBuffer).putInt(byteOffset, value);
-		byteOffset += 4;
+		buffer.putInt(byteOffset, value);
+		byteOffset += 1;
 #else
 		buffer.buffer.setInt32(byteOffset * 4, value);
 		byteOffset += 1;
