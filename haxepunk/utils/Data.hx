@@ -18,6 +18,10 @@ typedef DataStorageNative = haxepunk.backend.hl.DataStorage;
 
 typedef DataStorageNative = haxepunk.backend.html5.DataStorage;
 
+#elseif java
+
+typedef DataStorageNative = haxepunk.backend.android.DataStorage;
+
 #else
 
 #error "Data storage class not defined"

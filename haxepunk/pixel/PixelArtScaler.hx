@@ -81,10 +81,12 @@ class PixelArtScaler extends Entity
 
 	override public function removed()
 	{
-		if (scene.shaders != null)
-		{
-			scene.shaders.remove(s2);
-			scene.shaders.remove(s1);
-		}
+		scene.may((s) -> {
+			if (s.shaders != null)
+			{
+				s.shaders.remove(s2);
+				s.shaders.remove(s1);
+			}
+		});
 	}
 }

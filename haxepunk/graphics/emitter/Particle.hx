@@ -29,7 +29,7 @@ class Particle
 		var r = _type._red + _type._redRange * td,
 			g = _type._green + _type._greenRange * td,
 			b = _type._blue + _type._blueRange * td;
-		return Color.getColorRGB(Std.int(r * 0xff), Std.int(g * 0xff), Std.int(b * 0xff));
+		return Color.fromRGB(Std.int(r * 0xff), Std.int(g * 0xff), Std.int(b * 0xff));
 	}
 
 	public function alpha(td:Float):Float

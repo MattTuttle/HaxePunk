@@ -1,17 +1,5 @@
 package haxepunk.math;
 
-private typedef Position =
-{
-	x:Float,
-	y:Float
-};
-
-private typedef PositionObj =
-{
-	@:isVar var x(get, set):Float;
-	@:isVar var y(get, set):Float;
-};
-
 /**
  * Represents a position on a two dimensional coordinate system.
  *
@@ -19,17 +7,15 @@ private typedef PositionObj =
  *
  * All functions are reentrant.
  */
-@:forward
-abstract Vector2(Position) from Position to Position
+class Vector2
 {
+	public var x:Float;
+	public var y:Float;
+
 	public inline function new(x:Float = 0, y:Float = 0)
 	{
-		this = { x:x, y:y };
-	}
-	
-	@:dox(hide) @:from public static inline function fromObj(obj:PositionObj)
-	{
-		return new Vector2(obj.x, obj.y);
+		this.x = x;
+		this.y = y;
 	}
 
 	/**
