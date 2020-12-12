@@ -83,9 +83,9 @@ class NineSlice extends Graphic
 		botL = getSegment(source, 0, h - bottomHeight, leftWidth, bottomHeight);
 		botC = getSegment(source, leftWidth, h - bottomHeight, w - leftWidth - rightWidth, bottomHeight);
 		botR = getSegment(source, w - rightWidth, h - bottomHeight, rightWidth, bottomHeight);
-		_sliceRect.setTo(leftWidth, topHeight, w - rightWidth, h - bottomHeight);
 
 		super();
+		_sliceRect.setTo(leftWidth, topHeight, w - rightWidth, h - bottomHeight);
 
 		width = w;
 		height = h;
