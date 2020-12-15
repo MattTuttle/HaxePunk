@@ -12,6 +12,8 @@ import haxepunk.input.MouseManager;
 import haxepunk.utils.CircularBuffer;
 import haxepunk.utils.DrawContext;
 
+using haxe.Int64;
+
 @:access(haxepunk.Engine)
 class Console extends Scene
 {
@@ -89,36 +91,36 @@ class Console extends Scene
 	{
 		super();
 		trackDrawCalls = false;
-		fps = new CircularBuffer(DATA_SIZE);
-		memory = new CircularBuffer(DATA_SIZE);
-		entities = new CircularBuffer(DATA_SIZE);
-		triangles = new CircularBuffer(DATA_SIZE);
-		drawCalls = new CircularBuffer(DATA_SIZE);
+		fps = new CircularBuffer<Float>(DATA_SIZE);
+		memory = new CircularBuffer<Float>(DATA_SIZE);
+		entities = new CircularBuffer<Int>(DATA_SIZE);
+		triangles = new CircularBuffer<Int>(DATA_SIZE);
+		drawCalls = new CircularBuffer<Int>(DATA_SIZE);
 
 		logo = new Image("graphics/debug/console_logo.png");
 		logo.blend = BlendMode.Multiply;
 		addGraphic(logo);
 
-		fpsChart = new Metric("FPS", fps, 0xff0000, HXP.frameRate);
+		fpsChart = new Metric<Float>("FPS", fps, 0xff0000, HXP.frameRate);
 		fpsChart.x = fpsChart.y = 8;
 		add(fpsChart);
 
-		memoryChart = new Metric("Memory (MB)", memory, 0xffdd55, 256);
+		memoryChart = new Metric<Float>("Memory (MB)", memory, 0xffdd55, 256);
 		memoryChart.x = fpsChart.x;
 		memoryChart.y = fpsChart.y + fpsChart.height + 8;
 		add(memoryChart);
 
-		entitiesChart = new Metric("Entities", entities, 0xff6600, 16);
+		entitiesChart = new Metric<Int>("Entities", entities, 0xff6600, 16);
 		entitiesChart.x = memoryChart.x;
 		entitiesChart.y = memoryChart.y + memoryChart.height + 8;
 		add(entitiesChart);
 
-		trianglesChart = new Metric("Triangles", triangles, 0x00ff00, 128);
+		trianglesChart = new Metric<Int>("Triangles", triangles, 0x00ff00, 128);
 		trianglesChart.x = entitiesChart.x;
 		trianglesChart.y = entitiesChart.y + entitiesChart.height + 8;
 		add(trianglesChart);
 
-		drawCallsChart = new Metric("Draw calls", drawCalls, 0x0000ff, 16);
+		drawCallsChart = new Metric<Int>("Draw calls", drawCalls, 0x0000ff, 16);
 		drawCallsChart.x = trianglesChart.x;
 		drawCallsChart.y = trianglesChart.y + trianglesChart.height + 8;
 		add(drawCallsChart);
@@ -312,12 +314,13 @@ class Console extends Scene
 	{
 		var s = HXP.elapsed / SAMPLE_TIME;
 		_fps += 1 / HXP.elapsed * s;
-		_mem += HXP.app.getMemoryUse() / 1024 / 1024 * s;
+		var memMB = HXP.app.getMemoryUse().div(1024 * 1024).toInt();
+		_mem += memMB * s;
 		_ent += HXP.scene.count * s;
 		_tri += HXP.triangleCount * s;
 		_dc += HXP.drawCallCount * s;
 		_t += s;
-		if (_t >= 1)
+		if (_t >= 1.0)
 		{
 			fps.push(_fps / _t);
 			memory.push(_mem / _t);

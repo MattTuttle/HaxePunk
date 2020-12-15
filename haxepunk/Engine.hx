@@ -114,8 +114,6 @@ class Engine
 
 		_frameList = new Array();
 
-		_sceneIterator = new VisibleSceneIterator();
-
 		loadDefaultAssets();
 	}
 
@@ -216,17 +214,21 @@ class Engine
 		preRender.invoke();
 
 		renderer.startFrame();
-		for (scene in scenes)
+
+		for (scene in _scenes)
 		{
-			renderer.startScene(scene);
-			HXP.renderingScene = scene;
-			scene.render();
-			for (commands in scene.batch)
+			if (scene.visible && scene.started)
 			{
-				renderer.render(commands);
+				renderScene(scene);
 			}
-			renderer.flushScene(scene);
+			// if this scene has a solid background, stop adding scenes
+			if (scene.bgAlpha == 1) break;
 		}
+
+		console.may(function(console) {
+			renderScene(console);
+		});
+
 		HXP.renderingScene = null;
 		renderer.endFrame();
 
@@ -238,6 +240,18 @@ class Engine
 		if (_frameList.length > 10) _frameListSum -= _frameList.shift();
 		HXP.frameRate = 1000 / (_frameListSum / _frameList.length);
 		_frameLast = t;
+	}
+
+	function renderScene(scene:Scene)
+	{
+		renderer.startScene(scene);
+		HXP.renderingScene = scene;
+		scene.render();
+		for (commands in scene.batch)
+		{
+			renderer.render(commands);
+		}
+		renderer.flushScene(scene);
 	}
 
 	/** @private Framerate independent game loop. */
@@ -355,10 +369,6 @@ class Engine
 		return _scene;
 	}
 
-	/** An iterator for all visible scenes */
-	public var scenes(get, never):Iterator<Scene>;
-	inline function get_scenes() return _sceneIterator.reset(this);
-
 	var app:App;
 
 	// Scene information.
@@ -379,37 +389,4 @@ class Engine
 	var _frameListSum:Int = 0;
 	var _frameList:Array<Int>;
 
-	var _sceneIterator:VisibleSceneIterator;
-}
-
-private class VisibleSceneIterator
-{
-	public function new() {}
-
-	@:access(haxepunk.Engine)
-	public function reset(engine:Engine):Iterator<Scene>
-	{
-		HXP.clear(scenes);
-
-		engine.console.may(function(console) {
-			scenes.push(console);
-		});
-
-		var scene:Scene;
-		var i = engine._scenes.length - 1;
-		while (i >= 0)
-		{
-			scene = engine._scenes[i];
-			if (scene.visible && scene.started)
-			{
-				scenes.push(scene);
-			}
-			// if this scene has a solid background, stop adding scenes
-			if (scene.bgAlpha == 1) break;
-			--i;
-		}
-		return scenes.iterator();
-	}
-
-	var scenes:Array<Scene> = [];
 }

@@ -1,5 +1,9 @@
 package haxepunk.backend.android;
 
+import haxe.Int64;
+import java.lang.Runtime;
+import haxepunk.input.Mouse;
+
 @:native("javax.microedition.khronos.opengles.GL10") extern class GL10 {}
 @:native("javax.microedition.khronos.egl.EGLConfig") extern class EGLConfig {}
 
@@ -11,7 +15,24 @@ extern interface GLSurfaceRenderer
 	public function onSurfaceChanged(gl:GL10, width:Int, height:Int):Void;
 }
 
-class App implements haxepunk.App implements GLSurfaceRenderer
+@:native("android.view.View") extern class View {}
+@:native("android.view.MotionEvent") extern class MotionEvent
+{
+	public function getX():Single;
+	public function getY():Single;
+	public function getAction():Int;
+	public static final ACTION_MASK:Int;
+	public static final ACTION_DOWN:Int;
+	public static final ACTION_UP:Int;
+}
+
+@:native("android.view.View$OnTouchListener")
+extern interface TouchListener
+{
+	public function onTouch(v:View, event:MotionEvent):Bool;
+}
+
+class App implements haxepunk.App implements GLSurfaceRenderer implements TouchListener
 {
 	/** Sets if the application window should be fullscreen or windowed */
 	@:isVar public var fullscreen(get, set):Bool;
@@ -49,6 +70,22 @@ class App implements haxepunk.App implements GLSurfaceRenderer
 		engine.onResize.invoke();
 	}
 
+	@:access(haxepunk.input.Mouse)
+	public function onTouch(v:View, event:MotionEvent):Bool
+	{
+		mouseX = event.getX();
+		mouseY = event.getY();
+		var action = event.getAction() & MotionEvent.ACTION_MASK;
+		switch (action)
+		{
+			case MotionEvent.ACTION_DOWN:
+				Mouse.onMouseDown(0);
+			case MotionEvent.ACTION_UP:
+				Mouse.onMouseUp(0);
+		}
+		return true;
+	}
+
 	public function init(engine:Engine):Void
 	{
 		this.engine = engine;
@@ -61,7 +98,10 @@ class App implements haxepunk.App implements GLSurfaceRenderer
 	}
 
 	/** The current memory usage in bytes. Used by console but could be left unimplemented. */
-	public function getMemoryUse():Float { return 0; }
+	public function getMemoryUse():Int64 {
+		var runtime = Runtime.getRuntime();
+		return runtime.totalMemory() - runtime.freeMemory();
+	}
 
 	// no mouse cursor, so do nothing
 	public function showCursor():Void {}
@@ -71,9 +111,11 @@ class App implements haxepunk.App implements GLSurfaceRenderer
 	public function multiTouchSupported():Bool { return false; }
 
 	/** Returns the current horizontal mouse coordinate */
-	public function getMouseX():Float { return 0;}
+	public function getMouseX():Float { return mouseX;}
 	/** Returns the current vertical mouse coordinate **/
-	public function getMouseY():Float { return 0; }
+	public function getMouseY():Float { return mouseY; }
 
 	var engine:Engine;
+	var mouseX:Float;
+	var mouseY:Float;
 }

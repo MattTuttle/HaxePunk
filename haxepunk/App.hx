@@ -1,5 +1,7 @@
 package haxepunk;
 
+import haxe.Int64;
+
 /**
  * An interface that must be implemented by each target.
  *
@@ -22,7 +24,7 @@ interface App
 	/** Get the time in milliseconds */
 	public function getTimeMillis():Float;
 	/** The current memory usage in bytes. Used by console but could be left unimplemented. */
-	public function getMemoryUse():Float;
+	public function getMemoryUse():Int64;
 
 	/** Show the mouse cursor */
 	public function showCursor():Void;

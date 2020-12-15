@@ -1,5 +1,6 @@
 package haxepunk.backend.flash;
 
+import haxe.Int64;
 import flash.display.Sprite;
 import flash.display.StageAlign;
 import flash.display.StageDisplayState;
@@ -56,7 +57,7 @@ class FlashApp extends Sprite implements haxepunk.App
 		return Lib.getTimer();
 	}
 
-	public function getMemoryUse():Float
+	public function getMemoryUse():Int64
 	{
 		return System.totalMemory;
 	}

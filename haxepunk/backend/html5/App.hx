@@ -2,6 +2,7 @@ package haxepunk.backend.html5;
 
 #if js
 
+import haxe.Int64;
 import js.Browser;
 import js.html.TouchEvent;
 import js.html.MouseEvent;
@@ -32,8 +33,8 @@ class App implements haxepunk.App
 	{
 		var el = Browser.document.getElementById("haxepunk");
 		canvas = cast(el, CanvasElement);
-		canvas.width = HXP.width;
-		canvas.height = HXP.height;
+		canvas.width = HXP.width == 0 ? 1280 : HXP.width;
+		canvas.height = HXP.height == 0 ? 720 : HXP.width;
 		gl = canvas.getContextWebGL({ alpha: false });
 		gl.pixelStorei(GL.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
 		gl.enable(GL.BLEND);
@@ -188,7 +189,7 @@ class App implements haxepunk.App
 		return haxe.Timer.stamp() * 1000;
 	}
 
-	public function getMemoryUse():Float
+	public function getMemoryUse():Int64
 	{
 		// window.performance.memory is only available on Chrome
 		return js.Syntax.code('(window.performance && window.performance.memory) ? window.performance.memory.usedJSHeapSize : 0');

@@ -2,6 +2,7 @@ package haxepunk.backend.android;
 
 #if macro
 import haxe.macro.Context;
+import haxe.macro.Compiler;
 import haxe.macro.Expr.Field;
 #end
 
@@ -14,15 +15,13 @@ class BuildMacros
                 case FFun(f):
                     if (field.name == "main") {
                         var c = macro class HaxePunkMain {
-                            public static function start(assets:AssetLoader.AssetManager):App.GLSurfaceRenderer {
-                                AssetLoader.assets = assets;
+                            public static function start() {
                                 ${f.expr};
-                                return cast HXP.app;
                             }
                         };
                         c.pack = ["haxepunk", "backend", "android"];
+                        c.meta.push({name: ":keep", pos: Context.currentPos()});
                         Context.defineType(c);
-                        //fields.remove(field);
                         break;
                     }
                 default:

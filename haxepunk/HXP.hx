@@ -181,6 +181,7 @@ class HXP
 	 * @param width		New width.
 	 * @param height	New height.
 	 */
+	@:access(haxepunk.Engine)
 	public static function resize(width:Int, height:Int)
 	{
 		// resize scene to scale
@@ -191,7 +192,8 @@ class HXP
 		HXP.halfHeight = HXP.height / 2;
 		HXP.bounds.width = width;
 		HXP.bounds.height = height;
-		for (scene in HXP.engine.scenes) scene._resize();
+		for (scene in HXP.engine._scenes) scene._resize();
+		HXP.engine.console.may((c) -> c._resize());
 		HXP.needsResize = false;
 	}
 

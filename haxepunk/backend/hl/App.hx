@@ -1,6 +1,7 @@
 package haxepunk.backend.hl;
 
 #if hlsdl
+import haxe.Int64;
 import haxepunk.HXP;
 import haxepunk.Engine;
 import haxepunk.backend.opengl.GLRenderer;
@@ -226,7 +227,7 @@ class App implements haxepunk.App
 		return haxe.Timer.stamp() * 1000;
 	}
 
-	public function getMemoryUse():Float return 0;
+	public function getMemoryUse():Int64 return 0;
 
 	public function multiTouchSupported():Bool return false;
 

@@ -2,24 +2,25 @@ package haxepunk.utils;
 
 import haxe.ds.Vector;
 
+@:generic
 class CircularBuffer<T>
 {
 	var pos:Int = 0;
 	var len:Int = 0;
-	var data:Array<T>;
+	var data:Vector<T>;
 	var _iterator:CircularBufferIterator<T>;
 
 	public function new(len:Int)
 	{
-		data = new Array();
-		_iterator = new CircularBufferIterator(this);
+		data = new Vector<T>(len);
+		maxLength = len;
+		_iterator = new CircularBufferIterator<T>(this);
 	}
 
 	public var length(get, never):Int;
 	inline function get_length() return len;
 
-	public var maxLength(get, never):Int;
-	inline function get_maxLength() return data.length;
+	public var maxLength(default, null):Int;
 
 	public var first(get, never):Null<T>;
 	inline function get_first()
@@ -33,7 +34,7 @@ class CircularBuffer<T>
 		return len < 1 ? null : data[index(len - 1)];
 	}
 
-	public inline function push(val:T)
+	public function push(val:T)
 	{
 		data[index(len)] = val;
 		if (len < data.length) ++len;
@@ -74,6 +75,7 @@ class CircularBuffer<T>
 	}
 }
 
+@:generic
 private class CircularBufferIterator<T>
 {
 	var buffer:CircularBuffer<T>;

@@ -1,6 +1,7 @@
 package haxepunk.backend.generic;
 
 import haxepunk.Engine;
+import haxe.Int64;
 
 class App implements haxepunk.App
 {
@@ -16,7 +17,7 @@ class App implements haxepunk.App
 	public function hideCursor() {}
 
 	public function getTimeMillis():Float return 0;
-	public function getMemoryUse():Float return 0;
+	public function getMemoryUse():Int64 return 0;
 
 	public function multiTouchSupported():Bool return false;
 

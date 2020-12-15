@@ -7,10 +7,14 @@ import haxepunk.utils.Color;
 import haxepunk.utils.DrawContext;
 import haxepunk.math.MathUtil;
 
+class MetricContext
+{
+	public static var context:DrawContext;
+}
+
+@:generic
 class Metric<T:Float> extends Entity
 {
-	static var drawContext:DrawContext;
-
 	var metricName:String;
 	var data:CircularBuffer<T>;
 	var minScale:Float = 0;
@@ -33,10 +37,10 @@ class Metric<T:Float> extends Entity
 		width = 160;
 		height = 80;
 
-		if (drawContext == null)
+		if (MetricContext.context == null)
 		{
-			drawContext = new DrawContext();
-			drawContext.lineThickness = 4;
+			MetricContext.context = new DrawContext();
+			MetricContext.context.lineThickness = 4;
 		}
 	}
 
@@ -51,6 +55,7 @@ class Metric<T:Float> extends Entity
 		var fsx:Float = camera.screenScaleX,
 			fsy:Float = camera.screenScaleY;
 
+		var drawContext = MetricContext.context;
 		drawContext.scene = scene;
 		drawContext.setColor(color.lerp(0, 0.9), 0.8);
 		drawContext.rectFilled(x * fsx, y * fsy, width * fsx, height * fsy);
