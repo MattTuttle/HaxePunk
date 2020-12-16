@@ -128,7 +128,7 @@ class CompiledShader
 		}
 	}
 
-	public function prepare(drawCommand:DrawCommand, buffer:BufferData)
+	public function prepare(drawCommand:DrawCommand)
 	{
 		if (position == null)
 		{
@@ -136,26 +136,7 @@ class CompiledShader
 			return;
 		}
 
-		buffer.reset();
-		if (texCoord != null)
-		{
-			if (color != null)
-			{
-				buffer.prepareVertexUVandColor(drawCommand);
-			}
-			else
-			{
-				buffer.prepareVertexAndUV(drawCommand);
-			}
-		}
-		else if (color != null)
-		{
-			buffer.prepareVertexAndColor(drawCommand);
-		}
-		else
-		{
-			buffer.prepareVertexOnly(drawCommand);
-		}
+		var buffer = drawCommand.data;
 
 		addVertexAttribData(buffer, drawCommand.triangleCount * 3);
 

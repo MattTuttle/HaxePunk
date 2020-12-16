@@ -325,7 +325,7 @@ class DrawContext
 			var theta = segment * radians;
 			var x2 = x + (Math.sin(theta) * radius) * scaleX;
 			var y2 = y + (Math.cos(theta) * radius) * scaleY;
-			addTriangle(x, y, 0, 0, x1, y1, 0, 0, x2, y2, 0, 0, color, alpha);
+			addTriangle(x, y, x1, y1, x2, y2, color, alpha);
 			x1 = x2; y1 = y2;
 		}
 	}
@@ -404,17 +404,17 @@ class DrawContext
 
 	inline function drawTriangle(v1:Vector2, v2:Vector2, v3:Vector2):Void
 	{
-		addTriangle(v1.x, v1.y, 0, 0, v2.x, v2.y, 0, 0, v3.x, v3.y, 0, 0, color, alpha);
+		addTriangle(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, color, alpha);
 	}
 
 	/** @private Helper function to add a quad to the buffer */
 	inline function drawQuad(x1, y1, x2, y2, x3, y3, x4, y4)
 	{
-		addTriangle(x1, y1, 0, 0, x2, y2, 0, 0, x3, y3, 0, 0, color, alpha);
-		addTriangle(x1, y1, 0, 0, x3, y3, 0, 0, x4, y4, 0, 0, color, alpha);
+		addTriangle(x1, y1, x2, y2, x3, y3, color, alpha);
+		addTriangle(x1, y1, x3, y3, x4, y4, color, alpha);
 	}
 
-	inline function addTriangle(tx1:Float, ty1:Float, uvx1:Float, uvy1:Float, tx2:Float, ty2:Float, uvx2:Float, uvy2:Float, tx3:Float, ty3:Float, uvx3:Float, uvy3:Float, color:Color, alpha:Float)
+	inline function addTriangle(tx1:Float, ty1:Float, tx2:Float, ty2:Float, tx3:Float, ty3:Float, color:Color, alpha:Float)
 	{
 		if (scale)
 		{
@@ -425,7 +425,7 @@ class DrawContext
 			ty2 *= HXP.screen.scaleY;
 			ty3 *= HXP.screen.scaleY;
 		}
-		command.addTriangle(tx1, ty1, uvx1, uvy1, tx2, ty2, uvx2, uvy2, tx3, ty3, uvx3, uvy3, color, alpha);
+		command.addTriangleNoUV(tx1, ty1, tx2, ty2, tx3, ty3, color, alpha);
 	}
 
 	// Drawing information.

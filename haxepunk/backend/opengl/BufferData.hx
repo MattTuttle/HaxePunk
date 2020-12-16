@@ -13,8 +13,6 @@ import haxepunk.graphics.hardware.DrawCommand;
 
 class BufferData
 {
-	static inline var INITIAL_SIZE:Int = 100;
-
 	static inline function resize(numFloats:Int, minChunks:Int, chunkSize:Int)
 	{
 		return Std.int(Math.max(
@@ -49,7 +47,10 @@ class BufferData
 
 	var byteOffset:Int;
 
-	public function new() {}
+	public function new()
+	{
+		needsResize(50, 15);
+	}
 
 	public function needsResize(triangles:Int, floatsPerTriangle:Int):Bool
 	{
@@ -67,8 +68,6 @@ class BufferData
 	#end
 #end
 			return true;
-
-			reset();
 		}
 		return false;
 	}
@@ -136,71 +135,6 @@ class BufferData
 		buffer.buffer.setInt32(byteOffset * 4, value);
 		byteOffset += 1;
 #end
-	}
-
-	// Add DrawCommand triangle position only
-	public function prepareVertexOnly(drawCommand:DrawCommand)
-	{
-		for (tri in drawCommand.triangles)
-		{
-			addVec(tri.tx1, tri.ty1);
-			addVec(tri.tx2, tri.ty2);
-			addVec(tri.tx3, tri.ty3);
-		}
-	}
-
-	public function prepareVertexAndColor(drawCommand:DrawCommand)
-	{
-		var triangleColor:UInt = 0;
-		for (tri in drawCommand.triangles)
-		{
-			triangleColor = tri.color.withAlpha(tri.alpha);
-
-			addVec(tri.tx1, tri.ty1);
-			addInt(triangleColor);
-
-			addVec(tri.tx2, tri.ty2);
-			addInt(triangleColor);
-
-			addVec(tri.tx3, tri.ty3);
-			addInt(triangleColor);
-		}
-	}
-
-	public function prepareVertexAndUV(drawCommand:DrawCommand)
-	{
-		for (tri in drawCommand.triangles)
-		{
-			addVec(tri.tx1, tri.ty1);
-			addVec(tri.uvx1, tri.uvy1);
-
-			addVec(tri.tx2, tri.ty2);
-			addVec(tri.uvx2, tri.uvy2);
-
-			addVec(tri.tx3, tri.ty3);
-			addVec(tri.uvx3, tri.uvy3);
-		}
-	}
-
-	public function prepareVertexUVandColor(drawCommand:DrawCommand)
-	{
-		var triangleColor:UInt = 0;
-		for (tri in drawCommand.triangles)
-		{
-			triangleColor = tri.color.withAlpha(tri.alpha);
-
-			addVec(tri.tx1, tri.ty1);
-			addVec(tri.uvx1, tri.uvy1);
-			addInt(triangleColor);
-
-			addVec(tri.tx2, tri.ty2);
-			addVec(tri.uvx2, tri.uvy2);
-			addInt(triangleColor);
-
-			addVec(tri.tx3, tri.ty3);
-			addVec(tri.uvx3, tri.uvy3);
-			addInt(triangleColor);
-		}
 	}
 }
 

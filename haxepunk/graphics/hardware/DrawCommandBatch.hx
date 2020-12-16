@@ -26,7 +26,6 @@ class DrawCommandIterator
 		return current != null;
 	}
 
-	@:access(haxepunk.graphics.hardware.DrawCommand)
 	public function next():DrawCommand
 	{
 		var result = current;
@@ -77,66 +76,8 @@ class DrawCommandBatch
 			// we can reuse the most recent draw call
 			return last;
 		}
-		#if !hxp_no_render_batch
-		else if ((x1 != 0 || x2 != 0 || x3 != 0) && (y1 != 0 || y2 != 0 || y3 != 0))
-		{
-			// look back to see if we can add this to a previous draw call
-			var t:Int = 0,
-				current:DrawCommand = last,
-				found:Bool = false;
-			while (current != null && t < maxTriangleChecks)
-			{
-				if (current.match(texture, shader, smooth, blend, clipRect))
-				{
-					found = true;
-					if (flexibleLayer) return current;
-					break;
-				}
-				t += current.triangleCount;
-				current = current._prev;
-			}
-			if (found)
-			{
-				var rx1 = MathUtil.minOf3(x1, x2, x3),
-					rx2 = MathUtil.maxOf3(x1, x2, x3),
-					ry1 = MathUtil.minOf3(y1, y2, y3),
-					ry2 = MathUtil.maxOf3(y1, y2, y3);
-				_bounds.setTo(rx1, ry1, rx2 - rx1, ry2 - ry1);
-				t = 0;
-				current = last;
-				while (current != null)
-				{
-					if (current.match(texture, shader, smooth, blend, clipRect))
-					{
-						// we can use this existing draw call
-						return current;
-					}
-					else if (current.bounds.intersects(_bounds))
-					{
-						// an intermediate draw command may have drawn over this
-						// region; let's investigate
-						var collision = false;
-						for (triangle in current.triangles)
-						{
-							if (t++ >= maxTriangleChecks) break;
-							if (triangle.intersectsTriangle(x1, y1, x2, y2, x3, y3))
-							{
-								collision = true;
-								break;
-							}
-						}
-						if (collision)
-						{
-							break;
-						}
-					}
-					current = current._prev;
-				}
-			}
-		}
-		#end
 
-		while (last != null && last.data == null)
+		while (last != null && last.triangleCount == 0)
 		{
 			// recycle draw commands we didn't actually populate
 			var l = last;

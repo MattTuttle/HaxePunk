@@ -198,7 +198,6 @@ class GLRenderer implements Renderer
 	var fb:FrameBuffer;
 	var backFb:FrameBuffer;
 
-	var renderBufferData:BufferData;
 	var defaultFramebuffer:GLFramebuffer = null;
 
 	var screenWidth:Int;
@@ -234,7 +233,6 @@ class GLRenderer implements Renderer
 		return cast compiled;
 	}
 
-	@:access(haxepunk.graphics.hardware.DrawCommand)
 	public function render(drawCommand:DrawCommand):Void
 	{
 		checkForErrors();
@@ -267,10 +265,7 @@ class GLRenderer implements Renderer
 				var shader = getCompiledShader(drawCommand.shader, CompiledShader);
 				shader.bind();
 
-				// expand arrays if necessary
-				var triangles:Int = drawCommand.triangleCount;
-
-				bindRenderbuffer(triangles, shader.floatsPerVertex * 3);
+				bindRenderbuffer(drawCommand, shader.floatsPerVertex * 3);
 
 				var matrixUniform = shader.uniformIndex(UNIFORM_MATRIX);
 				if (matrixUniform != #if java -1 #else null #end) {
@@ -291,7 +286,7 @@ class GLRenderer implements Renderer
 				if (texture != null) bindTexture(texture, drawCommand.smooth);
 				checkForErrors();
 
-				shader.prepare(drawCommand, renderBufferData);
+				shader.prepare(drawCommand);
 
 				checkForErrors();
 
@@ -306,7 +301,7 @@ class GLRenderer implements Renderer
 				gl.scissor(x, screenHeight - y - height, width, height);
 				gl.enable(GL.SCISSOR_TEST);
 
-				gl.drawArrays(GL.TRIANGLES, 0, triangles * 3);
+				gl.drawArrays(GL.TRIANGLES, 0, drawCommand.triangleCount * 3);
 
 				checkForErrors();
 
@@ -329,18 +324,21 @@ class GLRenderer implements Renderer
 		gl.bindBuffer(GL.ARRAY_BUFFER, buffer);
 	}
 
-	inline function bindRenderbuffer(triangles:Int, floatsPerTriangle:Int)
+	var byteSize:Int = 0;
+
+	inline function bindRenderbuffer(drawCommand:DrawCommand, floatsPerTriangle:Int)
 	{
 		#if !doc
 		if (GLUtils.invalid(renderBuffer))
 		{
-			renderBufferData.buffer = null;
 			renderBuffer = createArrayBuffer();
 		}
 		bindArrayBuffer(renderBuffer);
-		if (renderBufferData.needsResize(triangles, floatsPerTriangle))
+		var size = drawCommand.data.bufferBytesSize();
+		if (byteSize < size)
 		{
-			bufferData(GL.ARRAY_BUFFER, renderBufferData.bufferBytesSize(), renderBufferData.buffer, GL.DYNAMIC_DRAW);
+			byteSize = size;
+			bufferData(GL.ARRAY_BUFFER, byteSize, drawCommand.data.buffer, GL.DYNAMIC_DRAW);
 		}
 		#end
 	}
@@ -382,7 +380,7 @@ class GLRenderer implements Renderer
 		checkForErrors();
 		_tracking = scene.trackDrawCalls;
 
-		if (renderBufferData == null || GLUtils.invalid(renderBuffer))
+		if (GLUtils.invalid(renderBuffer))
 		{
 			destroy();
 			init();
@@ -535,10 +533,6 @@ class GLRenderer implements Renderer
 
 	inline function init()
 	{
-		if (renderBufferData == null)
-		{
-			renderBufferData = new BufferData();
-		}
 		if (fb == null)
 		{
 			fb = {texture: null, framebuffer: null, width: 0, height: 0};
