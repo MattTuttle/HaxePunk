@@ -243,6 +243,7 @@ class Preloader
 	public static macro function build():Array<Field>
 	{
 		var fields = Context.getBuildFields();
+		#if !unit_test
 		var found = false;
 		// search for @:preload metadata on functions
 		for (field in fields)
@@ -280,6 +281,7 @@ class Preloader
 				kind: FieldType.FVar(macro : haxepunk.assets.Preloader, null)
 			});
 		}
+		#end
 		return fields;
 	}
 

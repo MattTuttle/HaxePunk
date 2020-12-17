@@ -624,42 +624,25 @@ class Entity extends Tweener
 	 */
 	public function setHitboxTo(o:Dynamic)
 	{
-		#if html5
-		inline function getInt(value:Dynamic, defaultValue:Int = 0):Int
-		{
-			return if (Std.is(value, Int) || Std.is(value, Float))
-				value;
-			else
-				defaultValue;
-		};
-
-		width = getInt(o.width);
-		height = getInt(o.height);
-
-		originX = getInt(o.originX, -getInt(o.x));
-		originY = getInt(o.originY, -getInt(o.y));
-
-		#else
-
-		inline function getInt(o:Dynamic, prop:String, defaultValue:Int=0):Int
-		{
-			return try
-			{
-				Std.int(Reflect.getProperty(o, prop));
-			}
-			catch (e:Dynamic)
-			{
-				defaultValue;
-			}
-		};
-
 		width = getInt(o, "width");
 		height = getInt(o, "height");
 
 		originX = getInt(o, "originX", -getInt(o, "x"));
 		originY = getInt(o, "originY", -getInt(o, "y"));
-		#end
 	}
+
+	// used for setHitboxTo and shouldn't be used for anything else
+	@:dox(hide)
+	function getInt(o:Dynamic, prop:String, defaultValue:Int=0):Int
+	{
+		var v = Reflect.getProperty(o, prop);
+		return switch (Type.typeof(v))
+		{
+			case TInt: v;
+			default: defaultValue;
+		}
+	};
+
 
 	/**
 	 * Sets the origin of the Entity.

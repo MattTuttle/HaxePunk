@@ -72,7 +72,7 @@ class EntityTest
 		addToScene(e);
 		Assert.areEqual(e, scene.getInstance("foobar"));
 		e.name = "hello";
-		Assert.areEqual(null, scene.getInstance("foobar"));
+		Assert.isNull(scene.getInstance("foobar"));
 		Assert.areEqual(e, scene.getInstance("hello"));
 	}
 
@@ -131,7 +131,7 @@ class EntityTest
 		Assert.areEqual(0, e.height);
 		Assert.areEqual(849, e.originX);
 		Assert.areEqual(-253, e.originY);
-
+		
 		e.setHitboxTo(null);
 		Assert.areEqual(0, e.width);
 		Assert.areEqual(0, e.height);
@@ -236,8 +236,9 @@ class EntityTest
 	public function testVisible()
 	{
 		Assert.isTrue(e.visible);
-		e.parent = new Entity();
-		e.parent.visible = false;
+		var parent = new Entity();
+		parent.visible = false;
+		e.parent = parent;
 		Assert.isFalse(e.visible);
 		e.parent = null;
 		Assert.isTrue(e.visible);
@@ -249,8 +250,9 @@ class EntityTest
 	public function testCollidable()
 	{
 		Assert.isTrue(e.collidable);
-		e.parent = new Entity();
-		e.parent.collidable = false;
+		var parent = new Entity();
+		parent.collidable = false;
+		e.parent = parent;
 		Assert.isFalse(e.collidable);
 		e.parent = null;
 		Assert.isTrue(e.collidable);
@@ -262,8 +264,9 @@ class EntityTest
 	public function testActive()
 	{
 		Assert.isTrue(e.active);
-		e.parent = new Entity();
-		e.parent.active = false;
+		var parent = new Entity();
+		parent.active = false;
+		e.parent = parent;
 		Assert.isFalse(e.active);
 		e.parent = null;
 		Assert.isTrue(e.active);

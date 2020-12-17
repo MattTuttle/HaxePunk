@@ -119,7 +119,7 @@ class SceneTest extends TestSuite
 
 		e.name = "bar";
 		Assert.areEqual(e, scene.getInstance("bar"));
-		Assert.areEqual(null, scene.getInstance("foo"));
+		Assert.isNull(scene.getInstance("foo"));
 	}
 
 	@Test

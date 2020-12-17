@@ -3,9 +3,9 @@ package haxepunk.backend.html5;
 import js.Browser;
 import js.lib.Promise;
 import js.html.Image;
-import js.html.webgl.GL;
 import js.html.CanvasElement;
 import haxepunk.utils.Color;
+import haxepunk.backend.opengl.GL;
 
 @:build(haxepunk.backend.opengl.GLUtils.replaceGL())
 class Texture implements haxepunk.backend.generic.render.Texture
@@ -14,7 +14,7 @@ class Texture implements haxepunk.backend.generic.render.Texture
 	public var height(default, null):Int;
 
 	var canvas:CanvasElement;
-	var texture:js.html.webgl.Texture;
+	var texture:GLTexture;
 	var dirty:Bool = false;
 
 	public function new(width:Int=0, height:Int=0)

@@ -6,4 +6,4 @@
 --no-inline
 -D unit_test
 -D linux
--neko test.n
+-js bin/js/no-backend.js

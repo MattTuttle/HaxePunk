@@ -53,7 +53,7 @@ class GL
 	public static function activeTexture(_) {}
 	public static function deleteTexture(_) {}
 	public static function createTexture():GLTexture { return 0; }
-	public static function texImage2D(_, _, _, _, _, _, _, _, _) {}
+	public static function texImage2D(_, _, _, _, _, ?_, ?_, ?_, ?_) {}
 	public static function framebufferTexture2D(_, _, _, _, _) {}
 	public static function clearColor(_, _, _, _) {}
 	public static function clear(_) {}

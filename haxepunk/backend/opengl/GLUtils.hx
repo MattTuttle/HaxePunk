@@ -26,6 +26,7 @@ class GLUtils
 	static function replaceGLLoop(e:Expr)
 	{
 		var flash = Context.defined("lime") || Context.defined("nme");
+		flash = flash || Context.defined("unit_test");
 		var html5 = Context.defined("js") && !flash;
 		switch (e.expr)
 		{
