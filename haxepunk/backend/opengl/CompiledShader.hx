@@ -138,14 +138,14 @@ class CompiledShader
 
 		var buffer = drawCommand.data;
 
-		addVertexAttribData(buffer, drawCommand.triangleCount * 3);
+		addVertexAttribData(buffer, drawCommand.indicies);
 
 		GLRenderer.bufferSubData(buffer);
 
-		setAttributePointers(drawCommand.triangleCount);
+		setAttributePointers(drawCommand.indicies);
 	}
 
-	function setAttributePointers(nbTriangles:Int)
+	function setAttributePointers(indicies:Int)
 	{
 		var offset:Int = 0;
 
@@ -170,13 +170,13 @@ class CompiledShader
 
 		// Custom vertex attrib data is at the end of the buffer to speed up construction.
 
-		offset *= nbTriangles * 3;
+		offset *= indicies;
 
 		// Use an array of names to preserve order, since the order of keys in a Map is undefined
 		for (attrib in customAttributes)
 		{
 			gl.vertexAttribPointer(attrib.index, attrib.valuesPerElement, GL.FLOAT, false, 0, offset);
-			offset += nbTriangles * 3 * attrib.valuesPerElement * Float32Array.BYTES_PER_ELEMENT;
+			offset += indicies * attrib.valuesPerElement * Float32Array.BYTES_PER_ELEMENT;
 		}
 	}
 

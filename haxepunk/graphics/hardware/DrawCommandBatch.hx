@@ -77,7 +77,7 @@ class DrawCommandBatch
 			return last;
 		}
 
-		while (last != null && last.triangleCount == 0)
+		while (last != null && last.empty())
 		{
 			// recycle draw commands we didn't actually populate
 			var l = last;

@@ -15,7 +15,6 @@ import haxepunk.utils.Color;
  * @Beeblerox.
  */
 @:dox(hide)
-@:allow(haxepunk)
 class DrawCommand
 {
 	public static function create(texture:Texture, shader:Shader, smooth:Bool, blend:BlendMode, ?clipRect:Rectangle)
@@ -57,12 +56,18 @@ class DrawCommand
 	public var smooth:Bool = false;
 	public var blend:BlendMode = BlendMode.Alpha;
 	public var clipRect:Rectangle = null;
-	public var triangleCount(default, null):Int = 0;
 	public var visibleArea:Rectangle;
+
+	var triangleCount:Int = 0;
 
 	function new() {
 		data = new BufferData();
 	}
+
+	public function empty():Bool return triangleCount == 0;
+
+	public var indicies(get, never):Int;
+	inline function get_indicies():Int return triangleCount * 3;
 
 	/**
 	 * Compares values to this draw command to see if they all match. This is used by the batcher to reuse the previous draw command.
@@ -167,7 +172,7 @@ class DrawCommand
 		data.reset();
 	}
 
-	var data:BufferData;
-	var _prev:DrawCommand;
-	var _next:DrawCommand;
+	@:allow(haxepunk) var data:BufferData;
+	@:allow(haxepunk.graphics.hardware) var _prev:DrawCommand;
+	@:allow(haxepunk.graphics.hardware) var _next:DrawCommand;
 }

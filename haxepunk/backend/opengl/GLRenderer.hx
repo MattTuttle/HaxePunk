@@ -242,11 +242,11 @@ class GLRenderer implements Renderer
 			width = this.width,
 			height = this.height;
 
-		if (drawCommand != null && drawCommand.triangleCount > 0)
+		if (drawCommand != null && !drawCommand.empty())
 		{
 			if (_tracking)
 			{
-				HXP.triangleCount += drawCommand.triangleCount;
+				// HXP.triangleCount += drawCommand.triangleCount;
 				++HXP.drawCallCount;
 				if (HXP.drawCallLimit > -1 && HXP.drawCallCount > HXP.drawCallLimit) return;
 			}
@@ -265,7 +265,7 @@ class GLRenderer implements Renderer
 				var shader = getCompiledShader(drawCommand.shader, CompiledShader);
 				shader.bind();
 
-				bindRenderbuffer(drawCommand, shader.floatsPerVertex * 3);
+				bindRenderbuffer(drawCommand);
 
 				var matrixUniform = shader.uniformIndex(UNIFORM_MATRIX);
 				if (matrixUniform != #if java -1 #else null #end) {
@@ -301,7 +301,7 @@ class GLRenderer implements Renderer
 				gl.scissor(x, screenHeight - y - height, width, height);
 				gl.enable(GL.SCISSOR_TEST);
 
-				gl.drawArrays(GL.TRIANGLES, 0, drawCommand.triangleCount * 3);
+				gl.drawArrays(GL.TRIANGLES, 0, drawCommand.indicies);
 
 				checkForErrors();
 
@@ -326,7 +326,7 @@ class GLRenderer implements Renderer
 
 	var byteSize:Int = 0;
 
-	inline function bindRenderbuffer(drawCommand:DrawCommand, floatsPerTriangle:Int)
+	inline function bindRenderbuffer(drawCommand:DrawCommand)
 	{
 		#if !doc
 		if (GLUtils.invalid(renderBuffer))
