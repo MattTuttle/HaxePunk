@@ -244,36 +244,43 @@ class Preloader
 	{
 		var fields = Context.getBuildFields();
 		#if !unit_test
-		var found = false;
+		var needPreloader = false;
+		var outPath = Path.directory(Compiler.getOutput());
 		// search for @:preload metadata on functions
 		for (field in fields)
 		{
 			switch (field.kind)
 			{
 				case FFun(f):
+					var preloadBlocks = [];
+					var wrapPreload = false;
 					for (meta in field.meta)
 					{
-						if (meta.name == ":preload")
+						switch (meta.name)
 						{
-							var outPath = Path.directory(Compiler.getOutput());
-							var preloadBlocks = [for (param in meta.params) findAndCopyAssets(parseMetaPath(param), outPath)];
-							// wrap the function block with the preloader code
-							f.expr = macro {
-								_preloader = new haxepunk.assets.Preloader();
-								_preloader.onLoad.bind(function() {
-									${f.expr};
-								});
-								$b{preloadBlocks};
-								_preloader.load();
-							};
-							found = true;
+							case ":preload":
+								preloadBlocks.push(findAndCopyAssets(parseMetaPath(meta.params), outPath));
+								wrapPreload = true;
+								needPreloader = true;
 						}
+					}
+					if (wrapPreload)
+					{
+						// wrap the function block with the preloader code
+						f.expr = macro {
+							_preloader = new haxepunk.assets.Preloader();
+							_preloader.onLoad.bind(function() {
+								${f.expr};
+							});
+							$b{preloadBlocks};
+							_preloader.load();
+						};
 					}
 				default:
 			}
 		}
 		// add `var _preloader:Preloader;` field when there is a @:preload function
-		if (found) {
+		if (needPreloader) {
 			fields.push({
 				name: '_preloader',
 				access: [APrivate, AStatic],
@@ -286,41 +293,25 @@ class Preloader
 	}
 
 	#if macro
-	static function getString(expr:Expr):String {
+	static function getString(expr:Expr, error:String):String {
 		return switch (expr.expr) {
 			case EConst(CString(str, _)):
 				str;
 			default:
-				throw "Expected string";
+				throw error;
 		}
 	}
 
-	static function parseMetaPath(expr:Expr):PreloadPath {
-		return switch (expr.expr) {
-			case EConst(CString(str, _)):
-				var parts = str.split(":");
-				if (parts.length == 2)
-				{
-					{ path: parts[0], alias: parts[1] };
-				}
-				else
-				{
-					{ path: str };
-				}
-			case EObjectDecl(fields):
-				var v = ExprTools.getValue(expr);
-				var ext:Array<String> = cast v.ext;
-				if (Type.getClass(v.ext) == String) { ext = [v.ext]; }
-				{ path: v.path, alias: v.alias, extensions: ext };
-			case EArrayDecl(v):
-				if (v.length == 2) {
-					{ path: getString(v[0]), alias: getString(v[1]) };
-				} else {
-					throw "There should only be 2 values in the preloader array";
-				}
-			default:
-				throw "Invalid preloader path";
-		};
+	static function parseMetaPath(params:Null<Array<Expr>>):PreloadPath {
+		var path = "";
+		var alias = null;
+		if (params != null && params.length > 0)
+		{
+			path = getString(params[0], "Expected first value of preload to be a path");
+			if (params.length > 1)
+				alias = getString(params[1], "Expected second value of preload to be a string alias");
+		}
+		return { path: path, alias: alias };
 	}
 
 	static function copyAsset(path, finalPath):Bool

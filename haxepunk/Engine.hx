@@ -147,7 +147,7 @@ class Engine
 #end
 	}
 
-	@:preload(["assets/haxepunk/fonts", "font"])
+	@:preload("assets/haxepunk/fonts", "font")
 	function loadDefaultAssets() {
 		Log.debug("Default HaxePunk assets are loaded");
 		app.init(this);
