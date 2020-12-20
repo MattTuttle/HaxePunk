@@ -34,7 +34,7 @@ class App implements haxepunk.App
 		var el = Browser.document.getElementById("haxepunk");
 		canvas = cast(el, CanvasElement);
 		canvas.width = HXP.width == 0 ? 1280 : HXP.width;
-		canvas.height = HXP.height == 0 ? 720 : HXP.width;
+		canvas.height = HXP.height == 0 ? 720 : HXP.height;
 		gl = canvas.getContextWebGL({ alpha: false });
 		gl.pixelStorei(GL.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
 		gl.enable(GL.BLEND);
