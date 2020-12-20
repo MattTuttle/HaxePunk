@@ -305,13 +305,26 @@ class Preloader
 	static function parseMetaPath(params:Null<Array<Expr>>):PreloadPath {
 		var path = "";
 		var alias = null;
+		var extensions = null;
 		if (params != null && params.length > 0)
 		{
 			path = getString(params[0], "Expected first value of preload to be a path");
 			if (params.length > 1)
 				alias = getString(params[1], "Expected second value of preload to be a string alias");
+			if (params.length > 2)
+			{
+				switch (params[2].expr)
+				{
+					case EConst(CString(str, _)):
+						extensions = [str];
+					case EArrayDecl(a):
+						extensions = [for (v in a) getString(v, "Extensions must be strings")];
+					default:
+						trace(params[2]);
+				}
+			}
 		}
-		return { path: path, alias: alias };
+		return { path: path, alias: alias, extensions: extensions };
 	}
 
 	static function copyAsset(path, finalPath):Bool
