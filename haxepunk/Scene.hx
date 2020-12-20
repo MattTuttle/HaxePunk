@@ -5,6 +5,7 @@ import haxepunk.Signal;
 import haxepunk.assets.AssetCache;
 import haxepunk.graphics.atlas.AtlasData;
 import haxepunk.graphics.hardware.DrawCommandBatch;
+import haxepunk.ds.Maybe;
 import haxepunk.backend.generic.render.Texture;
 import haxepunk.utils.BlendMode;
 import haxepunk.utils.Color;
@@ -543,7 +544,7 @@ class Scene extends Tweener
 	 * @param	rHeight		Height of the rectangle.
 	 * @return	The first Entity to collide, or null if none collide.
 	 */
-	public function collideRect(type:String, rX:Float, rY:Float, rWidth:Float, rHeight:Float):Entity
+	public function collideRect(type:String, rX:Float, rY:Float, rWidth:Float, rHeight:Float):Maybe<Entity>
 	{
 		if (_types.exists(type))
 		{
@@ -562,7 +563,7 @@ class Scene extends Tweener
 	 * @param	pY			Y position.
 	 * @return	The collided Entity, or null if none collide.
 	 */
-	public function collidePoint(type:String, pX:Float, pY:Float):Entity
+	public function collidePoint(type:String, pX:Float, pY:Float):Maybe<Entity>
 	{
 		var result:Entity = null;
 		if (_types.exists(type))
@@ -599,7 +600,7 @@ class Scene extends Tweener
 	 * @param	p           If non-null, will have its x and y values set to the point of collision.
 	 * @return	The first Entity to collide, or null if none collide.
 	 */
-	public function collideLine(type:String, fromX:Int, fromY:Int, toX:Int, toY:Int, precision:Int = 1, p:Vector2 = null):Entity
+	public function collideLine(type:String, fromX:Int, fromY:Int, toX:Int, toY:Int, precision:Int = 1, p:Vector2 = null):Maybe<Entity>
 	{
 		// If the distance is less than precision, do the short sweep.
 		if (precision < 1) precision = 1;
@@ -622,7 +623,7 @@ class Scene extends Tweener
 			yDelta:Int = Std.int(Math.abs(toY - fromY)),
 			xSign:Float = toX > fromX ? precision : -precision,
 			ySign:Float = toY > fromY ? precision : -precision,
-			x:Float = fromX, y:Float = fromY, e:Entity;
+			x:Float = fromX, y:Float = fromY, e:Maybe<Entity>;
 
 		// Do a raycast from the start to the end point.
 		if (xDelta > yDelta)
@@ -632,7 +633,8 @@ class Scene extends Tweener
 			{
 				while (x < toX)
 				{
-					if ((e = collidePoint(type, x, y)) != null)
+					e = collidePoint(type, x, y);
+					if (e.exists())
 					{
 						if (p == null) return e;
 						if (precision < 2)
@@ -649,7 +651,8 @@ class Scene extends Tweener
 			{
 				while (x > toX)
 				{
-					if ((e = collidePoint(type, x, y)) != null)
+					e = collidePoint(type, x, y);
+					if (e.exists())
 					{
 						if (p == null) return e;
 						if (precision < 2)
@@ -670,7 +673,8 @@ class Scene extends Tweener
 			{
 				while (y < toY)
 				{
-					if ((e = collidePoint(type, x, y)) != null)
+					e = collidePoint(type, x, y);
+					if (e.exists())
 					{
 						if (p == null) return e;
 						if (precision < 2)
@@ -687,7 +691,8 @@ class Scene extends Tweener
 			{
 				while (y > toY)
 				{
-					if ((e = collidePoint(type, x, y)) != null)
+					e = collidePoint(type, x, y);
+					if (e.exists())
 					{
 						if (p == null) return e;
 						if (precision < 2)
