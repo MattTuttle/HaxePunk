@@ -624,8 +624,8 @@ class Entity extends Tweener
 	 */
 	public function setHitboxTo(o:Dynamic)
 	{
-		width = getInt(o, "width");
-		height = getInt(o, "height");
+		width = getInt(o, "scaledWidth", getInt(o, "width"));
+		height = getInt(o, "scaledHeight", getInt(o, "height"));
 
 		originX = getInt(o, "originX", -getInt(o, "x"));
 		originY = getInt(o, "originY", -getInt(o, "y"));
@@ -639,6 +639,7 @@ class Entity extends Tweener
 		return switch (Type.typeof(v))
 		{
 			case TInt: v;
+			case TFloat: Std.int(v);
 			default: defaultValue;
 		}
 	};
