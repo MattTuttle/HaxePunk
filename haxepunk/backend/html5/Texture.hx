@@ -1,5 +1,6 @@
 package haxepunk.backend.html5;
 
+import js.html.ImageData;
 import js.Browser;
 import js.lib.Promise;
 import js.html.Image;
@@ -41,6 +42,7 @@ class Texture implements haxepunk.backend.generic.render.Texture
 				var texture = new Texture(image.width, image.height);
 				texture.canvas.getContext2d().drawImage(image, 0, 0);
 				texture.dirty = true;
+
 				resolve(texture);
 			};
 			image.onabort = function() {
@@ -52,24 +54,42 @@ class Texture implements haxepunk.backend.generic.render.Texture
 
 	public function getPixel(x:Int, y:Int):Color
 	{
-		throw "getPixel Unimplemented";
+		var pixel = canvas.getContext2d().getImageData(x, y, 1, 1);
+		return Color.fromRGB(pixel.data[0], pixel.data[1], pixel.data[2]).withAlpha(pixel.data[3]);
 	}
 
 	public function setPixel(x:Int, y:Int, c:Color):Void
 	{
-		throw "setPixel Unimplemented";
+		var pixel = new ImageData(1, 1);
+		pixel.data[0] = c.r;
+		pixel.data[1] = c.g;
+		pixel.data[2] = c.b;
+		pixel.data[3] = c.a;
+		canvas.getContext2d().putImageData(pixel, x, y);
+		dirty = true;
 	}
 
 	// for removing background from bitmap fonts
 	public function removeColor(color:Color):Void
 	{
-		throw "removeColor Unimplemented";
+		var ctx = canvas.getContext2d();
+		var pixels = ctx.getImageData(0, 0, width, height);
+		var data = pixels.data;
+		for (i in 0...(width * height))
+		{
+			if (data[i*4+0] == color.r && data[i*4+1] == color.g && data[i*4+2] == color.b)
+			{
+				data[i*4+3] = 0; // set alpha to zero
+			}
+		}
+		ctx.putImageData(pixels, 0, 0);
+		dirty = true;
 	}
 
 	// used in Image.createCircle
 	public function drawCircle(x:Float, y:Float, radius:Float):Void
 	{
-		var ctx = canvas.getContext("2d");
+		var ctx = canvas.getContext2d();
 		ctx.fillStyle = 'white';
 		ctx.arc(x, y, radius, 0, Math.PI * 2);
 		ctx.fill();
