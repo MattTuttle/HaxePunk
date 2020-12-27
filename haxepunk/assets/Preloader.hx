@@ -26,6 +26,9 @@ class Preloader
 	public var loaded(default, null):Int = 0;
 	public var failed(default, null):Int = 0;
 
+	public var progress(get, never):Float;
+	function get_progress():Float return (loaded + failed) / required;
+
 	var cache:AssetCache;
 	public var onLoad = new haxepunk.Signal.Signal0();
 	var assets = new StringMap<Array<String>>();
