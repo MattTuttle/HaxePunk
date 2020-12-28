@@ -33,8 +33,8 @@ class ColoredRect extends Graphic
 			y1 = (floorY(camera, point.y) - floorY(camera, camera.y) + floorY(camera, y) - floorY(camera, originY)) * fsy,
 			y2 = y1 + height * fsy;
 
-		command.addTriangleNoUV(x1, y1, x2, y1, x1, y2, color, alpha);
-		command.addTriangleNoUV(x1, y2, x2, y1, x2, y2, color, alpha);
+		command.addTriangleNoUV(x1, y1, x2, y1, x1, y2, _color);
+		command.addTriangleNoUV(x1, y2, x2, y1, x2, y2, _color);
 	}
 
 	/**

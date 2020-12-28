@@ -82,7 +82,7 @@ class AtlasData
 	public inline function prepareTileMatrix(
 		rect:Rectangle,
 		tx:Float, ty:Float, a:Float, b:Float, c:Float, d:Float,
-		color:Color, alpha:Float,
+		color:Color,
 		shader:Shader, smooth:Bool=false, blend:BlendMode, ?clipRect:Rectangle,
 		flexibleLayer:Bool = false)
 	{
@@ -90,7 +90,7 @@ class AtlasData
 			texture, shader, smooth, blend, clipRect,
 			rect.x, rect.y, rect.width, rect.height,
 			a, b, c, d, tx, ty,
-			color, alpha, flexibleLayer
+			color, flexibleLayer
 		);
 	}
 
@@ -110,7 +110,7 @@ class AtlasData
 	public inline function prepareTile(
 		rect:Rectangle, tx:Float, ty:Float,
 		scaleX:Float, scaleY:Float, angle:Float,
-		color:Color, alpha:Float,
+		color:Color,
 		shader:Shader, smooth:Bool, blend:BlendMode, ?clipRect:Rectangle,
 		flexibleLayer:Bool = false):Void
 	{
@@ -135,7 +135,7 @@ class AtlasData
 			d = cos * scaleY; // m11
 		}
 
-		_batch.addRect(texture, shader, smooth, blend, clipRect, rect.x, rect.y, rect.width, rect.height, a, b, c, d, tx, ty, color, alpha, flexibleLayer);
+		_batch.addRect(texture, shader, smooth, blend, clipRect, rect.x, rect.y, rect.width, rect.height, a, b, c, d, tx, ty, color, flexibleLayer);
 	}
 
 	/**
@@ -169,7 +169,7 @@ class AtlasData
 		shader:Shader, smooth:Bool, blend:BlendMode, ?clipRect:Rectangle,
 		flexibleLayer:Bool = false):Void
 	{
-		_batch.addTriangle(texture, shader, smooth, blend, clipRect, tx1, ty1, uvx1, uvy1, tx2, ty2, uvx2, uvy2, tx3, ty3, uvx3, uvy3, color, alpha, flexibleLayer);
+		_batch.addTriangle(texture, shader, smooth, blend, clipRect, tx1, ty1, uvx1, uvy1, tx2, ty2, uvx2, uvy2, tx3, ty3, uvx3, uvy3, color, flexibleLayer);
 	}
 
 	// used for pooling

@@ -14,12 +14,12 @@ interface IAtlasRegion
 
 	public function draw(x:Float, y:Float,
 		scaleX:Float=1, scaleY:Float=1, angle:Float=0,
-		color:Color=Color.White, alpha:Float=1,
+		color:Color=Color.White,
 		shader:Shader, smooth:Bool, blend:BlendMode, ?clipRect:Rectangle,
 		flexibleLayer:Bool=false):Void;
 
 	public function drawMatrix(tx:Float, ty:Float, a:Float, b:Float, c:Float, d:Float,
-		color:Color=Color.White, alpha:Float=1,
+		color:Color=Color.White,
 		shader:Shader, smooth:Bool, blend:BlendMode, ?clipRect:Rectangle,
 		flexibleLayer:Bool=false):Void;
 

@@ -76,7 +76,7 @@ class AtlasResolutions implements IAtlasRegion
 	 */
 	public inline function draw(x:Float, y:Float,
 		scaleX:Float=1, scaleY:Float=1, angle:Float=0,
-		color:Color=Color.White, alpha:Float=1,
+		color:Color=Color.White,
 		shader:Shader, smooth:Bool, blend:BlendMode, ?clipRect:Rectangle,
 		flexibleLayer:Bool=false)
 	{
@@ -84,7 +84,7 @@ class AtlasResolutions implements IAtlasRegion
 		var scale:Float = base.width / region.width;
 		region.draw(x, y,
 			scaleX * scale, scaleY * scale, angle,
-			color, alpha,
+			color,
 			shader, smooth, blend, clipRect, flexibleLayer
 		);
 	}
@@ -106,14 +106,14 @@ class AtlasResolutions implements IAtlasRegion
 	 * @param	clipRect	Clipping rectangle
 	 */
 	public inline function drawMatrix(tx:Float, ty:Float, a:Float, b:Float, c:Float, d:Float,
-		color:Color=Color.White, alpha:Float=1,
+		color:Color=Color.White,
 		shader:Shader, smooth:Bool, blend:BlendMode, ?clipRect:Rectangle,
 		flexibleLayer:Bool=false)
 	{
 		var region = regionForScale(Math.max(Math.abs(a * c), Math.abs(b * d)));
 		var scale:Float = base.width / region.width;
 		region.drawMatrix(tx * scale, ty * scale, a * scale, b * scale, c * scale, d * scale,
-			color, alpha,
+			color,
 			shader, smooth, blend, clipRect, flexibleLayer
 		);
 	}

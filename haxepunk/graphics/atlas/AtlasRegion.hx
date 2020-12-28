@@ -80,14 +80,14 @@ class AtlasRegion implements IAtlasRegion
 	 */
 	public inline function draw(x:Float, y:Float,
 		scaleX:Float=1, scaleY:Float=1, angle:Float=0,
-		color:Color=Color.White, alpha:Float=1,
+		color:Color=Color.White,
 		shader:Shader, smooth:Bool, blend:BlendMode, ?clipRect:Rectangle, flexibleLayer:Bool = false)
 	{
 		if (rotated) angle = angle + 90;
 
 		_parent.prepareTile(_rect, x, y,
 			scaleX, scaleY, angle,
-			color, alpha,
+			color,
 			shader, smooth, blend, clipRect, flexibleLayer);
 	}
 
@@ -109,7 +109,7 @@ class AtlasRegion implements IAtlasRegion
 	 * @param	clipRect	Clipping rectangle
 	 */
 	public inline function drawMatrix(tx:Float, ty:Float, a:Float, b:Float, c:Float, d:Float,
-		color:Color=Color.White, alpha:Float=1,
+		color:Color=Color.White,
 		shader:Shader, smooth:Bool, blend:BlendMode, ?clipRect:Rectangle,
 		flexibleLayer:Bool = false):Void
 	{
@@ -118,7 +118,7 @@ class AtlasRegion implements IAtlasRegion
 			// rotate 90 degrees by inverting values
 			_parent.prepareTileMatrix(_rect,
 				-ty, tx, -b, a, -d, c,
-				color, alpha,
+				color,
 				shader, smooth, blend, clipRect, flexibleLayer
 			);
 		}
@@ -126,7 +126,7 @@ class AtlasRegion implements IAtlasRegion
 		{
 			_parent.prepareTileMatrix(_rect,
 				tx, ty, a, b, c, d,
-				color, alpha,
+				color,
 				shader, smooth, blend, clipRect
 			);
 		}

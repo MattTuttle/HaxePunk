@@ -1,6 +1,5 @@
 package haxepunk.graphics;
 
-import haxepunk.HXP;
 import haxepunk.Graphic;
 import haxepunk.graphics.Image;
 import haxepunk.utils.Color;
@@ -28,34 +27,6 @@ class NineSlice extends Graphic
 	 * Set this to false to skip the center, drawing only the border segments.
 	 */
 	public var drawCenter:Bool = true;
-
-	override function set_color(v:Color):Color
-	{
-		return topL.color =
-			topC.color =
-			topR.color =
-			medL.color =
-			medC.color =
-			medR.color =
-			botL.color =
-			botC.color =
-			botR.color =
-			color = v;
-	}
-
-	override function set_alpha(v:Float):Float
-	{
-		return topL.alpha =
-			topC.alpha =
-			topR.alpha =
-			medL.alpha =
-			medC.alpha =
-			medR.alpha =
-			botL.alpha =
-			botC.alpha =
-			botR.alpha =
-			alpha = v;
-	}
 
 	var source:ImageType;
 
@@ -146,6 +117,7 @@ class NineSlice extends Graphic
 				else segment.clipRect = null;
 				segment.shader = shader;
 				segment.smooth = smooth;
+				segment._color = _color;
 				segment.render(point, camera);
 			}
 		}

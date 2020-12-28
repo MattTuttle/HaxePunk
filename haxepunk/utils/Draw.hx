@@ -53,8 +53,8 @@ class Draw
 	 * The alpha value to draw. Ranges between 0-1 where 0 is completely transparent and 1 is opaque.
 	 */
 	public static var alpha(get, set):Float;
-	static inline function get_alpha() return instance.alpha;
-	static inline function set_alpha(v:Float) return instance.alpha = v;
+	static inline function get_alpha() return instance.color.alpha;
+	static inline function set_alpha(v:Float) return instance.color.withAlpha(v);
 
 	/**
 	 * The line thickness to use when drawing lines. Defaults to a single pixel wide.

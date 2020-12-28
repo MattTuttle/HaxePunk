@@ -206,19 +206,25 @@ class Graphic
 	/**
 	 * Change the opacity of the Image, a value from 0 to 1.
 	 */
-	public var alpha(default, set):Float = 1;
-	function set_alpha(value:Float):Float
+	public var alpha(get, set):Float;
+	inline function get_alpha():Float return _color.alpha;
+	inline function set_alpha(value:Float):Float
 	{
-		return alpha = value < 0 ? 0 : (value > 1 ? 1 : value);
+		_color = _color.withAlpha(value);
+		return _color.alpha;
 	}
 
 	/**
 	 * The tinted color of the Image. Use 0xFFFFFF to draw the Image normally.
+	 * Set with rgb hex but the return color will contain alpha information.
 	 */
-	public var color(default, set):Color;
+	public var color(get, set):Color;
+	inline function get_color():Color return _color & 0xffffff;
 	function set_color(value:Color):Color
 	{
-		return color = value & 0xffffff;
+		var rgb:Color = value & 0xffffff;
+		_color = rgb.withAlpha(_color.alpha);
+		return rgb;
 	}
 
 	/**
@@ -348,4 +354,5 @@ class Graphic
 	var _scroll:Bool = true;
 	var _point:Vector2 = new Vector2();
 	var _visible:Bool = true;
+	var _color:Color = 0xFFFFFFFF;
 }

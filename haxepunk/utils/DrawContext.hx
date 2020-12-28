@@ -36,12 +36,7 @@ class DrawContext
 	/**
 	 * The red, green, and blue values in a single integer value.
 	 */
-	public var color:Color = 0xFFFFFF;
-
-	/**
-	 * The alpha value to draw. Ranges between 0-1 where 0 is completely transparent and 1 is opaque.
-	 */
-	public var alpha:Float = 1;
+	public var color:Color = 0xFFFFFFFF;
 
 	/**
 	 * If true, scale coordinates using the current screen scale.
@@ -56,8 +51,7 @@ class DrawContext
 	public function new(lineThickness:Float = 1, color:Color = Color.White, alpha:Float = 1)
 	{
 		this.lineThickness = lineThickness;
-		this.color = color;
-		this.alpha = alpha;
+		this.color = color.withAlpha(alpha);
 	}
 
 	/**
@@ -65,8 +59,7 @@ class DrawContext
 	 */
 	public inline function setColor(color:Color = 0xFFFFFF, alpha:Float = 1)
 	{
-		this.color = color;
-		this.alpha = alpha;
+		this.color = color.withAlpha(alpha);
 	}
 
 	/**
@@ -325,7 +318,7 @@ class DrawContext
 			var theta = segment * radians;
 			var x2 = x + (Math.sin(theta) * radius) * scaleX;
 			var y2 = y + (Math.cos(theta) * radius) * scaleY;
-			addTriangle(x, y, x1, y1, x2, y2, color, alpha);
+			addTriangle(x, y, x1, y1, x2, y2, color);
 			x1 = x2; y1 = y2;
 		}
 	}
@@ -404,17 +397,17 @@ class DrawContext
 
 	inline function drawTriangle(v1:Vector2, v2:Vector2, v3:Vector2):Void
 	{
-		addTriangle(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, color, alpha);
+		addTriangle(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, color);
 	}
 
 	/** @private Helper function to add a quad to the buffer */
 	inline function drawQuad(x1, y1, x2, y2, x3, y3, x4, y4)
 	{
-		addTriangle(x1, y1, x2, y2, x3, y3, color, alpha);
-		addTriangle(x1, y1, x3, y3, x4, y4, color, alpha);
+		addTriangle(x1, y1, x2, y2, x3, y3, color);
+		addTriangle(x1, y1, x3, y3, x4, y4, color);
 	}
 
-	inline function addTriangle(tx1:Float, ty1:Float, tx2:Float, ty2:Float, tx3:Float, ty3:Float, color:Color, alpha:Float)
+	inline function addTriangle(tx1:Float, ty1:Float, tx2:Float, ty2:Float, tx3:Float, ty3:Float, color:Color)
 	{
 		if (scale)
 		{
@@ -425,7 +418,7 @@ class DrawContext
 			ty2 *= HXP.screen.scaleY;
 			ty3 *= HXP.screen.scaleY;
 		}
-		command.addTriangleNoUV(tx1, ty1, tx2, ty2, tx3, ty3, color, alpha);
+		command.addTriangleNoUV(tx1, ty1, tx2, ty2, tx3, ty3, color);
 	}
 
 	// Drawing information.

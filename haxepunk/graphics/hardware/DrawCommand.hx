@@ -56,7 +56,6 @@ class DrawCommand
 	public var smooth:Bool = false;
 	public var blend:BlendMode = BlendMode.Alpha;
 	public var clipRect:Rectangle = null;
-	public var visibleArea:Rectangle;
 
 	var triangleCount:Int = 0;
 
@@ -103,53 +102,31 @@ class DrawCommand
 	 * @param color    Vertex color tint
 	 * @param alpha    Vertex alpha value
 	 */
-	public function addTriangle(tx1:Float, ty1:Float, uvx1:Float, uvy1:Float, tx2:Float, ty2:Float, uvx2:Float, uvy2:Float, tx3:Float, ty3:Float, uvx3:Float, uvy3:Float, color:Color, alpha:Float):Void
+	public function addTriangle(tx1:Float, ty1:Float, uvx1:Float, uvy1:Float, tx2:Float, ty2:Float, uvx2:Float, uvy2:Float, tx3:Float, ty3:Float, uvx3:Float, uvy3:Float, color:Color):Void
 	{
-		if (checkOnScreen(tx1, ty1, tx2, ty2, tx3, ty3, alpha))
-		{
-			data.needsResize(triangleCount, 15*4);
-			var c = color.withAlpha(alpha);
-			data.addVec(tx1, ty1);
-			data.addVec(uvx1, uvy1);
-			data.addInt(c);
-			data.addVec(tx2, ty2);
-			data.addVec(uvx2, uvy2);
-			data.addInt(c);
-			data.addVec(tx3, ty3);
-			data.addVec(uvx3, uvy3);
-			data.addInt(c);
-			++triangleCount;
-		}
+		data.needsResize(triangleCount, 15*4);
+		data.addVec(tx1, ty1);
+		data.addVec(uvx1, uvy1);
+		data.addInt(color);
+		data.addVec(tx2, ty2);
+		data.addVec(uvx2, uvy2);
+		data.addInt(color);
+		data.addVec(tx3, ty3);
+		data.addVec(uvx3, uvy3);
+		data.addInt(color);
+		++triangleCount;
 	}
 
-	public function addTriangleNoUV(tx1:Float, ty1:Float, tx2:Float, ty2:Float, tx3:Float, ty3:Float, color:Color, alpha:Float):Void
+	public function addTriangleNoUV(tx1:Float, ty1:Float, tx2:Float, ty2:Float, tx3:Float, ty3:Float, color:Color):Void
 	{
-		if (checkOnScreen(tx1, ty1, tx2, ty2, tx3, ty3, alpha))
-		{
-			data.needsResize(triangleCount, 9*4);
-			var c = color.withAlpha(alpha);
-			data.addVec(tx1, ty1);
-			data.addInt(c);
-			data.addVec(tx2, ty2);
-			data.addInt(c);
-			data.addVec(tx3, ty3);
-			data.addInt(c);
-			++triangleCount;
-		}
-	}
-
-	function checkOnScreen(tx1, ty1, tx2, ty2, tx3, ty3, alpha:Float):Bool
-	{
-		if (alpha > 0)
-		{
-			return shader.alwaysDraw || (
-				MathUtil.minOf3(tx1, tx2, tx3) <= visibleArea.right &&
-				MathUtil.maxOf3(tx1, tx2, tx3) >= visibleArea.left &&
-				MathUtil.minOf3(ty1, ty2, ty3) <= visibleArea.bottom &&
-				MathUtil.maxOf3(ty1, ty2, ty3) >= visibleArea.top
-			);
-		}
-		return false;
+		data.needsResize(triangleCount, 9*4);
+		data.addVec(tx1, ty1);
+		data.addInt(color);
+		data.addVec(tx2, ty2);
+		data.addInt(color);
+		data.addVec(tx3, ty3);
+		data.addInt(color);
+		++triangleCount;
 	}
 
 	public function recycle()

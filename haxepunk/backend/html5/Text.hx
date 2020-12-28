@@ -271,7 +271,7 @@ class Text extends Image
 			ctx.fillStyle = "transparent";
 			ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-			ctx.fillStyle = "#FF00FF";
+			ctx.fillStyle = "#FFFFFF";
 			for (i in 0...lines.length) {
 				var lineWidth = ctx.measureText(lines[i]).width;
 				var x = switch (align) {

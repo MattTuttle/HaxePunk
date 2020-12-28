@@ -256,7 +256,6 @@ class Scene extends Tweener
 	public function render()
 	{
 		AtlasData.startScene(batch);
-		batch.visibleArea.setTo(0, 0, width, height);
 
 		if (bgAlpha > 0)
 		{

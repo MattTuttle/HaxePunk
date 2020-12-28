@@ -54,7 +54,7 @@ class Atlas
 		color:Color, alpha:Float,
 		shader:Shader, smooth:Bool, blend:BlendMode, ?clipRect:Rectangle)
 	{
-		_data.prepareTile(rect, x, y, scaleX, scaleY, angle, color, alpha, shader, smooth, blend, clipRect);
+		_data.prepareTile(rect, x, y, scaleX, scaleY, angle, color, shader, smooth, blend, clipRect);
 	}
 
 	/**

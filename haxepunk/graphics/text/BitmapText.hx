@@ -736,7 +736,7 @@ class BitmapText extends Graphic
 								(_point.x + floorX(camera, x)) * fsx,
 								(_point.y + floorY(camera, y)) * fsy,
 								gd.scale, gd.scale * sy * fsy / maxFullScale, 0,
-								_renderData.color, _renderData.alpha,
+								_renderData.color.withAlpha(_renderData.alpha),
 								shader, smooth, blend, clipRect, flexibleLayer
 							);
 							// advance cursor position
