@@ -207,8 +207,8 @@ class Graphic
 	 * Change the opacity of the Image, a value from 0 to 1.
 	 */
 	public var alpha(get, set):Float;
-	inline function get_alpha():Float return _color.alpha;
-	inline function set_alpha(value:Float):Float
+	function get_alpha():Float return _color.alpha;
+	function set_alpha(value:Float):Float
 	{
 		_color = _color.withAlpha(value);
 		return _color.alpha;
@@ -219,7 +219,7 @@ class Graphic
 	 * Set with rgb hex but the return color will contain alpha information.
 	 */
 	public var color(get, set):Color;
-	inline function get_color():Color return _color & 0xffffff;
+	function get_color():Color return _color & 0xffffff;
 	function set_color(value:Color):Color
 	{
 		var rgb:Color = value & 0xffffff;
