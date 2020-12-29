@@ -31,7 +31,7 @@ class AssetLoader implements haxepunk.assets.AssetLoader
 		#if asset_debug
 		throw "Texture needs to be preloaded before calling getTexture for " + id;
 		#else
-		return new Texture(0, 0);
+		return new Texture(null, 0, 0);
 		#end
 	}
 
@@ -47,11 +47,14 @@ class AssetLoader implements haxepunk.assets.AssetLoader
 	@:access(haxepunk.backend.html5.Texture)
 	public function createTexture(width:Int, height:Int, transparent:Bool=false, color:Color=0):Texture
 	{
-		var texture = new Texture(width, height);
-		var ctx = texture.canvas.getContext2d();
+		var canvas = Texture.canvas;
+		canvas.width = width;
+		canvas.height = height;
+		var ctx = canvas.getContext2d();
 		ctx.fillStyle = "rgba(" + color.r + ", " + color.g + ", " + color.b + ", " + (transparent ? "1" : "0") + ")";
 		ctx.rect(0, 0, width, height);
 		ctx.fill();
+		var texture = new Texture(ctx.getImageData(0, 0, width, height), width, height);
 		texture.dirty = true;
 		return texture;
 	}

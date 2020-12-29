@@ -1,5 +1,6 @@
 package haxepunk.backend.html5;
 
+import js.html.ImageData;
 #if js
 
 import js.html.CanvasRenderingContext2D;
@@ -48,7 +49,8 @@ class Text extends Image
 	{
 		if (text == value && _richText == null) return value;
 		text = value;
-		textWidth = Std.int(_source.canvas.getContext2d().measureText(text).width);
+		var ctx = Texture.canvas.getContext2d();
+		textWidth = Std.int(ctx.measureText(text).width);
 		_needsUpdate = true;
 		return value;
 	}
@@ -185,17 +187,8 @@ class Text extends Image
 
 		resizable = options.resizable;
 
-		var fontSize = options.size;
-
-		var canvas:CanvasElement = cast js.Browser.document.createElement("canvas");
-		var metrics = canvas.getContext2d().measureText(text);
-
-		_width = (width == 0 ? Std.int(metrics.width + 4) : width);
-		_height = (height == 0 ? Std.int(fontSize + 4) : height);
-
-		_source = new Texture(_width, _height);
-		_region = Atlas.loadImageAsRegion(_source);
-		super();
+		_width = width;
+		_height = height;
 
 		this.x = x;
 		this.y = y;
@@ -207,7 +200,9 @@ class Text extends Image
 		this.align = options.align;
 		this._wordWrap = options.wordWrap;
 
-		_needsUpdate = true;
+		_source = new Texture(null, _width, _height);
+		updateTexture();
+		super();
 	}
 
 	function setFont(ctx:CanvasRenderingContext2D)
@@ -217,79 +212,85 @@ class Text extends Image
 		ctx.textBaseline = "top";
 	}
 
+	function updateTexture()
+	{
+		_needsUpdate = false;
+
+		var canvas = Texture.canvas;
+		var ctx = canvas.getContext2d();
+		setFont(ctx);
+
+		var lines = [];
+
+		if (_wordWrap)
+		{
+			for (words in text.split("\n")) {
+				var line = "";
+				for (word in words.split(" "))
+				{
+					var lineLength = ctx.measureText(line + " " + word).width;
+					if (lineLength > _width) {
+						lines.push(line);
+						line = "";
+					}
+					line += word + " ";
+				}
+				lines.push(line);
+			}
+		}
+		else
+		{
+			lines.push(text);
+			textWidth = Std.int(ctx.measureText(text).width);
+
+			if (resizable)
+			{
+				var width = Math.ceil(textWidth + (bufferMargin * 2));
+				if (_width < width) _width = width;
+
+				var height = Math.ceil(textHeight + (bufferMargin * 2));
+				if (_height < height) _height = height;
+			}
+		}
+
+		canvas.width = _width;
+		canvas.height = _height;
+		canvas.style.width = _width + "px";
+		canvas.style.height = _height + "px";
+
+		// have to set the font again after changing the width/height
+		setFont(ctx);
+
+		ctx.fillStyle = "transparent";
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+		ctx.fillStyle = "#FFFFFF";
+		for (i in 0...lines.length) {
+			var lineWidth = ctx.measureText(lines[i]).width;
+			var x = switch (align) {
+				case LEFT:
+					0;
+				case RIGHT:
+					_width - (lineWidth / 2);
+				case CENTER:
+					_width / 2;
+			}
+			ctx.fillText(lines[i], x, i * textHeight + bufferMargin);
+		}
+
+		// reset the source texture
+		_source.width = _width;
+		_source.height = _height;
+		_source.pixels = ctx.getImageData(0, 0, _width, _height);
+		_source.dirty = true;
+		_region = Atlas.loadImageAsRegion(_source);
+	}
+
 	override public function render(point:Vector2, camera:Camera)
 	{
 		if (_needsUpdate)
 		{
-			_needsUpdate = false;
-
-			var canvas = _source.canvas;
-			var ctx = canvas.getContext2d();
-			setFont(ctx);
-
-			var lines = [];
-
-			if (_wordWrap)
-			{
-				for (words in text.split("\n")) {
-					var line = "";
-					for (word in words.split(" "))
-					{
-						var lineLength = ctx.measureText(line + " " + word).width;
-						if (lineLength > _width) {
-							lines.push(line);
-							line = "";
-						}
-						line += word + " ";
-					}
-					lines.push(line);
-				}
-			}
-			else
-			{
-				lines.push(text);
-				textWidth = Std.int(ctx.measureText(text).width);
-
-				if (resizable)
-				{
-					var width = Math.ceil(textWidth + (bufferMargin * 2));
-					if (_width < width) _width = width;
-
-					var height = Math.ceil(textHeight + (bufferMargin * 2));
-					if (_height < height) _height = height;
-				}
-			}
-
-			canvas.width = _width;
-			canvas.height = _height;
-			canvas.style.width = _width + "px";
-			canvas.style.height = _height + "px";
-
-			// have to set the font again after changing the width/height
-			setFont(ctx);
-
-			ctx.fillStyle = "transparent";
-			ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-			ctx.fillStyle = "#FFFFFF";
-			for (i in 0...lines.length) {
-				var lineWidth = ctx.measureText(lines[i]).width;
-				var x = switch (align) {
-					case LEFT:
-						0;
-					case RIGHT:
-						_width - (lineWidth / 2);
-					case CENTER:
-						_width / 2;
-				}
-				ctx.fillText(lines[i], x, i * textHeight + bufferMargin);
-			}
-
-			// reset the source texture
-			_source.width = _width;
-			_source.height = _height;
-			_source.dirty = true;
-			_region = Atlas.loadImageAsRegion(_source);
+			updateTexture();
 		}
 		super.render(point, camera);
 	}
