@@ -59,6 +59,7 @@ class GLRenderer implements Renderer
 		#else
 		gl.bufferData(target, srcData, usage);
 		#end
+		checkForErrors();
 	}
 
 	public static inline function bufferSubData(buffer:BufferData)
@@ -235,8 +236,6 @@ class GLRenderer implements Renderer
 
 	public function render(drawCommand:DrawCommand):Void
 	{
-		checkForErrors();
-
 		var x = this.x,
 			y = this.y,
 			width = this.width,
@@ -280,15 +279,10 @@ class GLRenderer implements Renderer
 					#end
 				}
 
-				checkForErrors();
-
 				var texture:Texture = drawCommand.texture;
 				if (texture != null) bindTexture(texture, drawCommand.smooth);
-				checkForErrors();
 
 				shader.prepare(drawCommand);
-
-				checkForErrors();
 
 				setBlendMode(drawCommand.blend);
 
@@ -303,13 +297,9 @@ class GLRenderer implements Renderer
 
 				gl.drawArrays(GL.TRIANGLES, 0, drawCommand.indicies);
 
-				checkForErrors();
-
 				gl.disable(GL.SCISSOR_TEST);
 
-				shader.unbind();
-
-				checkForErrors();
+				// shader.unbind();
 			}
 		}
 	}
@@ -377,14 +367,12 @@ class GLRenderer implements Renderer
 
 	public function startScene(scene:Scene)
 	{
-		checkForErrors();
 		_tracking = scene.trackDrawCalls;
 
 		if (GLUtils.invalid(renderBuffer))
 		{
 			destroy();
 			init();
-			checkForErrors();
 		}
 
 		var screen = HXP.screen;
@@ -466,11 +454,9 @@ class GLRenderer implements Renderer
 				fb = backFb;
 				backFb = oldFb;
 				bindFrameBuffer(fb);
-				checkForErrors();
 			}
 			shader.setScale(scaleX, scaleY);
 			shader.bind();
-			checkForErrors();
 
 			gl.activeTexture(GL.TEXTURE0);
 			gl.bindTexture(GL.TEXTURE_2D, renderTexture);
@@ -492,7 +478,7 @@ class GLRenderer implements Renderer
 
 			setBlendMode(Alpha);
 			gl.drawArrays(GL.TRIANGLES, 0, 6);
-			unbind();
+			// unbind();
 		}
 	}
 
