@@ -11,8 +11,7 @@ import haxepunk.HXP;
 import haxepunk.utils.Log;
 import haxepunk.graphics.Image;
 import haxepunk.graphics.atlas.Atlas;
-import haxepunk.graphics.atlas.AtlasRegion;
-import haxepunk.utils.Color;
+import haxepunk.graphics.atlas.IAtlasRegion;
 import haxepunk.math.Vector2;
 import haxepunk.graphics.text.TextOptions;
 import haxepunk.graphics.text.BorderOptions;
@@ -51,7 +50,7 @@ class Text extends Image
 		text = value;
 		var ctx = Texture.canvas.getContext2d();
 		textWidth = Std.int(ctx.measureText(text).width);
-		_needsUpdate = true;
+		layoutLines();
 		return value;
 	}
 
@@ -74,7 +73,7 @@ class Text extends Image
 		}
 		else
 		{
-			_needsUpdate = true;
+			layoutLines();
 		}
 		return value;
 	}
@@ -85,8 +84,11 @@ class Text extends Image
 	public var font(default, set):String;
 	function set_font(value:String):String
 	{
-		if (font != value) _needsUpdate = true;
-		return font = Path.withoutDirectory(Path.withoutExtension(value));
+		if (font != value) {
+			font = Path.withoutDirectory(Path.withoutExtension(value));
+			layoutLines();
+		}
+		return font;
 	}
 
 	/**
@@ -96,8 +98,11 @@ class Text extends Image
 	function set_size(value:Int):Int
 	{
 		textHeight = value;
-		if (size != value) _needsUpdate = true;
-		return size = value;
+		if (size != value)  {
+			size = value;
+			layoutLines();
+		}
+		return size;
 	}
 
 	/**
@@ -106,8 +111,11 @@ class Text extends Image
 	public var align(default, set):TextAlignType;
 	function set_align(value:TextAlignType):TextAlignType
 	{
-		if (align != value) _needsUpdate = true;
-		return align = value;
+		if (align != value) {
+			align = value;
+			layoutLines();
+		}
+		return align;
 	}
 
 	/**
@@ -116,8 +124,11 @@ class Text extends Image
 	public var leading(default, set):Int;
 	function set_leading(value:Int):Int
 	{
-		if (leading != value) _needsUpdate = true;
-		return leading = value;
+		if (leading != value) {
+			leading = value;
+			layoutLines();
+		}
+		return leading;
 	}
 
 	/**
@@ -126,7 +137,7 @@ class Text extends Image
 	var border(default, set):Null<BorderOptions>;
 	inline function set_border(options:Null<BorderOptions>):Null<BorderOptions>
 	{
-		_needsUpdate = true;
+		layoutLines();
 		return border = options;
 	}
 
@@ -147,7 +158,7 @@ class Text extends Image
 	public function addStyle(tagName:String, params:Dynamic):Void
 	{
 		Log.critical("addStyle not working on js target");
-		if (_richText != null) _needsUpdate = true;
+		if (_richText != null) layoutLines();
 	}
 
 	override function get_width():Int return Std.int(_width);
@@ -189,6 +200,7 @@ class Text extends Image
 
 		_width = width;
 		_height = height;
+		_lines = [];
 
 		this.x = x;
 		this.y = y;
@@ -212,35 +224,32 @@ class Text extends Image
 		ctx.textBaseline = "top";
 	}
 
-	function updateTexture()
-	{
-		_needsUpdate = false;
-
-		var canvas = Texture.canvas;
-		var ctx = canvas.getContext2d();
+	function layoutLines() {
+		_needsUpdate = true;
+		var ctx = Texture.canvas.getContext2d();
 		setFont(ctx);
-
-		var lines = [];
+		_lines = [];
 
 		if (_wordWrap)
 		{
+			textWidth = _width;
 			for (words in text.split("\n")) {
 				var line = "";
 				for (word in words.split(" "))
 				{
 					var lineLength = ctx.measureText(line + " " + word).width;
 					if (lineLength > _width) {
-						lines.push(line);
+						_lines.push(line);
 						line = "";
 					}
 					line += word + " ";
 				}
-				lines.push(line);
+				_lines.push(line);
 			}
 		}
 		else
 		{
-			lines.push(text);
+			_lines.push(text);
 			textWidth = Std.int(ctx.measureText(text).width);
 
 			if (resizable)
@@ -252,21 +261,26 @@ class Text extends Image
 				if (_height < height) _height = height;
 			}
 		}
+	}
 
+	function updateTexture()
+	{
+		var canvas = Texture.canvas;
 		canvas.width = _width;
 		canvas.height = _height;
 		canvas.style.width = _width + "px";
 		canvas.style.height = _height + "px";
 
 		// have to set the font again after changing the width/height
+		var ctx = canvas.getContext2d();
 		setFont(ctx);
 
 		ctx.fillStyle = "transparent";
 		ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 		ctx.fillStyle = "#FFFFFF";
-		for (i in 0...lines.length) {
-			var lineWidth = ctx.measureText(lines[i]).width;
+		for (i in 0..._lines.length) {
+			var lineWidth = ctx.measureText(_lines[i]).width;
 			var x = switch (align) {
 				case LEFT:
 					0;
@@ -275,7 +289,7 @@ class Text extends Image
 				case CENTER:
 					_width / 2;
 			}
-			ctx.fillText(lines[i], x, i * textHeight + bufferMargin);
+			ctx.fillText(_lines[i], x, i * textHeight + bufferMargin);
 		}
 
 		// reset the source texture
@@ -290,6 +304,7 @@ class Text extends Image
 	{
 		if (_needsUpdate)
 		{
+			_needsUpdate = false;
 			updateTexture();
 		}
 		super.render(point, camera);
@@ -302,12 +317,13 @@ class Text extends Image
 	var _source:Texture;
 	var _buffer:CanvasElement;
 	var _wordWrap:Bool = false;
+	var _lines:Array<String>;
 
 	var _needsUpdate:Bool = true;
 
 	var _borderBuffer:CanvasElement;
 	var _borderBackBuffer:CanvasElement;
-	var _borderRegion:AtlasRegion;
+	var _borderRegion:IAtlasRegion;
 	var _borderSource:CanvasElement;
 
 }
