@@ -354,21 +354,21 @@ class Entity extends Tweener
 			x - originX <= rX + rWidth &&
 			y - originY <= rY + rHeight)
 		{
-			if (!mask.exists()) return true;
-			var _x = this.x, _y = this.y;
-			this.x = x; this.y = y;
-			HXP.entity.x = rX;
-			HXP.entity.y = rY;
-			HXP.entity.width = Std.int(rWidth);
-			HXP.entity.height = Std.int(rHeight);
-			// already checked for existence
-			if (mask.unsafe().collide(HXP.entity.HITBOX))
-			{
+			return mask.map((mask) -> {
+				var _x = this.x, _y = this.y;
+				this.x = x; this.y = y;
+				HXP.entity.x = rX;
+				HXP.entity.y = rY;
+				HXP.entity.width = Std.int(rWidth);
+				HXP.entity.height = Std.int(rHeight);
+				if (mask.collide(HXP.entity.HITBOX))
+				{
+					this.x = _x; this.y = _y;
+					return true;
+				}
 				this.x = _x; this.y = _y;
-				return true;
-			}
-			this.x = _x; this.y = _y;
-			return false;
+				return false;
+			}, true);
 		}
 		return false;
 	}
