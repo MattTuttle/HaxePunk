@@ -74,7 +74,6 @@ typedef Graphiclist = BaseGraphicList<Graphic>;
 					_point.y = floorY(camera, point.y) + floorY(camera, y) - floorY(camera, originY);
 				}
 				else _point.x = _point.y = 0;
-				g._color = _color;
 				g.doRender(_point, camera);
 			}
 		}
