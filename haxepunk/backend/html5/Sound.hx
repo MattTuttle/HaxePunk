@@ -1,5 +1,6 @@
 package haxepunk.backend.html5;
 
+import js.html.SourceElement;
 #if js
 
 import js.lib.Promise;
@@ -16,10 +17,13 @@ abstract Sound(Audio) to Audio from Audio
 		var sfx = new Sound(audio);
 		return new Promise<Sound>(function(resolve, reject) {
 			audio.preload = 'auto';
-			audio.src = source;
-			audio.oncanplay = function() {
+			var se:SourceElement = cast js.Browser.document.createElement("source");
+			se.src = source;
+			se.type = "audio/wav";
+			audio.appendChild(se);
+			audio.addEventListener('loadedmetadata', () -> {
 				resolve(sfx);
-			}
+			});
 		});
 	}
 }

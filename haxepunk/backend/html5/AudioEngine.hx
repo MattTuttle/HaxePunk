@@ -33,6 +33,7 @@ class AudioEngine implements haxepunk.audio.AudioEngine
 
 	public function setVolume(sfx:Sfx, volume:Float):Float
 	{
+		if (sfx.data == null) return 0;
 		return sfx.data.volume = MathUtil.clamp(volume, 0, 1);
 	}
 
