@@ -393,6 +393,8 @@ class GLRenderer implements Renderer
 		height = scene.height;
 
 		ortho(-x, screenWidth - x, screenHeight - y, -y);
+		// needed for resizing viewport
+		gl.viewport(0, 0, width, height);
 	}
 
 	@:access(haxepunk.Screen)
@@ -402,6 +404,7 @@ class GLRenderer implements Renderer
 		{
 			if (!p.active) continue;
 
+trace("hi");
 			// bind the first scene shader
 			bindFrameBuffer(fb);
 			var shader = getCompiledShader(p, CompiledSceneShader);

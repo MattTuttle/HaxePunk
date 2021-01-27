@@ -14,13 +14,17 @@ class Screen
 	/**
 	 * Controls how the game scale changes when the window is resized.
 	 */
-	public var scaleMode:ScaleMode = new ScaleMode();
+	public var scaleMode:ScaleMode;
 
 	/**
 	 * Constructor.
 	 */
 	@:allow(haxepunk)
-	function new() {}
+	function new(width:Int, height:Int) {
+		this.width = width;
+		this.height = height;
+		scaleMode = new ScaleMode();
+	}
 
 	/**
 	 * Resizes the screen.
@@ -29,13 +33,13 @@ class Screen
 	@:allow(haxepunk.HXP)
 	function resize(width:Int, height:Int)
 	{
-		var oldWidth:Int = HXP.width,
-			oldHeight:Int = HXP.height;
+		var oldWidth:Int = this.width,
+			oldHeight:Int = this.height;
 
 		scaleMode.resize(width, height);
 
-		width = HXP.width = Std.int((HXP.screen.width + 0.5) / HXP.screen.scaleX);
-		height = HXP.height = Std.int((HXP.screen.height + 0.5) / HXP.screen.scaleY);
+		width = Std.int((this.width + 0.5) / this.scaleX);
+		height = Std.int((this.height + 0.5) / this.scaleY);
 	}
 
 	/**
@@ -71,9 +75,8 @@ class Screen
 	public var scaleX(default, set):Float = 1;
 	function set_scaleX(value:Float):Float
 	{
-		scaleX = value;
-		HXP.needsResize = true;
-		return scaleX;
+		if (value != scaleX) HXP.needsResize = true;
+		return scaleX = value;
 	}
 
 	/**
@@ -82,9 +85,8 @@ class Screen
 	public var scaleY(default, set):Float = 1;
 	function set_scaleY(value:Float):Float
 	{
-		scaleY = value;
-		HXP.needsResize = true;
-		return scaleY;
+		if (scaleY != value) HXP.needsResize = true;
+		return scaleY = value;
 	}
 
 	/**

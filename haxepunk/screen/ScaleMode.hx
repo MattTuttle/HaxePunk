@@ -18,13 +18,10 @@ class ScaleMode
 	public function new(integer:Bool = false)
 	{
 		this.integer = integer;
-		setBaseSize(HXP.width, HXP.height);
 	}
 
-	public function setBaseSize(width:Int = -1, height:Int = -1)
+	public function setBaseSize(width:Int, height:Int)
 	{
-		if (width == -1) width = HXP.width;
-		if (height == -1) height = HXP.height;
 		baseWidth = width;
 		baseHeight = height;
 	}

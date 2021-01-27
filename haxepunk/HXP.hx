@@ -26,12 +26,14 @@ class HXP
 	/**
 	 * Width of the game.
 	 */
-	public static var width:Int;
+	public static var width(get, never):Int;
+	inline static function get_width():Int return screen.width;
 
 	/**
 	 * Height of the game.
 	 */
-	public static var height:Int;
+	public static var height(get, never):Int;
+	inline static function get_height():Int return screen.height;
 
 	/**
 	 * Width of the window.
@@ -73,11 +75,6 @@ class HXP
 	 * The Screen object, use to transform or offset the Screen.
 	 */
 	public static var screen:Screen;
-
-	/**
-	 * A rectangle representing the size of the screen.
-	 */
-	public static var bounds:Rectangle;
 
 	/**
 	 * The default font file to use, by default: font/monofonto.ttf.
@@ -190,8 +187,6 @@ class HXP
 		HXP.screen.resize(width, height);
 		HXP.halfWidth = HXP.width / 2;
 		HXP.halfHeight = HXP.height / 2;
-		HXP.bounds.width = width;
-		HXP.bounds.height = height;
 		for (scene in HXP.engine._scenes) scene._resize();
 		HXP.engine.console.may((c) -> c._resize());
 		HXP.needsResize = false;

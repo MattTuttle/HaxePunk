@@ -33,8 +33,6 @@ class App implements haxepunk.App
 	{
 		var el = Browser.document.getElementById("haxepunk");
 		canvas = cast(el, CanvasElement);
-		canvas.width = HXP.width == 0 ? 1280 : HXP.width;
-		canvas.height = HXP.height == 0 ? 720 : HXP.height;
 		gl = canvas.getContextWebGL({ alpha: false });
 		gl.pixelStorei(GL.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
 		gl.enable(GL.BLEND);
@@ -43,6 +41,8 @@ class App implements haxepunk.App
 		listenForMouseEvents(doc);
 		listenForKeyEvents(doc);
 		listenForTouchEvents(doc);
+		Browser.window.addEventListener('resize', resize);
+		canvas.addEventListener('resize', resize);
 		doc.addEventListener('visibilitychange', function() {
 			HXP.focused = !doc.hidden;
 			if (HXP.focused) {
@@ -163,14 +163,14 @@ class App implements haxepunk.App
 
 	function resize()
 	{
-		var width = canvas.width;
-		var height = canvas.height;
+		var width = canvas.clientWidth;
+		var height = canvas.clientHeight;
+		canvas.width = width;
+		canvas.height = height;
 		if (HXP.width == 0 || HXP.height == 0)
 		{
 			// set initial size
-			HXP.width = width;
-			HXP.height = height;
-			HXP.screen.scaleMode.setBaseSize();
+			HXP.screen.scaleMode.setBaseSize(width, height);
 		}
 		HXP.resize(width, height);
 		engine.onResize.invoke();

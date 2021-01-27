@@ -92,18 +92,13 @@ class Engine
 	public function new(width:Int = 0, height:Int = 0, frameRate:Float = 60, fixed:Bool = false)
 	{
 		// global game properties
-		HXP.bounds = new Rectangle(0, 0, width, height);
 		HXP.assignedFrameRate = frameRate;
 		HXP.fixed = fixed;
 
 		// global game objects
 		HXP.engine = this;
+		HXP.screen = new Screen(width, height);
 
-		// set width/height or default them to 1280x720
-		HXP.width = width;
-		HXP.height = height;
-
-		HXP.screen = new Screen();
 		HXP.app = app = createApp();
 
 		// miscellaneous startup stuff
