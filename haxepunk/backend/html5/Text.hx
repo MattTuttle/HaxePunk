@@ -228,11 +228,11 @@ class Text extends Image
 		_needsUpdate = true;
 		var ctx = Texture.canvas.getContext2d();
 		setFont(ctx);
-		_lines = [];
 
 		if (_wordWrap)
 		{
 			textWidth = _width;
+			_lines = [];
 			for (words in text.split("\n")) {
 				var line = "";
 				for (word in words.split(" "))
@@ -249,7 +249,7 @@ class Text extends Image
 		}
 		else
 		{
-			_lines.push(text);
+			_lines = text.split("\n");
 			textWidth = Std.int(ctx.measureText(text).width);
 
 			if (resizable)
@@ -257,7 +257,7 @@ class Text extends Image
 				var width = Math.ceil(textWidth + (bufferMargin * 2));
 				if (_width < width) _width = width;
 
-				var height = Math.ceil(textHeight + (bufferMargin * 2));
+				var height = Math.ceil(textHeight * _lines.length + (bufferMargin * 2));
 				if (_height < height) _height = height;
 			}
 		}
