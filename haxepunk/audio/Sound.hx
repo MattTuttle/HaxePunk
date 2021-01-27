@@ -28,6 +28,10 @@ typedef Sound = haxepunk.backend.openal.formats.AudioData;
 
 typedef Sound = haxepunk.backend.android.Sound;
 
+#elseif unit_test
+
+class Sound {}
+
 #else
 
 #error "No Sound class is defined"

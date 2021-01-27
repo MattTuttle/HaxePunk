@@ -207,6 +207,8 @@ class HXP
 		// splice causes Array allocation, so prefer pop for most arrays
 		if (array.length > 256) array.splice(0, array.length);
 		else while (array.length > 0) array.pop();
+#elseif unit_test
+		while (array.length > 0) array.pop();
 #else
 		untyped array.length = 0;
 #end
