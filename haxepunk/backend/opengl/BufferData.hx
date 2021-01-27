@@ -46,10 +46,12 @@ class BufferData
 	}
 
 	var byteOffset:Int;
+	static var maxFloats:Int = 0;
 
 	public function new()
 	{
-		needsResize(50, 15);
+		// set to max number of floats needed at this point
+		needsResize(maxFloats, 1);
 	}
 
 	public function needsResize(triangles:Int, floatsPerTriangle:Int):Bool
@@ -57,7 +59,11 @@ class BufferData
 		if (numFloats < triangles * floatsPerTriangle)
 		{
 			numFloats = resize(numFloats, triangles, floatsPerTriangle);
+			if (numFloats > maxFloats) {
+				maxFloats = numFloats;
+			}
 
+			var old = buffer;
 #if hl
 			buffer = new hl.Bytes(bufferBytesSize());
 #else
@@ -67,6 +73,8 @@ class BufferData
 			intView = new Uint32Array(buffer.buffer, 0);
 	#end
 #end
+			// copy old buffer into the new
+			if (old != null) buffer.set(old, 0);
 			return true;
 		}
 		return false;
@@ -131,7 +139,7 @@ class BufferData
 #elseif java
 		buffer.putInt(byteOffset, value);
 		byteOffset += 1;
-#else
+#elseif !unit_test
 		buffer.buffer.setInt32(byteOffset * 4, value);
 		byteOffset += 1;
 #end

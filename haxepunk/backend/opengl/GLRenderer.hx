@@ -245,7 +245,7 @@ class GLRenderer implements Renderer
 		{
 			if (_tracking)
 			{
-				// HXP.triangleCount += drawCommand.triangleCount;
+				HXP.triangleCount += Std.int(drawCommand.indicies / 3);
 				++HXP.drawCallCount;
 				if (HXP.drawCallLimit > -1 && HXP.drawCallCount > HXP.drawCallLimit) return;
 			}
@@ -264,7 +264,7 @@ class GLRenderer implements Renderer
 				var shader = getCompiledShader(drawCommand.shader, CompiledShader);
 				shader.bind();
 
-				bindRenderbuffer(drawCommand);
+				bindRenderbuffer(drawCommand.data);
 
 				var matrixUniform = shader.uniformIndex(UNIFORM_MATRIX);
 				if (matrixUniform != #if java -1 #else null #end) {
@@ -316,7 +316,7 @@ class GLRenderer implements Renderer
 
 	var byteSize:Int = 0;
 
-	inline function bindRenderbuffer(drawCommand:DrawCommand)
+	inline function bindRenderbuffer(data:BufferData)
 	{
 		#if !doc
 		if (GLUtils.invalid(renderBuffer))
@@ -324,11 +324,11 @@ class GLRenderer implements Renderer
 			renderBuffer = createArrayBuffer();
 		}
 		bindArrayBuffer(renderBuffer);
-		var size = drawCommand.data.bufferBytesSize();
+		var size = data.bufferBytesSize();
 		if (byteSize < size)
 		{
 			byteSize = size;
-			bufferData(GL.ARRAY_BUFFER, byteSize, drawCommand.data.buffer, GL.DYNAMIC_DRAW);
+			bufferData(GL.ARRAY_BUFFER, byteSize, data.buffer, GL.DYNAMIC_DRAW);
 		}
 		#end
 	}

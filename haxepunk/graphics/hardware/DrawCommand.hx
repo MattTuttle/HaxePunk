@@ -1,7 +1,6 @@
 package haxepunk.graphics.hardware;
 
 import haxepunk.backend.opengl.BufferData;
-import haxepunk.backend.opengl.Float32Array;
 import haxepunk.graphics.shader.Shader;
 import haxepunk.backend.generic.render.Texture;
 import haxepunk.math.MathUtil;
@@ -17,7 +16,7 @@ import haxepunk.utils.Color;
 @:dox(hide)
 class DrawCommand
 {
-	public static function create(texture:Texture, shader:Shader, smooth:Bool, blend:BlendMode, ?clipRect:Rectangle)
+	public static function reuseOrCreate(texture:Texture, shader:Shader, smooth:Bool, blend:BlendMode, ?clipRect:Rectangle)
 	{
 		var command:DrawCommand;
 		if (_pool != null)
@@ -63,7 +62,7 @@ class DrawCommand
 		data = new BufferData();
 	}
 
-	public function empty():Bool return triangleCount == 0;
+	public inline function empty():Bool return triangleCount == 0;
 
 	public var indicies(get, never):Int;
 	inline function get_indicies():Int return triangleCount * 3;
@@ -104,6 +103,7 @@ class DrawCommand
 	 */
 	public function addTriangle(tx1:Float, ty1:Float, uvx1:Float, uvy1:Float, tx2:Float, ty2:Float, uvx2:Float, uvy2:Float, tx3:Float, ty3:Float, uvx3:Float, uvy3:Float, color:Color):Void
 	{
+		++triangleCount;
 		data.needsResize(triangleCount, 15*4);
 		data.addVec(tx1, ty1);
 		data.addVec(uvx1, uvy1);
@@ -114,11 +114,11 @@ class DrawCommand
 		data.addVec(tx3, ty3);
 		data.addVec(uvx3, uvy3);
 		data.addInt(color);
-		++triangleCount;
 	}
 
 	public function addTriangleNoUV(tx1:Float, ty1:Float, tx2:Float, ty2:Float, tx3:Float, ty3:Float, color:Color):Void
 	{
+		++triangleCount;
 		data.needsResize(triangleCount, 9*4);
 		data.addVec(tx1, ty1);
 		data.addInt(color);
@@ -126,7 +126,6 @@ class DrawCommand
 		data.addInt(color);
 		data.addVec(tx3, ty3);
 		data.addInt(color);
-		++triangleCount;
 	}
 
 	public function recycle()

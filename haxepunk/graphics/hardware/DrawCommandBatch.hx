@@ -11,14 +11,14 @@ import haxepunk.math.Rectangle;
 class DrawCommandIterator
 {
 	@:allow(haxepunk.graphics.hardware.DrawCommandBatch)
-	var command:DrawCommand = null;
+	var start:DrawCommand = null;
 	var current:DrawCommand = null;
 
 	public function new() {}
 
 	public function reset()
 	{
-		current = command;
+		current = start;
 	}
 
 	public function hasNext():Bool
@@ -35,8 +35,8 @@ class DrawCommandIterator
 
 	public function recycle()
 	{
-		if (command != null) command.recycle();
-		command = current = null;
+		if (start != null) start.recycle();
+		start = current = null;
 	}
 }
 
@@ -48,14 +48,14 @@ class DrawCommandBatch
 	static var _bounds:Rectangle = new Rectangle();
 
 
-	var head = new DrawCommandIterator();
+	var commandList = new DrawCommandIterator();
 	var last:DrawCommand;
 
 	public function new() {}
 
 	public inline function recycle()
 	{
-		head.recycle();
+		commandList.recycle();
 		last = null;
 	}
 
@@ -64,8 +64,8 @@ class DrawCommandBatch
 	 */
 	public function iterator():DrawCommandIterator
 	{
-		head.reset();
-		return head;
+		commandList.reset();
+		return commandList;
 	}
 
 	public function getDrawCommand(texture:Texture, shader:Shader, smooth:Bool, blend:BlendMode, clipRect:Rectangle, x1:Float=0, y1:Float=0, x2:Float=0, y2:Float=0, x3:Float=0, y3:Float=0, flexibleLayer:Bool=false)
@@ -85,10 +85,10 @@ class DrawCommandBatch
 			l.recycle();
 		}
 
-		var command = DrawCommand.create(texture, shader, smooth, blend, clipRect);
+		var command = DrawCommand.reuseOrCreate(texture, shader, smooth, blend, clipRect);
 		if (last == null)
 		{
-			head.command = last = command;
+			commandList.start = last = command;
 			command._prev = null;
 		}
 		else
