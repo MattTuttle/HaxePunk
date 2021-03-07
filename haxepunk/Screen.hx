@@ -24,6 +24,7 @@ class Screen
 		this.width = width;
 		this.height = height;
 		scaleMode = new ScaleMode();
+		scaleMode.setBaseSize(width, height);
 	}
 
 	/**
